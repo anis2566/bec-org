@@ -1,0 +1,269 @@
+export enum LEVELS {
+  Primary = "Primary",
+  Secondary = "Secondary",
+  HigherSecondary = "Higher Secondary",
+}
+
+export enum GROUPS {
+  Science = "Science",
+  Business_Studies = "Business Studies",
+  Humanities = "Humanities",
+}
+
+export enum INSTITUTE_TYPES {
+  School = "School",
+  College = "College",
+}
+
+export enum ADMISSION_TYPE {
+  Monthly = "Monthly",
+  Course = "Course",
+}
+
+export enum GENDER {
+  Male = "Male",
+  Female = "Female",
+}
+
+export enum NATIONALITY {
+  Bangladeshi = "Bangladeshi",
+  Foreigner = "Foreigner",
+}
+
+export enum RELIGION {
+  Islam = "Islam",
+  Hinduism = "Hinduism",
+  Christianity = "Christianity",
+  Buddhism = "Buddhism",
+}
+
+export enum SHIFT {
+  Morning = "Morning",
+  Day = "Day",
+  Evening = "Evening",
+}
+
+export enum MONTH {
+  January = "January",
+  February = "February",
+  March = "March",
+  April = "April",
+  May = "May",
+  June = "June",
+  July = "July",
+  August = "August",
+  September = "September",
+  October = "October",
+  November = "November",
+  December = "December",
+}
+
+export enum STUDENT_STATUS {
+  Present = "Present",
+  Absent = "Absent",
+}
+
+export enum ADMISSION_STATUS {
+  Present = "Present",
+  Absent = "Absent",
+}
+
+export enum ADMISSION_PAYMENT_STATUS {
+  Paid = "Paid",
+  Unpaid = "Unpaid",
+}
+
+export enum SALARY_STATUS {
+  Initiated = "Initiated",
+  Present = "Present",
+  Absent = "Absent",
+}
+
+export enum SALARY_PAYMENT_STATUS {
+  "N/A" = "N/A",
+  Paid = "Paid",
+  Unpaid = "Unpaid",
+}
+
+export enum TEACHER_STATUS {
+  Present = "Present",
+  Absent = "Absent",
+}
+
+export enum PAYMENT_METHOD {
+  Cash = "Cash",
+  Bank = "Bank",
+  "Mobile Banking" = "Mobile Banking",
+}
+
+export enum DAYS {
+  Saturday = "Saturday",
+  Sunday = "Sunday",
+  Monday = "Monday",
+  Tuesday = "Tuesday",
+  Wednesday = "Wednesday",
+  Thursday = "Thursday",
+  Friday = "Friday",
+}
+
+export const DEFAULT_PAGE = 1;
+export const DEFAULT_LIMIT = 5;
+export const DEFAULT_PAGE_SIZE = 5;
+export const DEFAULT_PAGE_SIZE_OPTIONS = [5, 10, 20, 30, 40, 50, 100, 200, 500];
+export const DEFAULT_SORT_OPTIONS = [
+  {
+    label: "Newest",
+    value: "desc",
+  },
+  {
+    label: "Oldest",
+    value: "asc",
+  },
+];
+
+export const StudentDeactivationReasons = [
+  "Family or Personal Issue",
+  "Course Completed/Ended",
+  "Payment Due",
+  "Time Issue",
+  "Relocated to Different City/Town",
+  "Disciplinary Action",
+  "Transfered to Another Institution",
+  "Irregular Attendance",
+  "Lack of Academic Performance",
+  "Other",
+];
+
+export const Session = [
+  {
+    label: "2024",
+    value: "2024",
+  },
+  {
+    label: "2025",
+    value: "2025",
+  },
+  {
+    label: "2026",
+    value: "2026",
+  },
+  {
+    label: "2027",
+    value: "2027",
+  },
+];
+
+export const timeSlots = [
+  "9:00 AM - 9:30 AM",
+  "9:30 AM - 10:00 AM",
+  "10:00 AM - 10:30 AM",
+  "10:30 AM - 11:00 AM",
+  "11:00 AM - 11:30 AM",
+  "11:30 AM - 12:00 PM",
+  "12:00 PM - 12:30 PM",
+  "12:30 PM - 1:00 PM",
+  "1:00 PM - 1:30 PM",
+  "1:30 PM - 2:00 PM",
+  "2:00 PM - 2:30 PM",
+  "2:30 PM - 3:00 PM",
+  "3:00 PM - 3:30 PM",
+  "3:30 PM - 4:00 PM",
+  "4:00 PM - 4:30 PM",
+  "4:30 PM - 5:00 PM",
+  "5:00 PM - 5:30 PM",
+  "5:30 PM - 6:00 PM",
+  "6:00 PM - 6:30 PM",
+  "6:30 PM - 7:00 PM",
+  "7:00 PM - 7:30 PM",
+  "7:30 PM - 8:00 PM",
+  "8:00 PM - 8:30 PM",
+  "8:30 PM - 9:00 PM",
+];
+
+export function sortTimeSlots(input: string[]): string[] {
+  return input.sort((a, b) => timeSlots.indexOf(a) - timeSlots.indexOf(b));
+}
+
+export const formatTime = (time: string, position: "start" | "end") => {
+  return time.split("-")[position === "start" ? 0 : 1];
+};
+
+export function splitTimeRange(range: string, intervalMinutes = 30) {
+  const [startStr, endStr] = range.split("-").map((s) => s.trim());
+
+  const parseTime = (str: string) => {
+    const [time, modifier] = str.split(" ");
+    let hours = 0,
+      minutes = 0;
+    if (time) {
+      const parts = time.split(":").map(Number);
+      hours = parts[0] || 0;
+      minutes = parts[1] || 0;
+    }
+
+    minutes = minutes || 0;
+
+    if (modifier === "PM" && hours !== 12) hours += 12;
+    if (modifier === "AM" && hours === 12) hours = 0;
+
+    return hours * 60 + minutes;
+  };
+
+  const formatTime = (mins: number) => {
+    const hours24 = Math.floor(mins / 60);
+    const minutes = mins % 60; // now using const
+    const modifier = hours24 >= 12 ? "PM" : "AM";
+    const hours = hours24 % 12 || 12;
+
+    return `${hours}:${String(minutes).padStart(2, "0")} ${modifier}`;
+  };
+
+  const start = parseTime(startStr ?? "");
+  const end = parseTime(endStr ?? "");
+
+  const slots: string[] = [];
+
+  for (let t = start; t < end; t += intervalMinutes) {
+    const slotStart = formatTime(t);
+    const slotEnd = formatTime(Math.min(t + intervalMinutes, end));
+    slots.push(`${slotStart} - ${slotEnd}`);
+  }
+
+  return slots;
+}
+
+export const dayOrder = {
+  Saturday: 1,
+  Sunday: 2,
+  Monday: 3,
+  Tuesday: 4,
+  Wednesday: 5,
+  Thursday: 6,
+  Friday: 7,
+};
+
+type DaySchedule = {
+  day: string;
+  times: string[];
+};
+
+export function groupByDay(slots: string[]): DaySchedule[] {
+  const grouped: Record<string, string[]> = {};
+
+  for (const slot of slots) {
+    const [day, ...timeParts] = slot.split(" ");
+    const time = timeParts.join(" ");
+
+    if (!day) continue;
+
+    if (!grouped[day]) {
+      grouped[day] = [];
+    }
+    grouped[day].push(time);
+  }
+
+  return Object.entries(grouped).map(([day, times]) => ({
+    day,
+    times,
+  }));
+}

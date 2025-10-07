@@ -16,3 +16,162 @@ export const SignInSchema = z.object({
 });
 
 export type SignInSchemaType = z.infer<typeof SignInSchema>;
+
+export const ClassNameSchema = z.object({
+  name: requiredString,
+  level: requiredString,
+  position: requiredString,
+});
+
+export type ClassNameSchemaType = z.infer<typeof ClassNameSchema>;
+
+export const SubjectSchema = z.object({
+  name: requiredString,
+  level: requiredString,
+  group: z.string().optional(),
+});
+
+export type SubjectSchemaType = z.infer<typeof SubjectSchema>;
+
+export const CounterSchema = z.object({
+  type: requiredString,
+  value: requiredString,
+});
+
+export type CounterSchemaType = z.infer<typeof CounterSchema>;
+
+export const AdmissionFeeSchema = z.object({
+  classNameId: requiredString,
+  amount: requiredString,
+});
+
+export type AdmissionFeeSchemaType = z.infer<typeof AdmissionFeeSchema>;
+
+export const SalaryFeeSchema = z.object({
+  type: requiredString,
+  classNameId: requiredString,
+  amount: requiredString,
+  group: z.string().optional(),
+});
+
+export type SalaryFeeSchemaType = z.infer<typeof SalaryFeeSchema>;
+
+export const InstituteSchema = z.object({
+  type: requiredString,
+  name: requiredString,
+});
+
+export type InstituteSchemaType = z.infer<typeof InstituteSchema>;
+
+export const StudentSchema = z.object({
+  name: requiredString,
+  nameBangla: requiredString,
+  fName: requiredString,
+  mName: requiredString,
+  gender: requiredString,
+  dob: requiredString,
+  nationality: requiredString,
+  religion: requiredString,
+  imageUrl: z.string().optional(),
+  school: requiredString,
+  classNameId: requiredString,
+  section: z.string().optional(),
+  shift: z.string().optional(),
+  group: z.string().optional(),
+  roll: requiredString,
+  fPhone: z.string().length(11, { message: "invalid phone number" }),
+  mPhone: z.string().length(11, { message: "invalid phone number" }),
+  presentHouseNo: requiredString,
+  presentMoholla: requiredString,
+  presentPost: requiredString,
+  presentThana: requiredString,
+  permanentVillage: requiredString,
+  permanentPost: requiredString,
+  permanentThana: requiredString,
+  permanentDistrict: requiredString,
+  type: requiredString,
+  studentId: requiredString,
+  admissionFee: requiredString,
+  salaryFee: requiredString,
+  courseFee: z.string().optional(),
+  batchId: requiredString,
+});
+export type StudentSchemaType = z.infer<typeof StudentSchema>;
+
+export const FindStudentSchema = z.object({
+  classNameId: requiredString,
+  search: requiredString,
+});
+
+export type FindStudentSchemaType = z.infer<typeof FindStudentSchema>;
+
+export const SalaryPaymentSchema = z.object({
+  method: requiredString,
+  amount: requiredString,
+  note: z.string().optional(),
+});
+
+export type SalaryPaymentSchemaType = z.infer<typeof SalaryPaymentSchema>;
+
+export const TeacherSchema = z.object({
+  name: requiredString,
+  fName: requiredString,
+  mName: requiredString,
+  gender: requiredString,
+  dob: requiredString,
+  nationality: requiredString,
+  religion: requiredString,
+  imageUrl: z.string().optional(),
+  presentHouseNo: requiredString,
+  presentMoholla: requiredString,
+  presentPost: requiredString,
+  presentThana: requiredString,
+  permanentVillage: requiredString,
+  permanentPost: requiredString,
+  permanentThana: requiredString,
+  permanentDistrict: requiredString,
+  phone: z.string().length(11, { message: "invalid phone number" }),
+  altPhone: z.string().optional(),
+  currentInstitution: requiredString,
+  currentSubject: requiredString,
+  level: z.array(z.string()).min(1, { message: "required" }),
+  availableTimes: z.array(z.string()).min(1, { message: "required" }),
+  availableDays: z.array(z.string()).min(1, { message: "required" }),
+  classRate: requiredString,
+  teacherId: requiredString,
+});
+export type TeacherSchemaType = z.infer<typeof TeacherSchema>;
+
+export const HouseSchema = z.object({
+  name: requiredString,
+  roomCount: requiredString,
+});
+export type HouseSchemaType = z.infer<typeof HouseSchema>;
+
+export const RoomSchema = z.object({
+  name: requiredString,
+  capacity: requiredString,
+  availableTimes: z.array(z.string()).min(1, { message: "required" }),
+  houseId: requiredString,
+});
+export type RoomSchemaType = z.infer<typeof RoomSchema>;
+
+export const BatchSchema = z.object({
+  name: requiredString,
+  classNameId: requiredString,
+  capacity: requiredString,
+  time: z.array(z.string()).min(1, { message: "required" }),
+  classTime: z.array(z.string()).min(1, { message: "required" }),
+  level: requiredString,
+  roomId: requiredString,
+});
+export type BatchSchemaType = z.infer<typeof BatchSchema>;
+
+export const BatchClassSchema = z.object({
+  time: requiredString,
+  days: z.array(z.string()).min(1, { message: "required" }),
+  subjectId: requiredString,
+  teacherId: requiredString,
+  batchId: requiredString,
+});
+export type BatchClassSchemaType = z.infer<typeof BatchClassSchema>;

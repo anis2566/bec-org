@@ -26,6 +26,12 @@ import { prisma, PrismaClient } from "@workspace/db";
  * @see https://trpc.io/docs/server/context
  */
 
+type SessionWithRole = Session & {
+  user: Session["user"] & {
+    role: string;
+  };
+};
+
 export const createTRPCContext = async (opts: {
   headers: Headers;
   auth: Auth;
@@ -128,6 +134,20 @@ export const protectedProcedure = t.procedure
       ctx: {
         // infers the `session` as non-nullable
         session: { ...ctx.session, user: ctx.session.user },
+      },
+    });
+  });
+
+export const adminProcedure = t.procedure
+  .use(timingMiddleware)
+  .use(({ ctx, next }) => {
+    const session = ctx.session as SessionWithRole | null;
+    // if (session?.user.role !== "Admin") {
+    //   throw new TRPCError({ code: "UNAUTHORIZED" });
+    // }
+    return next({
+      ctx: {
+        session: session as SessionWithRole,
       },
     });
   });

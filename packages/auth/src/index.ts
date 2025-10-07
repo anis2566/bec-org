@@ -38,10 +38,6 @@ export function initAuth(options: {
         updatedAt: "updatedAt",
       },
       additionalFields: {
-        avatar: {
-          type: "string",
-          required: false,
-        },
         role: {
           type: "string",
           defaultValue: "User",
@@ -55,6 +51,7 @@ export function initAuth(options: {
           required: false,
         },
       },
+      
     },
 
     account: {

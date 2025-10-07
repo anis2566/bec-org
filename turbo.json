@@ -24,7 +24,7 @@
       "cache": false,
       "env": ["DATABASE_URL"]
     },
-    "db:migrate": {
+    "db:push": {
       "cache": false,
       "persistent": true,
       "env": ["DATABASE_URL"]

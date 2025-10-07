@@ -7,7 +7,6 @@
     "dev": "turbo dev",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "postinstall": "pnpm db:generate",
     "db:generate": "turbo db:generate"
   },
   "devDependencies": {

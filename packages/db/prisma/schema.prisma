@@ -1,12 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider      = "prisma-client-js"
+  output        = "../generated/prisma"
   binaryTargets = ["native", "rhel-openssl-3.0.x"]
 }
 
@@ -16,35 +10,21 @@ datasource db {
 }
 
 model User {
-  id             String    @id @default(auto()) @map("_id") @db.ObjectId
-  name           String?
-  email          String?   @unique
-  emailVerified  Boolean   @default(false)
-  password       String?
-  image          String?   
-  role           String    @default("User")
-  status         String    @default("Pending")
-  phone          String?
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  name          String?
+  email         String? @unique
+  emailVerified Boolean @default(false)
+  password      String?
+  image         String?
+  role          String  @default("User")
+  status        String  @default("Pending")
+  phone         String?
 
-  accounts     Account[]
-  sessions     Session[]
-  bank         UserBank?
-  referredToMe Refer?    @relation("UserIsReferee")
+  accounts Account[]
+  sessions Session[]
 
-  exams        Exam[]
-  attempts     McqAttempt[]
-  feedbacks    ExamFeedback[]
-  transactions Transaction[]
-  purchases    PlanPurchase[]
-  referredByMe Refer[]        @relation("UserIsReferer")
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
-
-  @@index([role])
-  @@index([status])
-  @@index([createdAt])
-  @@index([role, status])
-  @@index([status, createdAt])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Account {
@@ -67,14 +47,14 @@ model Account {
 }
 
 model Session {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  sessionToken String @unique @map("token")
-  userId    String   @db.ObjectId
-  expiresAt DateTime
-  ipAddress String?
-  userAgent String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique @map("token")
+  userId       String   @db.ObjectId
+  expiresAt    DateTime
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -92,407 +72,305 @@ model Verification {
   @@unique([identifier, value])
 }
 
-model UserBank {
-  id                            String  @id @default(auto()) @map("_id") @db.ObjectId
-  credit                        Int     @default(0)
-  mcqs                          Int     @default(0)
-  exams                         Int     @default(0)
-  attempts                      Int     @default(0)
-  enabledDownloadFeedbackReport Boolean @default(false)
-
-  userId String @unique @db.ObjectId
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([credit])
-  @@index([mcqs])
-  @@index([exams])
-  @@index([attempts])
-}
-
 model ClassName {
   id       String @id @default(auto()) @map("_id") @db.ObjectId
   name     String @unique
   level    String
   position Int    @default(0)
 
-  subjectIds String[]  @db.ObjectId
-  subjects   Subject[] @relation(fields: [subjectIds], references: [id])
-
-  chapterIds String[]  @db.ObjectId
-  chapters   Chapter[] @relation(fields: [chapterIds], references: [id])
-
-  exams Exam[]
+  admissionFees AdmissionFee[]
+  salaryFees    SalaryFee[]
+  students      Student[]
+  Batches       Batch[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([level])
-  @@index([name, level])
 }
 
 model Subject {
   id    String  @id @default(auto()) @map("_id") @db.ObjectId
   name  String
+  level String
   group String?
 
-  classNameIds String[]    @db.ObjectId
-  classNames   ClassName[] @relation(fields: [classNameIds], references: [id])
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  BatchClass BatchClass[]
+}
 
-  chapters Chapter[]
-  mcqs     Mcq[]
-  exams    Exam[]
+model Counter {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  type  String @unique
+  value Int    @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([name])
-  @@index([group])
-  @@index([name, group])
 }
 
-model Chapter {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  name     String
-  position Int    @default(0)
-
-  subjectId String  @db.ObjectId
-  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-
-  examIds String[] @db.ObjectId
-  exams   Exam[]   @relation(fields: [examIds], references: [id])
-
-  classNameIds String[]    @db.ObjectId
-  classNames   ClassName[] @relation(fields: [classNameIds], references: [id])
-
-  context ChapterContext?
-  mcqs    Mcq[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([subjectId])
-  @@index([name])
-  @@index([subjectId, name])
-}
-
-model ChapterContext {
-  id            String  @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  author        String?
-  authorSummary String?
-  content       String
-  meaning       String?
-  summary       String?
-
-  chapterId String  @unique @db.ObjectId
-  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([title])
-  @@index([author])
-}
-
-model Mcq {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  question    String
-  options     String[]
-  statements  String[] @default([])
-  answer      String
-  type        String
-  reference   String?
-  explanation String?
-  isMath      Boolean  @default(false)
-  session     Int
-  source      String?
-  questionUrl String?
-  contextUrl  String?
-
-  context String?
-
-  subjectId String  @db.ObjectId
-  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
-
-  chapterId String  @db.ObjectId
-  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-
-  examIds String[] @db.ObjectId
-  exams   Exam[]   @relation(fields: [examIds], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([subjectId])
-  @@index([chapterId])
-  @@index([type])
-  @@index([session])
-  @@index([isMath])
-  @@index([subjectId, chapterId])
-  @@index([subjectId, type])
-  @@index([chapterId, type])
-  @@index([type, session])
-}
-
-model Exam {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
-  title         String
-  type          String
-  questionCount Int
-  duration      Int
-  status        String @default("Pending")
+model AdmissionFee {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  amount Int
 
   classNameId String    @db.ObjectId
-  className   ClassName @relation(fields: [classNameId], references: [id], onDelete: NoAction)
-
-  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: NoAction)
-  subjectId String  @db.ObjectId
-
-  chapterIds String[]  @db.ObjectId
-  chapters   Chapter[] @relation(fields: [chapterIds], references: [id])
-
-  questionIds String[] @db.ObjectId
-  questions   Mcq[]    @relation(fields: [questionIds], references: [id])
-
-  userId String @db.ObjectId
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  attempts        McqAttempt[]
-  recommendations Recommendation[]
+  className   ClassName @relation(fields: [classNameId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([title])
-  @@index([userId])
-  @@index([status])
-  @@index([type])
-  @@index([classNameId])
-  @@index([subjectId])
-  @@index([createdAt])
-  @@index([userId, status])
-  @@index([userId, type])
-  @@index([classNameId, subjectId])
-  @@index([status, createdAt])
-  @@index([userId, createdAt])
 }
 
-model McqAttempt {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+model SalaryFee {
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  type   String
+  group  String?
+  amount Int
 
-  answers       String[]  @default([])
-  total         Int
-  score         Int       @default(0)
-  streak        Int       @default(0)
-  longestStreak Int       @default(0)
-  wrongAnswer   Int       @default(0)
-  status        String    @default("Pending")
-  startTime     DateTime?
-  endTime       DateTime?
-
-  examId String @db.ObjectId
-  exam   Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
-
-  userId String @db.ObjectId
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  feedback ExamFeedback?
+  classNameId String    @db.ObjectId
+  className   ClassName @relation(fields: [classNameId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([examId])
-  @@index([status])
-  @@index([score])
-  @@index([createdAt])
-  @@index([userId, examId])
-  @@index([userId, status])
-  @@index([userId, createdAt])
-  @@index([examId, status])
-  @@index([status, createdAt])
-  @@index([userId, score])
 }
 
-model ExamFeedback {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
-
-  mcqAttemptId String     @unique @db.ObjectId
-  mcqAttempt   McqAttempt @relation(fields: [mcqAttemptId], references: [id], onDelete: Cascade)
-
-  userId String @db.ObjectId
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  overallSummary  String
-  strengths       String[] @default([])
-  weaknesses      String[] @default([])
-  recommendations String[] @default([])
-
-  detailedAnalysis Json?
-
-  userRating Int?
+model Institute {
+  id   String @id @default(auto()) @map("_id") @db.ObjectId
+  type String
+  name String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([userId])
-  @@index([userRating])
-  @@index([createdAt])
-  @@index([userId, createdAt])
-  @@index([userId, userRating])
 }
 
-model CreditPlan {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  credit    Int
-  price     Int
-  discount  Int
-  save      Int
-  bonus     Int
-  status    String  @default("Active")
-  isPopular Boolean @default(false)
+model Student {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  session     String
+  studentId   Int
+  name        String
+  nameBangla  String
+  fName       String
+  mName       String
+  gender      String
+  dob         DateTime
+  nationality String
+  religion    String
+  imageUrl    String?
 
-  transactions Transaction[]
+  school  String
+  section String?
+  shift   String?
+  group   String?
+  roll    Int
+
+  fPhone String
+  mPhone String
+
+  presentHouseNo    String
+  presentMoholla    String
+  presentPost       String
+  presentThana      String
+  permanentVillage  String
+  permanentPost     String
+  permanentThana    String
+  permanentDistrict String
+
+  type         String
+  admissionFee Int
+  salaryFee    Int
+  courseFee    Int?
+
+  classNameId String    @db.ObjectId
+  className   ClassName @relation(fields: [classNameId], references: [id], onDelete: Cascade)
+
+  batchId String? @db.ObjectId
+  batch   Batch?  @relation(fields: [batchId], references: [id], onDelete: SetNull)
+
+  studentStatus StudentStatus?
+
+  admissionPayments AdmissionPayment[]
+  salaryPayments    SalaryPayment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([status])
-  @@index([isPopular])
-  @@index([price])
-  @@index([credit])
-  @@index([status, isPopular])
-  @@index([status, price])
 }
 
-model Transaction {
-  id            String @id @default(auto()) @map("_id") @db.ObjectId
-  transactionId String
+model StudentStatus {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  status       String    @default("Present")
+  absentReason String?
+  absentDate   DateTime?
+
+  studentId String  @unique @db.ObjectId
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AdmissionPayment {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  className     String
   amount        Int
-  type          String
   method        String
-  status        String @default("Pending")
+  status        String
+  paymentStatus String    @default("Unpaid")
+  session       String
+  month         String
+  paidAt        DateTime?
 
-  userId String @db.ObjectId
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  creditPlanId String     @db.ObjectId
-  creditPlan   CreditPlan @relation(fields: [creditPlanId], references: [id], onDelete: NoAction)
+  studentId String  @db.ObjectId
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([transactionId])
-  @@index([userId])
-  @@index([status])
-  @@index([type])
-  @@index([method])
-  @@index([createdAt])
-  @@index([userId, status])
-  @@index([userId, type])
-  @@index([status, createdAt])
-  @@index([userId, createdAt])
-  @@index([amount])
 }
 
-model ExamPlan {
-  id                   String   @id @default(auto()) @map("_id") @db.ObjectId
-  title                String
-  description          String
-  credit               Int
-  mcqs                 Int      @default(0)
-  exams                Int      @default(0)
-  attempts             Int      @default(0)
-  features             String[]
-  aiFeedbackFeatures   String[]
-  enableDownloadReport Boolean  @default(false)
+model SalaryPayment {
+  id            String    @id @default(auto()) @map("_id") @db.ObjectId
+  transactionId String?
+  amount        Int
+  session       String
+  month         String
+  className     String
+  method        String?
+  status        String
+  paymentStatus String    @default("Unpaid")
+  note          String?
+  paidAt        DateTime?
 
-  purchases PlanPurchase[]
+  studentId String  @db.ObjectId
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([credit])
-  @@index([mcqs])
-  @@index([exams])
-  @@index([attempts])
-  @@index([title])
 }
 
-model PlanPurchase {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
-  usedMcqs     Int    @default(0)
-  usedExams    Int    @default(0)
-  usedAttempts Int    @default(0)
-  status       String @default("Pending")
+model Teacher {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  session     String
+  teacherId   Int
+  name        String
+  fName       String
+  mName       String
+  dob         DateTime
+  gender      String
+  nationality String
+  religion    String
+  imageUrl    String?
 
-  userId String @db.ObjectId
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  presentHouseNo    String
+  presentMoholla    String
+  presentPost       String
+  presentThana      String
+  permanentVillage  String
+  permanentPost     String
+  permanentThana    String
+  permanentDistrict String
 
-  planId String   @db.ObjectId
-  plan   ExamPlan @relation(fields: [planId], references: [id], onDelete: NoAction)
+  phone    String
+  altPhone String?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  currentInstitution String
+  currentSubject     String
 
-  @@index([userId])
-  @@index([planId])
-  @@index([status])
-  @@index([createdAt])
-  @@index([userId, status])
-  @@index([userId, planId])
-  @@index([status, createdAt])
+  level          String[]
+  availableTimes String[] @default([])
+  availableDays  String[] @default([])
+  availableSlots String[] @default([])
+  bookedSlots    String[] @default([])
+  classRate      Int
+
+  teacherStatus TeacherStatus?
+
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  BatchClass BatchClass[]
 }
 
-model Refer {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
-  hasPurchased Boolean @default(false)
+model TeacherStatus {
+  id           String    @id @default(auto()) @map("_id") @db.ObjectId
+  status       String    @default("Present")
+  absentReason String?
+  absentDate   DateTime?
 
-  refererId String @db.ObjectId
-  referer   User   @relation("UserIsReferer", fields: [refererId], references: [id], onDelete: Cascade)
-
-  refereeId String @unique @db.ObjectId
-  referee   User   @relation("UserIsReferee", fields: [refereeId], references: [id], onDelete: Cascade)
+  teacherId String  @unique @db.ObjectId
+  Teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([refererId])
-  @@index([hasPurchased])
-  @@index([createdAt])
-  @@index([refererId, hasPurchased])
 }
 
-model Announcement {
-  id         String  @id @default(auto()) @map("_id") @db.ObjectId
-  title      String
-  content    String
-  isFeatured Boolean @default(false)
+model House {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  roomCount Int
+
+  rooms Room[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([isFeatured])
-  @@index([createdAt])
-  @@index([isFeatured, createdAt])
 }
 
-model Recommendation {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  title  String
-  reason String
+model Room {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  capacity       Int
+  availableTimes String[] @default([])
+  bookTimes      String[] @default([])
 
-  examId String @db.ObjectId
-  exam   Exam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+  houseId String @db.ObjectId
+  house   House  @relation(fields: [houseId], references: [id], onDelete: Cascade)
+
+  batches Batch[]
+
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  BatchClass BatchClass[]
+}
+
+model Batch {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  name           String
+  batchClassName String
+  roomName       String
+  capacity       Int
+  time           String[]
+  classTime      String[]
+  level          String
+
+  roomId String @db.ObjectId
+  room   Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  classNameId String    @db.ObjectId
+  className   ClassName @relation(fields: [classNameId], references: [id], onDelete: Cascade)
+
+  students Student[]
+
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  BatchClass BatchClass[]
+}
+
+model BatchClass {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  time      String
+  day       String
+  batchTime String
+
+  roomName String
+  roomId   String @db.ObjectId
+  room     Room   @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  subjectId   String  @db.ObjectId
+  subject     Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  subjectName String
+
+  teacherId   String  @db.ObjectId
+  teacher     Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+  teacherName String
+
+  batchId   String @db.ObjectId
+  batch     Batch  @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  batchName String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@index([examId])
-  @@index([createdAt])
-  @@index([examId, createdAt])
 }

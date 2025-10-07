@@ -1,8 +1,9 @@
 import type { TRPCQueryOptions } from "@trpc/tanstack-react-query";
-import { cache } from "react";
+import { cache, Suspense } from "react";
 import { headers } from "next/headers";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
+import { ErrorBoundary } from "react-error-boundary";
 
 import type { AppRouter } from "@workspace/api";
 import { appRouter, createTRPCContext } from "@workspace/api";
@@ -36,13 +37,15 @@ export function HydrateClient(props: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      {props.children}
+      <Suspense fallback={<div>Loading...</div>}>
+        <ErrorBoundary fallback={<p>Error</p>}>{props.children}</ErrorBoundary>
+      </Suspense>
     </HydrationBoundary>
   );
 }
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function prefetch<T extends ReturnType<TRPCQueryOptions<any>>>(
-  queryOptions: T,
+  queryOptions: T
 ) {
   const queryClient = getQueryClient();
   if (queryOptions.queryKey[1]?.type === "infinite") {
