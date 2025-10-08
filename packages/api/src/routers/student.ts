@@ -36,91 +36,109 @@ export const studentRouter = {
         const currentMonthIndex = new Date().getMonth();
         const currentMonth = Object.values(MONTH)[currentMonthIndex] as string;
 
-        await ctx.db.$transaction(async (tx) => {
-          const newStudent = await tx.student.create({
-            data: {
-              ...input,
-              session: new Date().getFullYear().toString(),
-              studentId: parseInt(input.studentId),
-              dob: new Date(input.dob),
-              roll: parseInt(input.roll),
-              admissionFee: parseInt(input.admissionFee),
-              salaryFee: parseInt(input.salaryFee),
-              courseFee: null,
-              studentStatus: {
-                create: {
-                  status: STUDENT_STATUS.Present,
-                },
-              },
-            },
-            select: {
-              id: true,
-              className: {
-                select: {
-                  name: true,
-                },
-              },
-            },
-          });
-
-          await tx.admissionPayment.create({
-            data: {
-              className: newStudent.className.name,
-              amount: parseInt(input.admissionFee),
-              method: "N/A",
-              session: new Date().getFullYear().toString(),
-              month: currentMonth,
-              studentId: newStudent.id,
-              status: ADMISSION_STATUS.Present,
-              paymentStatus: ADMISSION_PAYMENT_STATUS.Unpaid,
-            },
-          });
-
-          for (let i = 0; i < months.length; i++) {
-            let status: string;
-            let paymentStatus: string | undefined;
-
-            if (i < currentMonthIndex) {
-              status = "N/A";
-              paymentStatus = "N/A";
-            } else if (i === currentMonthIndex) {
-              status = SALARY_STATUS.Present;
-              paymentStatus = SALARY_PAYMENT_STATUS.Unpaid;
-            } else {
-              status = SALARY_STATUS.Initiated;
-              paymentStatus = SALARY_PAYMENT_STATUS["N/A"];
-            }
-
-            await tx.salaryPayment.create({
+        await ctx.db.$transaction(
+          async (tx) => {
+            const newStudent = await tx.student.create({
               data: {
+                ...input,
                 session: new Date().getFullYear().toString(),
-                month: months[i] as string,
-                studentId: newStudent.id,
-                className: newStudent.className.name,
-                method: "N/A",
-                status: status,
-                ...(paymentStatus && { paymentStatus }),
-                amount: parseInt(input.salaryFee),
+                studentId: parseInt(input.studentId),
+                dob: new Date(input.dob),
+                roll: parseInt(input.roll),
+                admissionFee: parseInt(input.admissionFee),
+                salaryFee: parseInt(input.salaryFee),
+                courseFee: null,
+                studentStatus: {
+                  create: {
+                    status: STUDENT_STATUS.Present,
+                  },
+                },
+              },
+              select: {
+                id: true,
+                className: {
+                  select: {
+                    name: true,
+                  },
+                },
               },
             });
-          }
 
-          await tx.counter.update({
-            where: {
-              type: newStudent.className.name,
-            },
-            data: {
-              value: {
-                increment: 1,
+            await tx.admissionPayment.create({
+              data: {
+                className: newStudent.className.name,
+                amount: parseInt(input.admissionFee),
+                method: "N/A",
+                session: new Date().getFullYear().toString(),
+                month: currentMonth,
+                studentId: newStudent.id,
+                status: ADMISSION_STATUS.Present,
+                paymentStatus: ADMISSION_PAYMENT_STATUS.Unpaid,
               },
-            },
-          });
-        });
+            });
+
+            for (let i = 0; i < months.length; i++) {
+              let status: string;
+              let paymentStatus: string | undefined;
+
+              if (i < currentMonthIndex) {
+                status = "N/A";
+                paymentStatus = "N/A";
+              } else if (i === currentMonthIndex) {
+                status = SALARY_STATUS.Present;
+                paymentStatus = SALARY_PAYMENT_STATUS.Unpaid;
+              } else {
+                status = SALARY_STATUS.Initiated;
+                paymentStatus = SALARY_PAYMENT_STATUS["N/A"];
+              }
+
+              await tx.salaryPayment.create({
+                data: {
+                  session: new Date().getFullYear().toString(),
+                  month: months[i] as string,
+                  studentId: newStudent.id,
+                  className: newStudent.className.name,
+                  method: "N/A",
+                  status: status,
+                  ...(paymentStatus && { paymentStatus }),
+                  amount: parseInt(input.salaryFee),
+                },
+              });
+            }
+
+            await tx.counter.update({
+              where: {
+                type: newStudent.className.name,
+              },
+              data: {
+                value: {
+                  increment: 1,
+                },
+              },
+            });
+          },
+          {
+            timeout: 15000,
+            maxWait: 10000,
+          }
+        );
 
         return { success: true, message: "Admission successfull" };
       } catch (error) {
         console.error("Error creating admission", error);
-        return { success: false, message: "Internal Server Error" };
+
+        if (error instanceof Error) {
+          console.error("Error name:", error.name);
+          console.error("Error message:", error.message);
+          console.error("Error stack:", error.stack);
+        }
+
+        return {
+          success: false,
+          message: "Internal Server Error",
+          // In development, you might want to include:
+          // error: error instanceof Error ? error.message : "Unknown error"
+        };
       }
     }),
   updateOne: adminProcedure
