@@ -23,6 +23,8 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
+import { Salaries } from "../components/salaries";
+import { StudentProfile } from "../components/profile";
 
 interface StudentViewProps {
   id: string;
@@ -85,16 +87,21 @@ export const StudentView = ({ id }: StudentViewProps) => {
         </Card>
       </div>
 
-      <Tabs defaultValue="payment" className="w-full">
+      <Tabs defaultValue="salaries" className="w-full">
         <TabsList className="w-full rounded-xs mb-2 bg-muted">
-          <TabsTrigger value="payment">Payment</TabsTrigger>
+          <TabsTrigger value="salaries">Salaries</TabsTrigger>
           <TabsTrigger value="attendance">Attendance</TabsTrigger>
           <TabsTrigger value="result">Result</TabsTrigger>
           <TabsTrigger value="homework">Homework</TabsTrigger>
           <TabsTrigger value="monthly-report">Monthly Report</TabsTrigger>
           <TabsTrigger value="profile">Profile</TabsTrigger>
         </TabsList>
-        <TabsContent value="profile">Profile</TabsContent>
+        <TabsContent value="salaries">
+          <Salaries studentId={id} />
+        </TabsContent>
+        <TabsContent value="profile">
+          <StudentProfile student={student} />
+        </TabsContent>
       </Tabs>
     </div>
   );

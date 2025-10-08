@@ -174,6 +174,7 @@ export const teacherRouter = {
           name: true,
           id: true,
           teacherId: true,
+          classRate: true,
         },
       });
 

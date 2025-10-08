@@ -6,6 +6,20 @@ import { adminProcedure } from "../trpc";
 import { BatchSchema } from "@workspace/utils/schemas";
 import { sortTimeSlots } from "@workspace/utils/constant";
 
+type ACC = {
+  roomName: string;
+  batches: {
+    batchName: string;
+    batchTime: string;
+    batchId: string;
+    classes: {
+      teachers: string[];
+      time: string;
+      subjectName: string[];
+    }[];
+  }[];
+};
+
 export const batchRouter = {
   createOne: adminProcedure
     .input(BatchSchema)
@@ -266,6 +280,75 @@ export const batchRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
+  getRoomPlan: adminProcedure.query(async ({ ctx }) => {
+    const classes = await ctx.db.batchClass.findMany();
+
+    const roomPlan = classes.reduce<ACC[]>((acc, item) => {
+      const existingRoom = acc.find((room) => room.roomName === item.roomName);
+
+      if (existingRoom) {
+        const existingBatch = existingRoom.batches.find(
+          (batch) => batch.batchName === item.batchName
+        );
+
+        if (existingBatch) {
+          // Find a class with the same batchTime
+          const existingClass = existingBatch.classes.find(
+            (cls) => cls.time === item.time
+          );
+
+          if (existingClass) {
+            // If subject doesn't exist, push it
+            if (!existingClass.subjectName.includes(item.subjectName)) {
+              existingClass.subjectName.push(item.subjectName);
+              existingClass.teachers.push(item.teacherName);
+            }
+          } else {
+            existingBatch.classes.push({
+              subjectName: [item.subjectName],
+              teachers: [item.teacherName],
+              time: item.time, // Use batchTime for grouping
+            });
+          }
+        } else {
+          existingRoom.batches.push({
+            batchName: item.batchName,
+            batchTime: item.batchTime,
+            batchId: item.batchId,
+            classes: [
+              {
+                subjectName: [item.subjectName],
+                teachers: [item.teacherName],
+                time: item.time, // Use batchTime
+              },
+            ],
+          });
+        }
+      } else {
+        acc.push({
+          roomName: item.roomName,
+          batches: [
+            {
+              batchName: item.batchName,
+              batchTime: item.batchTime,
+              batchId: item.batchId,
+              classes: [
+                {
+                  subjectName: [item.subjectName],
+                  teachers: [item.teacherName],
+                  time: item.time, // Use batchTime
+                },
+              ],
+            },
+          ],
+        });
+      }
+
+      return acc;
+    }, []);
+
+    return { roomPlan };
+  }),
   getByClass: adminProcedure
     .input(z.string().nullish())
     .query(async ({ input, ctx }) => {

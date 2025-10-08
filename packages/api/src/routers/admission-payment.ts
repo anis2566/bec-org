@@ -9,13 +9,12 @@ export const admissionPaymentRouter = {
     .input(
       z.object({
         id: z.string(),
-        status: z.string(),
         paymentStatus: z.string(),
         method: z.string(),
       })
     )
     .mutation(async ({ input, ctx }) => {
-      const { id, status, paymentStatus, method } = input;
+      const { id, paymentStatus, method } = input;
 
       try {
         const payment = await ctx.db.admissionPayment.findUnique({
@@ -34,7 +33,6 @@ export const admissionPaymentRouter = {
           },
           data: {
             method,
-            status,
             paymentStatus,
             paidAt: new Date(),
           },
@@ -50,20 +48,22 @@ export const admissionPaymentRouter = {
     const paymentId = input;
 
     const paymentData = await ctx.db.admissionPayment.findUnique({
-      where: { id: paymentId, status: "Active", paymentStatus: "Unpaid" },
+      where: { id: paymentId, paymentStatus: ADMISSION_PAYMENT_STATUS.Unpaid },
       include: {
         student: {
           select: {
             studentId: true,
             name: true,
             imageUrl: true,
-            className: true,
+            className: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
       },
     });
-
-    console.log(paymentData);
 
     if (!paymentData) {
       return { success: false, message: "Payment not found" };

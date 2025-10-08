@@ -15,6 +15,12 @@ import { houseRouter } from "./routers/house";
 import { roomRouter } from "./routers/room";
 import { batchRouter } from "./routers/batch";
 import { batchClassRouter } from "./routers/batch-class";
+import { teacherAdvanceRouter } from "./routers/teacher-advance";
+import { housePaymentRouter } from "./routers/house-payment";
+import { utilityPaymentRouter } from "./routers/utility-payment";
+import { otherPaymentRouter } from "./routers/other-payment";
+import { teacherPaymentRouter } from "./routers/teacher-payment";
+import { reportRouter } from "./routers/report";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -31,7 +37,13 @@ export const appRouter = createTRPCRouter({
   house: houseRouter,
   room: roomRouter,
   batch: batchRouter,
-  batchClass: batchClassRouter
+  batchClass: batchClassRouter,
+  teacherAdvance: teacherAdvanceRouter,
+  housePayment: housePaymentRouter,
+  utilityPayment: utilityPaymentRouter,
+  otherPayment: otherPaymentRouter,
+  teacherPayment: teacherPaymentRouter,
+  report: reportRouter
 });
 
 // export type definition of API

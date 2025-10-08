@@ -2,7 +2,7 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTRPC } from "@/trpc/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -16,30 +16,36 @@ import {
   DialogDescription,
 } from "@workspace/ui/components/dialog";
 import { Form } from "@workspace/ui/components/form";
-import { FormInput } from "@workspace/ui/shared/form-input";
 import { FormSelect } from "@workspace/ui/shared/form-select";
 import {
   ButtonState,
   LoadingButton,
 } from "@workspace/ui/shared/loadign-button";
 
-import { ClassNameSchema, ClassNameSchemaType } from "@workspace/utils/schemas";
-import { LEVELS } from "@workspace/utils/constant";
+import {
+  TeacherAdvanceStatusSchema,
+  TeacherAdvanceStatusSchemaType,
+} from "@workspace/utils/schemas";
+import { TEACHER_ADVANCE_STATUS } from "@workspace/utils/constant";
 
-import { useCreateClass } from "@/hooks/use-class";
-import { useGetClasses } from "../../filters/use-get-students";
+import { useGetAdvances } from "../../filters/use-get-advances";
+import { useAdvanceStatus } from "@/hooks/use-teacher-advance";
 
-export const CreateClassModal = () => {
+export const AdvanceStatusModal = () => {
   const [buttonState, setButtonState] = useState<ButtonState>("idle");
   const [errorText, setErrorText] = useState<string>("");
 
-  const { isOpen, onClose } = useCreateClass();
   const trpc = useTRPC();
-  const [filters] = useGetClasses();
+  const [filters] = useGetAdvances();
   const queryClient = useQueryClient();
+  const { isOpen, advanceId, status, onClose } = useAdvanceStatus();
 
-  const { mutate: createClass, isPending } = useMutation(
-    trpc.class.createOne.mutationOptions({
+  useEffect(() => {
+    form.setValue("status", status);
+  }, [status]);
+
+  const { mutate: updateStatus, isPending } = useMutation(
+    trpc.teacherAdvance.changeStatus.mutationOptions({
       onError: (err) => {
         setErrorText(err.message);
         setButtonState("error");
@@ -55,80 +61,70 @@ export const CreateClassModal = () => {
         setButtonState("success");
         toast.success(data.message);
         queryClient.invalidateQueries(
-          trpc.class.getAll.queryOptions({ ...filters })
+          trpc.teacherAdvance.getMany.queryOptions({ ...filters })
         );
         form.reset({
-          name: "",
-          level: "",
-          position: "",
-        })
+          status: "",
+        });
         onClose();
       },
     })
   );
 
-  const form = useForm<ClassNameSchemaType>({
-    resolver: zodResolver(ClassNameSchema),
+  const form = useForm<TeacherAdvanceStatusSchemaType>({
+    resolver: zodResolver(TeacherAdvanceStatusSchema),
     defaultValues: {
-      name: "",
-      level: "",
-      position: "",
+      status: "",
     },
   });
 
-  const onSubmit = (data: ClassNameSchemaType) => {
+  const onSubmit = (data: TeacherAdvanceStatusSchemaType) => {
     setButtonState("loading");
-    createClass(data);
+    updateStatus({
+      ...data,
+      id: advanceId,
+    });
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={isPending ? () => {} : onClose}>
+    <Dialog
+      open={isOpen && !!advanceId}
+      onOpenChange={isPending ? () => {} : onClose}
+    >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Set up your class</DialogTitle>
+          <DialogTitle>Update Status</DialogTitle>
           <DialogDescription>
-            This information will be used to create your class.
+            Update the status of the advance
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormInput
-              form={form}
-              name="name"
-              label="Name"
-              disabled={isPending}
-              type="text"
-            />
             <FormSelect
               form={form}
-              name="level"
-              label="Level"
-              placeholder="Select level"
+              name="status"
+              label="Status"
+              placeholder="Select status"
               disabled={isPending}
-              options={Object.values(LEVELS).map((level) => ({
-                label: level,
-                value: level,
-              }))}
-            />
-            <FormInput
-              form={form}
-              name="position"
-              label="Position"
-              disabled={isPending}
-              type="number"
+              options={Object.values(TEACHER_ADVANCE_STATUS)
+                .slice(1, 4)
+                .map((status) => ({
+                  label: status,
+                  value: status,
+                }))}
             />
             <LoadingButton
               type="submit"
               onClick={form.handleSubmit(onSubmit)}
-              loadingText="Submitting..."
-              successText="Submitted!"
+              loadingText="Updating..."
+              successText="Updated!"
               errorText={errorText || "Failed"}
               state={buttonState}
               onStateChange={setButtonState}
               className="w-full rounded-full"
               icon={Send}
             >
-              Submit
+              Update
             </LoadingButton>
           </form>
         </Form>

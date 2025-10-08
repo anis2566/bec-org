@@ -78,6 +78,34 @@ export const salaryPaymentRouter = {
         };
       }
     }),
+  getByStudent: adminProcedure
+    .input(
+      z.object({
+        studentId: z.string(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { studentId } = input;
+
+      const salaryPaymentData = await ctx.db.salaryPayment.findMany({
+        where: {
+          studentId,
+          status: {
+            notIn: [SALARY_STATUS["N/A"], SALARY_STATUS.Initiated],
+          },
+        },
+        select: {
+          method: true,
+          amount: true,
+          status: true,
+          month: true,
+          paymentStatus: true,
+          id: true,
+        },
+      });
+
+      return salaryPaymentData;
+    }),
   getOne: adminProcedure
     .input(
       z.object({

@@ -24,7 +24,7 @@ export const SidebarBreadcrumb = () => {
       <BreadcrumbList>
         {isDashboardRoute ? (
           <BreadcrumbItem>
-            <BreadcrumbPage className="capitalize">
+            <BreadcrumbPage className="capitalize text-white">
               {pathnameArray[0]}
             </BreadcrumbPage>
           </BreadcrumbItem>
@@ -34,16 +34,16 @@ export const SidebarBreadcrumb = () => {
             const isLast = index === array.length - 1;
 
             return (
-              <div key={index} className="flex items-center">
+              <div key={index} className="flex items-center text-white">
                 <BreadcrumbItem>
                   {isLast ? (
-                    <BreadcrumbPage className="capitalize">
+                    <BreadcrumbPage className="capitalize text-white/60">
                       {path}
                     </BreadcrumbPage>
                   ) : (
                     <BreadcrumbLink asChild>
                       <Link href={href}>
-                        <span className="capitalize">{path}</span>
+                        <span className="capitalize text-white">{path}</span>
                       </Link>
                     </BreadcrumbLink>
                   )}

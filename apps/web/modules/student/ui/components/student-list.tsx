@@ -18,6 +18,7 @@ import { STUDENT_STATUS } from "@workspace/utils/constant";
 
 import { ListActionButton } from "@/components/list-action-button";
 import { ListActionLink } from "@/components/list-action-link";
+import { useDeleteStudent } from "@/hooks/use-student";
 
 interface StudentWithRelation extends Student {
   className: ClassName;
@@ -29,7 +30,7 @@ interface StudentListProps {
 }
 
 export const StudentList = ({ students }: StudentListProps) => {
-  // const { onOpen } = useDeleteStudent();
+  const { onOpen } = useDeleteStudent();
 
   return (
     <Table>
@@ -103,7 +104,7 @@ export const StudentList = ({ students }: StudentListProps) => {
                   isDanger
                   title="Delete"
                   icon={Trash2}
-                  onClick={() => {}}
+                  onClick={() => onOpen(student.id)}
                 />
               </ListActions>
             </TableCell>

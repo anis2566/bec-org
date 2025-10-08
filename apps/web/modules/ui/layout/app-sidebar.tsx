@@ -36,6 +36,13 @@ import {
   BringToFront,
   UsersRound,
   Layers3,
+  HandCoins,
+  Package,
+  CalendarDays,
+  TrendingUp,
+  Coins,
+  UserRoundPen,
+  Wallet,
 } from "lucide-react";
 
 import {
@@ -62,6 +69,7 @@ import { NavFee } from "./nav-fee";
 import { NavTeacher } from "./nav-teacher";
 import { NavRoomHouse } from "./nav-room-house";
 import { NavBatch } from "./nav-batch";
+import { NavReport } from "./nav-report";
 
 // This is sample data.
 const data = {
@@ -173,6 +181,12 @@ const data = {
           icon: List,
         },
       ],
+    },
+    {
+      title: "Room Plan",
+      url: "/room-plan",
+      icon: Warehouse,
+      items: [],
     },
   ],
   fee: [
@@ -303,12 +317,12 @@ const data = {
       items: [
         {
           title: "New",
-          url: "/income/new",
+          url: "/income/other/new",
           icon: PlusCircle,
         },
         {
           title: "List",
-          url: "/income",
+          url: "/income/other",
           icon: List,
         },
       ],
@@ -316,18 +330,69 @@ const data = {
   ],
   expense: [
     {
-      title: "Income",
+      title: "Advance",
       url: "",
-      icon: DollarSign,
+      icon: HandCoins,
       items: [
         {
           title: "New",
-          url: "/expense/new",
+          url: "/expense/advance/new",
           icon: PlusCircle,
         },
         {
           title: "List",
-          url: "/expense",
+          url: "/expense/advance",
+          icon: List,
+        },
+      ],
+    },
+    {
+      title: "Teacher Bill",
+      url: "",
+      icon: UsersRound,
+      items: [
+        {
+          title: "New",
+          url: "/expense/teacher/new",
+          icon: PlusCircle,
+        },
+        {
+          title: "List",
+          url: "/expense/teacher",
+          icon: List,
+        },
+      ],
+    },
+    {
+      title: "House Rent",
+      url: "",
+      icon: House,
+      items: [
+        {
+          title: "New",
+          url: "/expense/house/new",
+          icon: PlusCircle,
+        },
+        {
+          title: "List",
+          url: "/expense/house",
+          icon: List,
+        },
+      ],
+    },
+    {
+      title: "Utility Bill",
+      url: "",
+      icon: Package,
+      items: [
+        {
+          title: "New",
+          url: "/expense/utility/new",
+          icon: PlusCircle,
+        },
+        {
+          title: "List",
+          url: "/expense/utility",
           icon: List,
         },
       ],
@@ -371,6 +436,74 @@ const data = {
       title: "Role & Permission",
       url: "",
       icon: Wallpaper,
+      items: [],
+    },
+  ],
+  report: [
+    {
+      title: "Daily",
+      url: "/report/daily",
+      icon: CalendarDays,
+      items: [],
+    },
+    {
+      title: "Income",
+      url: "",
+      icon: HandCoins,
+      items: [
+        {
+          title: "Salary",
+          url: "/report/income/salary",
+          icon: DollarSign,
+        },
+        {
+          title: "Admission",
+          url: "/report/income/admission",
+          icon: DollarSign,
+        },
+        {
+          title: "Other",
+          url: "/report/income/other",
+          icon: DollarSign,
+        },
+        {
+          title: "Overview",
+          url: "/report/income",
+          icon: TrendingUp,
+        },
+      ],
+    },
+    {
+      title: "Expense",
+      url: "",
+      icon: Coins,
+      items: [
+        {
+          title: "Teacher Bill",
+          url: "/report/expense/teacher",
+          icon: UserRoundPen,
+        },
+        {
+          title: "House rent",
+          url: "/report/expense/house",
+          icon: House,
+        },
+        {
+          title: "Utility",
+          url: "/report/expense/utility",
+          icon: Package,
+        },
+        {
+          title: "Overview",
+          url: "/report/expense",
+          icon: TrendingUp,
+        },
+      ],
+    },
+    {
+      title: "Final",
+      url: "/report",
+      icon: Wallet,
       items: [],
     },
   ],
@@ -437,10 +570,10 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="bg-[#1D1E4E]">
         <Header />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="bg-[#1D1E4E]">
         <NavAcademic items={data.academic} />
         <NavStudent items={data.student} />
         <NavAttendance items={data.attendance} />
@@ -450,6 +583,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavTeacher items={data.teacher} />
         <NavResult items={data.result} />
         <NavIncome items={data.income} />
+        <NavReport items={data.report} />
         <NavExpense items={data.expense} />
         <NavRoomHouse items={data.roomHouses} />
         <NavFees items={data.fees} />

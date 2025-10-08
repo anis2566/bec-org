@@ -187,6 +187,7 @@ model Student {
 
   admissionPayments AdmissionPayment[]
   salaryPayments    SalaryPayment[]
+  attendances       Attendence[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -280,9 +281,12 @@ model Teacher {
 
   teacherStatus TeacherStatus?
 
-  createdAt  DateTime     @default(now())
-  updatedAt  DateTime     @updatedAt
-  BatchClass BatchClass[]
+  advances TeacherAdvance[]
+  payments TeacherPayment[]
+
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  BatchClass     BatchClass[]
 }
 
 model TeacherStatus {
@@ -303,7 +307,8 @@ model House {
   name      String
   roomCount Int
 
-  rooms Room[]
+  rooms    Room[]
+  payments HousePayment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -343,6 +348,7 @@ model Batch {
   className   ClassName @relation(fields: [classNameId], references: [id], onDelete: Cascade)
 
   students Student[]
+  attendence Attendence[]
 
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
@@ -370,6 +376,102 @@ model BatchClass {
   batchId   String @db.ObjectId
   batch     Batch  @relation(fields: [batchId], references: [id], onDelete: Cascade)
   batchName String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TeacherAdvance {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  teacherName  String
+  teacherIndex Int
+  session      String
+  month        String
+  amount       Int
+  status       String @default("Pending")
+
+  teacherId String  @db.ObjectId
+  teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: NoAction)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HousePayment {
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  houseName     String
+  session       String
+  month         String
+  amount        Int
+  method        String
+  paymentStatus String
+
+  houseId String @db.ObjectId
+  house   House  @relation(fields: [houseId], references: [id], onDelete: NoAction)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UtilityPayment {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  amount  Int
+  month   String
+  session String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model OtherPayment {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  name    String
+  amount  Int
+  month   String
+  session String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TeacherPayment {
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  teacherName   String
+  teacherIndex  Int
+  amount        Int
+  netAmount     Int
+  session       String
+  classUnit     Int
+  incentive     Int?
+  deduction     Int?
+  deductionUnit Int?
+  month         String
+  status        String  @default("Pending")
+  note          String?
+  advance       Int     @default(0)
+
+  teacherId String  @db.ObjectId
+  teacher   Teacher @relation(fields: [teacherId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Attendence {
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
+  session       Int
+  month         String
+  date          DateTime
+  status        String         
+  absentReason  String?
+
+  studentId     String          @db.ObjectId
+  student       Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  batchId       String         @db.ObjectId
+  batch         Batch          @relation(fields: [batchId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

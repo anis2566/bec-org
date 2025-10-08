@@ -123,6 +123,69 @@ export const studentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
+  updateOne: adminProcedure
+    .input(
+      z.object({
+        ...StudentSchema.shape,
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { id, ...rest } = input;
+
+      try {
+        const existingStudent = await ctx.db.student.findUnique({
+          where: { id },
+        });
+
+        if (!existingStudent) {
+          return { success: false, message: "Student not found" };
+        }
+
+        await ctx.db.student.update({
+          where: { id },
+          data: {
+            ...rest,
+            session: new Date().getFullYear().toString(),
+            studentId: parseInt(input.studentId),
+            dob: new Date(input.dob),
+            roll: parseInt(input.roll),
+            admissionFee: parseInt(input.admissionFee),
+            salaryFee: parseInt(input.salaryFee),
+            courseFee: null,
+          },
+        });
+
+        return { success: true, message: "Student updated" };
+      } catch (error) {
+        console.error("Error updating student", error);
+        return { success: false, message: "Internal Server Error" };
+      }
+    }),
+  deleteOne: adminProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      const studentId = input;
+
+      try {
+        const existingStudent = await ctx.db.student.findUnique({
+          where: { id: studentId },
+        });
+
+        if (!existingStudent) {
+          return { success: false, message: "Student not found" };
+        }
+
+        await ctx.db.student.delete({
+          where: { id: studentId },
+        });
+
+        return { success: true, message: "Student deleted" };
+      } catch (error) {
+        console.error("Error deleting student", error);
+        return { success: false, message: "Internal Server Error" };
+      }
+    }),
   forPaymentSelect: adminProcedure
     .input(FindStudentSchema)
     .mutation(async ({ input, ctx }) => {
@@ -213,24 +276,38 @@ export const studentRouter = {
         };
       }
     }),
-  getByBatch: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
-    const batchId = input;
+  getByBatch: adminProcedure
+    .input(z.string().nullish())
+    .query(async ({ input, ctx }) => {
+      const batchId = input;
 
-    const students = await ctx.db.student.findMany({
-      where: {
-        batchId,
-      },
-      select: {
-        id: true,
-        name: true,
-        studentId: true,
-        imageUrl: true,
-        mPhone: true,
-      },
-    });
+      if (!batchId) {
+        return [];
+      }
 
-    return students;
-  }),
+      const students = await ctx.db.student.findMany({
+        where: {
+          batchId,
+        },
+        select: {
+          id: true,
+          name: true,
+          studentId: true,
+          imageUrl: true,
+          mPhone: true,
+          salaryPayments: {
+            where: {
+              paymentStatus: SALARY_PAYMENT_STATUS.Unpaid,
+            },
+            select: {
+              id: true,
+            },
+          },
+        },
+      });
+
+      return students;
+    }),
   getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const studentId = input;
 
@@ -247,6 +324,86 @@ export const studentRouter = {
 
     return studentData;
   }),
+  getAbsentMany: adminProcedure
+    .input(
+      z.object({
+        page: z.number(),
+        limit: z.number().min(1).max(100),
+        sort: z.string().nullish(),
+        search: z.string().nullish(),
+        session: z.string().nullish(),
+        className: z.string().nullish(),
+        id: z.string().nullish(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { page, limit, sort, search, session, className, id } = input;
+
+      const [students, totalCount] = await Promise.all([
+        ctx.db.student.findMany({
+          where: {
+            studentStatus: {
+              status: STUDENT_STATUS.Absent,
+            },
+            ...(search && {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            }),
+            ...(session && {
+              session,
+            }),
+            ...(className && {
+              className: {
+                name: className,
+              },
+            }),
+            ...(id && {
+              studentId: parseInt(id),
+            }),
+          },
+          include: {
+            className: true,
+            studentStatus: true,
+          },
+          orderBy: {
+            createdAt: sort === "asc" ? "asc" : "desc",
+          },
+          take: limit,
+          skip: (page - 1) * limit,
+        }),
+        ctx.db.student.count({
+          where: {
+            studentStatus: {
+              status: STUDENT_STATUS.Absent,
+            },
+            ...(search && {
+              name: {
+                contains: search,
+                mode: "insensitive",
+              },
+            }),
+            ...(session && {
+              session,
+            }),
+            ...(className && {
+              className: {
+                name: className,
+              },
+            }),
+            ...(id && {
+              studentId: parseInt(id),
+            }),
+          },
+        }),
+      ]);
+
+      return {
+        students,
+        totalCount,
+      };
+    }),
   getMany: adminProcedure
     .input(
       z.object({

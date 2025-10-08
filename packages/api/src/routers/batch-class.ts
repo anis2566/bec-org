@@ -315,6 +315,8 @@ export const batchClassRouter = {
 
       const groupedData: GroupedTeacherClass[] = Object.values(groupedMap);
 
+      console.log(groupedData);
+
       return groupedData;
     }),
 } satisfies TRPCRouterRecord;

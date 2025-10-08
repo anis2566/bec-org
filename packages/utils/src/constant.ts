@@ -74,6 +74,7 @@ export enum ADMISSION_PAYMENT_STATUS {
 }
 
 export enum SALARY_STATUS {
+  "N/A" = "N/A",
   Initiated = "Initiated",
   Present = "Present",
   Absent = "Absent",
@@ -96,6 +97,20 @@ export enum PAYMENT_METHOD {
   "Mobile Banking" = "Mobile Banking",
 }
 
+export enum TEACHER_ADVANCE_STATUS {
+  Pending = "Pending",
+  Approved = "Approved",
+  Paid = "Paid",
+  Rejected = "Rejected",
+}
+
+export enum TEACHER_PAYMENT_STATUS {
+  Pending = "Pending",
+  Confirmed = "Confirmed",
+  Paid = "Paid",
+  Rejected = "Rejected",
+}
+
 export enum DAYS {
   Saturday = "Saturday",
   Sunday = "Sunday",
@@ -104,6 +119,11 @@ export enum DAYS {
   Wednesday = "Wednesday",
   Thursday = "Thursday",
   Friday = "Friday",
+}
+
+export enum ATTENDANCE_STATUS {
+  Present = "Present",
+  Absent = "Absent",
 }
 
 export const DEFAULT_PAGE = 1;

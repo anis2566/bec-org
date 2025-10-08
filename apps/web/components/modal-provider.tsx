@@ -21,9 +21,13 @@ import { DeleteRoomModal } from "@/modules/room/ui/modal/delete-room-modal";
 import { CreateSalaryFeeModal } from "@/modules/salary-fee/ui/modal/create-salary-fee-modal";
 import { DeleteSalaryFeeModal } from "@/modules/salary-fee/ui/modal/delete-salary-fee-modal";
 import { EditSalaryFeeModal } from "@/modules/salary-fee/ui/modal/edit-salary-fee-modal";
+import { DeleteStudentModal } from "@/modules/student/ui/modal/delete-student-modal";
 import { CreateSubjectModal } from "@/modules/subject/ui/modal/create-subject-modal";
 import { DeleteSubjectModal } from "@/modules/subject/ui/modal/delete-subject-modal";
 import { EditSubjectModal } from "@/modules/subject/ui/modal/edit-subject-modal";
+import { AdvanceStatusModal } from "@/modules/teacher-advance/ui/modal/advance-status-modal";
+import { DeleteTeacherPaymentModal } from "@/modules/teacher-payment/ui/modal/delete-teacher-payment-modal";
+import { TeacherPaymentStatusModal } from "@/modules/teacher-payment/ui/modal/payment-status-modal";
 import { DeleteTeacherModal } from "@/modules/teacher/ui/modal/delete-teacher-modal";
 
 export const ModalProvider = () => {
@@ -56,6 +60,10 @@ export const ModalProvider = () => {
       <AddClassBatchModal />
       <AddClassesBatchModal />
       <DeleteBatchClassModal />
+      <DeleteStudentModal />
+      <AdvanceStatusModal />
+      <DeleteTeacherPaymentModal />
+      <TeacherPaymentStatusModal />
     </>
   );
 };

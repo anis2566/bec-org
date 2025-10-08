@@ -22,7 +22,7 @@ import {
 
 import { useDeleteClass } from "@/hooks/use-class";
 
-import { useGetClasses } from "../../filters/use-get-students";
+import { useGetClasses } from "../../filters/use-get-advances";
 
 export const DeleteClassModal = () => {
   const [buttonState, setButtonState] = useState<ButtonState>("idle");

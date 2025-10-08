@@ -175,3 +175,62 @@ export const BatchClassSchema = z.object({
   batchId: requiredString,
 });
 export type BatchClassSchemaType = z.infer<typeof BatchClassSchema>;
+
+export const TeacherAdvanceSchema = z.object({
+  teacherId: requiredString,
+  amount: requiredString,
+});
+export type TeacherAdvanceSchemaType = z.infer<typeof TeacherAdvanceSchema>;
+
+export const TeacherAdvanceStatusSchema = z.object({
+  status: requiredString,
+});
+export type TeacherAdvanceStatusSchemaType = z.infer<
+  typeof TeacherAdvanceStatusSchema
+>;
+
+export const HousePaymentSchema = z.object({
+  month: requiredString,
+  amount: requiredString,
+  method: requiredString,
+  paymentStatus: requiredString,
+  houseId: requiredString,
+});
+export type HousePaymentSchemaType = z.infer<typeof HousePaymentSchema>;
+
+export const UtilityPaymentSchema = z.object({
+  name: requiredString,
+  amount: requiredString,
+});
+export type UtilityPaymentSchemaType = z.infer<typeof UtilityPaymentSchema>;
+
+export const OtherPayment = z.object({
+  name: requiredString,
+  amount: requiredString,
+});
+export type OtherPaymentType = z.infer<typeof OtherPayment>;
+
+export const TeacherPaymentSchema = z.object({
+  teacherId: requiredString,
+  month: requiredString,
+  classUnit: requiredString,
+  incentive: z.string().optional(),
+  deductionUnit: z.string().optional(),
+  note: z.string().optional(),
+});
+export type TeacherPaymentSchemaType = z.infer<typeof TeacherPaymentSchema>;
+
+export const AdmissionPaymentStatusSchema = z.object({
+  method: requiredString,
+  paymentStatus: requiredString,
+});
+export type AdmissionPaymentStatusSchemaType = z.infer<
+  typeof TeacherAdvanceStatusSchema
+>;
+
+export const AttendanceSchema = z.object({
+  batchId: requiredString,
+  studentId: requiredString,
+  status: requiredString,
+});
+export type AttendanceSchemaType = z.infer<typeof AttendanceSchema>;

@@ -638,7 +638,7 @@ export const EditTeacherForm = ({ id }: EditTeacherFormProps) => {
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card px-2 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs">
       <Card className="rounded-xs px-3">
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-3xl mx-auto">
           {/* Header */}
           <div className="text-center">
             <h1 className="text-4xl font-bold text-gray-900">
@@ -646,9 +646,6 @@ export const EditTeacherForm = ({ id }: EditTeacherFormProps) => {
                 Edit Teacher Information
               </span>
             </h1>
-            <p className="text-muted-foreground text-lg">
-              Update the teacher information below.
-            </p>
             {teacher && (
               <div className="mt-2">
                 <Badge variant="secondary" className="text-sm">

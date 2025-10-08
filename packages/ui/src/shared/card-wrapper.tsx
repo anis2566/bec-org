@@ -1,12 +1,26 @@
-import { Card } from "../components/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "../components/card";
+import { Separator } from "../components/separator";
 import { cn } from "../lib/utils";
 
 interface CardWrapperProps {
   children: React.ReactNode;
   className?: string;
+  title?: string;
+  description?: string;
 }
 
-export const CardWrapper = ({ children, className }: CardWrapperProps) => {
+export const CardWrapper = ({
+  children,
+  className,
+  title,
+  description,
+}: CardWrapperProps) => {
   return (
     <Card
       className={cn(
@@ -14,7 +28,16 @@ export const CardWrapper = ({ children, className }: CardWrapperProps) => {
         className
       )}
     >
-      {children}
+      {title && description && (
+        <CardHeader className="px-0">
+          <CardTitle>{title}</CardTitle>
+          <CardDescription>{description}</CardDescription>
+          <Separator />
+        </CardHeader>
+      )}
+      <CardContent className="p-0">
+        {children}
+      </CardContent>
     </Card>
   );
 };

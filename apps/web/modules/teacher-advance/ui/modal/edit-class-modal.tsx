@@ -27,7 +27,7 @@ import { ClassNameSchema, ClassNameSchemaType } from "@workspace/utils/schemas";
 import { LEVELS } from "@workspace/utils/constant";
 
 import { useEditClass } from "@/hooks/use-class";
-import { useGetClasses } from "../../filters/use-get-students";
+import { useGetClasses } from "../../filters/use-get-advances";
 
 export const EditClassModal = () => {
   const [buttonState, setButtonState] = useState<ButtonState>("idle");
