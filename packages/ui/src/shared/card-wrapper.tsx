@@ -13,6 +13,7 @@ interface CardWrapperProps {
   className?: string;
   title?: string;
   description?: string;
+  contentClassName?: string;
 }
 
 export const CardWrapper = ({
@@ -20,6 +21,7 @@ export const CardWrapper = ({
   className,
   title,
   description,
+  contentClassName,
 }: CardWrapperProps) => {
   return (
     <Card
@@ -28,14 +30,14 @@ export const CardWrapper = ({
         className
       )}
     >
-      {title && description && (
+      {title && (
         <CardHeader className="px-0">
           <CardTitle>{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
+          {description && <CardDescription>{description}</CardDescription>}
           <Separator />
         </CardHeader>
       )}
-      <CardContent className="p-0">
+      <CardContent className={cn("p-0", contentClassName)}>
         {children}
       </CardContent>
     </Card>

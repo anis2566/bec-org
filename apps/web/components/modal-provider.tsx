@@ -1,6 +1,7 @@
 import { CreateAdmissionFeeModal } from "@/modules/admission-fee/ui/modal/create-admission-fee-modal";
 import { DeleteAdmisssionFeeModal } from "@/modules/admission-fee/ui/modal/delete-admission-fee-modal";
 import { EditAdmissionFeeModal } from "@/modules/admission-fee/ui/modal/edit-admission-fee-modal";
+import { DeleteAttendanceModal } from "@/modules/attendance/ui/modal/delete-attendance-modal";
 import { AddClassBatchModal } from "@/modules/batch/ui/modal/add-class-batch-modal";
 import { AddClassesBatchModal } from "@/modules/batch/ui/modal/add-classes-batch-modal";
 import { DeleteBatchClassModal } from "@/modules/batch/ui/modal/delete-batch-class-modal";
@@ -12,7 +13,11 @@ import { EditClassModal } from "@/modules/class/ui/modal/edit-class-modal";
 import { CreateCounterModal } from "@/modules/counter/ui/modal/create-counter-modal";
 import { DeleteCounterModal } from "@/modules/counter/ui/modal/delete-counter-modal";
 import { EditCounterModal } from "@/modules/counter/ui/modal/edit-counter-modal";
+import { CreateCategoryModal } from "@/modules/exam-category/ui/modal/create-category-modal";
+import { DeleteCategoryModal } from "@/modules/exam-category/ui/modal/delete-category-modal";
+import { EditCategoryModal } from "@/modules/exam-category/ui/modal/edit-category-modal";
 import { TransactionModal } from "@/modules/fee/ui/transaction-modal";
+import { DeleteHomeworkModal } from "@/modules/homework/ui/modal/delete-homework-modal";
 import { DeleteHouseModal } from "@/modules/house/ui/modal/delete-house-modal";
 import { CreateInstituteModal } from "@/modules/institute/ui/modal/create-institute-modal";
 import { DeleteInstituteModal } from "@/modules/institute/ui/modal/delete-institute-modal";
@@ -64,6 +69,11 @@ export const ModalProvider = () => {
       <AdvanceStatusModal />
       <DeleteTeacherPaymentModal />
       <TeacherPaymentStatusModal />
+      <DeleteAttendanceModal />
+      <DeleteHomeworkModal />
+      <CreateCategoryModal />
+      <EditCategoryModal />
+      <DeleteCategoryModal />
     </>
   );
 };

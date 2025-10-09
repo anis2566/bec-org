@@ -78,10 +78,14 @@ model ClassName {
   level    String
   position Int    @default(0)
 
-  admissionFees AdmissionFee[]
-  salaryFees    SalaryFee[]
-  students      Student[]
-  Batches       Batch[]
+  admissionFees    AdmissionFee[]
+  salaryFees       SalaryFee[]
+  students         Student[]
+  Batches          Batch[]
+  attendances      Attendance[]
+  attendanceGroups AttendanceGroup[]
+  homeworks        Homework[]
+  homeworkGroups   HomeworkGroup[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -92,6 +96,9 @@ model Subject {
   name  String
   level String
   group String?
+
+  homeworks      Homework[]
+  homeworkGroups HomeworkGroup[]
 
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
@@ -187,7 +194,8 @@ model Student {
 
   admissionPayments AdmissionPayment[]
   salaryPayments    SalaryPayment[]
-  attendances       Attendence[]
+  attendances       Attendance[]
+  homeworks         Homework[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -284,9 +292,9 @@ model Teacher {
   advances TeacherAdvance[]
   payments TeacherPayment[]
 
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
-  BatchClass     BatchClass[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  BatchClass BatchClass[]
 }
 
 model TeacherStatus {
@@ -347,8 +355,11 @@ model Batch {
   classNameId String    @db.ObjectId
   className   ClassName @relation(fields: [classNameId], references: [id], onDelete: Cascade)
 
-  students Student[]
-  attendence Attendence[]
+  students        Student[]
+  attendence      Attendance[]
+  attendenceGroup AttendanceGroup[]
+  homeWorks       Homework[]
+  homeWorkGroups  HomeworkGroup[]
 
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
@@ -458,20 +469,105 @@ model TeacherPayment {
   updatedAt DateTime @updatedAt
 }
 
+model Attendance {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  session      String
+  month        String
+  date         DateTime
+  day          String
+  status       String
+  absentReason String?
 
-model Attendence {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  session       Int
-  month         String
-  date          DateTime
-  status        String         
-  absentReason  String?
+  classNameId String    @db.ObjectId
+  className   ClassName @relation(fields: [classNameId], references: [id], onDelete: Cascade)
 
-  studentId     String          @db.ObjectId
-  student       Student         @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  studentId String  @db.ObjectId
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
 
-  batchId       String         @db.ObjectId
-  batch         Batch          @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  batchId String @db.ObjectId
+  batch   Batch  @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  attendenceGroupId String          @db.ObjectId
+  attendenceGroup   AttendanceGroup @relation(fields: [attendenceGroupId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model AttendanceGroup {
+  id      String   @id @default(auto()) @map("_id") @db.ObjectId
+  session String
+  month   String
+  date    DateTime
+  day     String
+  name    String
+  total   Int
+  present Int
+  absent  Int
+
+  classNameId String    @db.ObjectId
+  className   ClassName @relation(fields: [classNameId], references: [id], onDelete: Cascade)
+
+  batchId String @db.ObjectId
+  batch   Batch  @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  attendances Attendance[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Homework {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  hasFinished Boolean  @default(false)
+  date        DateTime
+  feedback    String?
+
+  studentId String  @db.ObjectId
+  student   Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  subjectId String  @db.ObjectId
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  batchId String @db.ObjectId
+  batch   Batch  @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  classNameId String    @db.ObjectId
+  className   ClassName @relation(fields: [classNameId], references: [id], onDelete: Cascade)
+
+  homeworkGroupId String        @db.ObjectId
+  homeworkGroup   HomeworkGroup @relation(fields: [homeworkGroupId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model HomeworkGroup {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  date       DateTime
+  total      Int
+  finished   Int      @default(0)
+  unfinished Int      @default(0)
+
+  classNameId String    @db.ObjectId
+  className   ClassName @relation(fields: [classNameId], references: [id], onDelete: Cascade)
+
+  batchId String @db.ObjectId
+  batch   Batch  @relation(fields: [batchId], references: [id], onDelete: Cascade)
+
+  subjectId String  @db.ObjectId
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  homeworks Homework[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ExamCategory {
+  id   String   @id @default(auto()) @map("_id") @db.ObjectId
+  name String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

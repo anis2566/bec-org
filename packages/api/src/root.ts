@@ -21,6 +21,9 @@ import { utilityPaymentRouter } from "./routers/utility-payment";
 import { otherPaymentRouter } from "./routers/other-payment";
 import { teacherPaymentRouter } from "./routers/teacher-payment";
 import { reportRouter } from "./routers/report";
+import { studentAttendanceRouter } from "./routers/student-attendance";
+import { homeworkRouter } from "./routers/homework";
+import { examCategoryRouter } from "./routers/exam-category";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -43,7 +46,10 @@ export const appRouter = createTRPCRouter({
   utilityPayment: utilityPaymentRouter,
   otherPayment: otherPaymentRouter,
   teacherPayment: teacherPaymentRouter,
-  report: reportRouter
+  report: reportRouter,
+  studentAttendance: studentAttendanceRouter,
+  homework: homeworkRouter,
+  examCategory: examCategoryRouter,
 });
 
 // export type definition of API

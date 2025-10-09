@@ -228,9 +228,34 @@ export type AdmissionPaymentStatusSchemaType = z.infer<
   typeof TeacherAdvanceStatusSchema
 >;
 
-export const AttendanceSchema = z.object({
-  batchId: requiredString,
+const AttendanceStatusSchema = z.object({
   studentId: requiredString,
   status: requiredString,
 });
+
+export const AttendanceSchema = z.object({
+  batchId: requiredString,
+  date: requiredString,
+  attendances: z.array(AttendanceStatusSchema).min(1, { message: "required" }),
+});
+
 export type AttendanceSchemaType = z.infer<typeof AttendanceSchema>;
+
+export const HomeworkStudentSchema = z.object({
+  studentId: requiredString,
+});
+
+export const HomeworkSchema = z.object({
+  date: requiredString,
+  subjectId: requiredString,
+  batchId: requiredString,
+  classNameId: requiredString,
+});
+
+export type HomeworkSchemaType = z.infer<typeof HomeworkSchema>;
+
+export const ExamCategory = z.object({
+  name: requiredString
+});
+
+export type ExamCategoryType = z.infer<typeof ExamCategory>;

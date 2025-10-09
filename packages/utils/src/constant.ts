@@ -287,3 +287,17 @@ export function groupByDay(slots: string[]): DaySchedule[] {
     times,
   }));
 }
+
+export const primaryLevels = ["Two", "Three", "Four", "Five"];
+
+export const secondaryLevels = [
+  "Six",
+  "Seven",
+  "Eight",
+  "Nine",
+  "Ten",
+  "HSC 1st Year",
+  "HSC 2nd Year",
+];
+
+export const higherSecondaryLevels = ["HSC 1st Year", "HSC 2nd Year"];

@@ -1,7 +1,12 @@
 "use client";
 
 import { useTRPC } from "@/trpc/react";
-import { useQueries } from "@tanstack/react-query";
+import { useMutation, useQueries } from "@tanstack/react-query";
+import { useState } from "react";
+import { ChevronDownIcon, Send } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+
 import {
   Select,
   SelectContent,
@@ -10,8 +15,6 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { FormCardWrapper } from "@workspace/ui/shared/form-card-wrapper";
-import { ListCardWrapper } from "@workspace/ui/shared/list-card-wrapper";
-import { useState } from "react";
 import {
   Table,
   TableHeader,
@@ -23,6 +26,21 @@ import {
 import { Badge } from "@workspace/ui/components/badge";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { Button } from "@workspace/ui/components/button";
+import { Calendar } from "@workspace/ui/components/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover";
+import {
+  Collapsible,
+  CollapsibleContent,
+} from "@workspace/ui/components/collapsible";
+import { CardWrapper } from "@workspace/ui/shared/card-wrapper";
+import {
+  ButtonState,
+  LoadingButton,
+} from "@workspace/ui/shared/loadign-button";
 
 type AttendanceRecord = {
   studentId: string;
@@ -33,8 +51,13 @@ export const NewStudentAttendanceForm = () => {
   const [classNameId, setClassNameId] = useState<string>("");
   const [batchId, setBatchId] = useState<string>("");
   const [attendances, setAttendances] = useState<AttendanceRecord[]>([]);
+  const [open, setOpen] = useState(false);
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [buttonState, setButtonState] = useState<ButtonState>("idle");
+  const [errorText, setErrorText] = useState<string>("");
 
   const trpc = useTRPC();
+  const router = useRouter();
 
   const [classesQuery, batchesQuery, studentsQuery] = useQueries({
     queries: [
@@ -48,6 +71,30 @@ export const NewStudentAttendanceForm = () => {
   const batches = batchesQuery.data;
   const students = studentsQuery.data;
   const isLoadingStudents = studentsQuery.isLoading;
+
+  const { mutate: createAttendance, isPending } = useMutation(
+    trpc.studentAttendance.createMany.mutationOptions({
+      onError: (err) => {
+        setErrorText(err.message);
+        setButtonState("error");
+        toast.error(err.message);
+      },
+      onSuccess: async (data) => {
+        if (!data.success) {
+          setButtonState("error");
+          setErrorText(data.message);
+          toast.error(data.message);
+          return;
+        }
+        setButtonState("success");
+        toast.success(data.message);
+        // queryClient.invalidateQueries(
+        //   trpc.class.getAll.queryOptions({ ...filters })
+        // );
+        router.push("/attendance/student");
+      },
+    })
+  );
 
   const presentCount = attendances.filter((a) => a.status === "present").length;
 
@@ -118,13 +165,21 @@ export const NewStudentAttendanceForm = () => {
   };
 
   const handleSubmit = () => {
-    if (!batchId) return;
+    if (!batchId || !date) return;
+
+    setButtonState("loading");
 
     const fullAttendances: AttendanceRecord[] =
       students?.map((student) => ({
         studentId: student.id,
         status: isStudentPresent(student.id) ? "present" : "absent",
       })) || [];
+
+    createAttendance({
+      date: date.toDateString(),
+      batchId,
+      attendances: fullAttendances,
+    });
   };
 
   return (
@@ -133,7 +188,11 @@ export const NewStudentAttendanceForm = () => {
         title="New Attendance"
         description="Find batch to create attendance"
       >
-        <Select onValueChange={handleClassChange} value={classNameId}>
+        <Select
+          onValueChange={handleClassChange}
+          value={classNameId}
+          disabled={isPending}
+        >
           <SelectTrigger className="w-full rounded-xs shadow-none dark:bg-background dark:hover:bg-background mb-4">
             <SelectValue placeholder="Select class" />
           </SelectTrigger>
@@ -145,8 +204,12 @@ export const NewStudentAttendanceForm = () => {
             ))}
           </SelectContent>
         </Select>
-        <Select onValueChange={handleBatchChange} value={batchId}>
-          <SelectTrigger className="w-full rounded-xs shadow-none dark:bg-background dark:hover:bg-background">
+        <Select
+          onValueChange={handleBatchChange}
+          value={batchId}
+          disabled={isPending}
+        >
+          <SelectTrigger className="w-full rounded-xs shadow-none dark:bg-background dark:hover:bg-background mb-4">
             <SelectValue placeholder="Select batch" />
           </SelectTrigger>
           <SelectContent>
@@ -157,16 +220,51 @@ export const NewStudentAttendanceForm = () => {
             ))}
           </SelectContent>
         </Select>
+        <Popover open={open} onOpenChange={setOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              id="date"
+              className="w-full justify-between font-normal rounded-xs shadow-none dark:bg-background dark:hover:bg-background"
+              disabled={isPending}
+            >
+              {date ? date.toLocaleDateString() : "Select date"}
+              <ChevronDownIcon />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto overflow-hidden p-0" align="start">
+            <Calendar
+              mode="single"
+              selected={date}
+              captionLayout="dropdown"
+              onSelect={(date) => {
+                setDate(date);
+                setOpen(false);
+              }}
+            />
+          </PopoverContent>
+        </Popover>
       </FormCardWrapper>
 
-      {students && students.length > 0 && (
-        <>
-          <div>
+      <Collapsible open={(students?.length ?? 0) > 0 && date != undefined}>
+        <CollapsibleContent>
+          <CardWrapper
+            title={`${presentCount} of ${students?.length} present`}
+            contentClassName="space-y-4"
+          >
             <div className="flex items-center gap-4">
-              <Button size="sm" variant="outline" onClick={markAllPresent}>
+              <Button
+                size="sm"
+                variant={allPresent ? "secondary" : "ghost"}
+                onClick={markAllPresent}
+              >
                 Mark All Present
               </Button>
-              <Button size="sm" variant="outline" onClick={markAllAbsent}>
+              <Button
+                size="sm"
+                variant={!allPresent ? "secondary" : "ghost"}
+                onClick={markAllAbsent}
+              >
                 Mark All Absent
               </Button>
               {presentCount > 0 && (
@@ -180,12 +278,6 @@ export const NewStudentAttendanceForm = () => {
                 </Button>
               )}
             </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              {presentCount} of {students.length} present
-            </p>
-          </div>
-
-          <ListCardWrapper title="Students" value={students?.length}>
             <Table>
               <TableHeader>
                 <TableRow className="bg-background/60">
@@ -195,6 +287,7 @@ export const NewStudentAttendanceForm = () => {
                       onCheckedChange={toggleAll}
                       aria-label="Select all students"
                       className={somePresent ? "opacity-50" : ""}
+                      disabled={isPending}
                     />
                   </TableHead>
                   <TableHead>#ID</TableHead>
@@ -217,6 +310,7 @@ export const NewStudentAttendanceForm = () => {
                           checked={isPresent}
                           onCheckedChange={() => toggleStudent(student.id)}
                           aria-label={`Mark ${student.name} as present`}
+                          disabled={isPending}
                         />
                       </TableCell>
                       <TableCell>{student.studentId}</TableCell>
@@ -239,13 +333,23 @@ export const NewStudentAttendanceForm = () => {
                 })}
               </TableBody>
             </Table>
-          </ListCardWrapper>
-
-          <Button onClick={handleSubmit} disabled={!batchId} className="w-full">
-            Submit Attendance
-          </Button>
-        </>
-      )}
+            <LoadingButton
+              type="button"
+              onClick={handleSubmit}
+              loadingText="Submitting..."
+              successText="Submitted!"
+              errorText={errorText || "Failed"}
+              state={buttonState}
+              onStateChange={setButtonState}
+              className="w-full rounded-full"
+              icon={Send}
+              disabled={attendances.length === 0}
+            >
+              Submit
+            </LoadingButton>
+          </CardWrapper>
+        </CollapsibleContent>
+      </Collapsible>
     </div>
   );
 };

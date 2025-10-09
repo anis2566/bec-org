@@ -38,7 +38,7 @@ export function NavResult({
   const pathname = usePathname();
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Result</SidebarGroupLabel>
+      <SidebarGroupLabel>Exam & Result</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
           if (item.items?.length === 0) {

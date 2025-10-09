@@ -156,11 +156,6 @@ const data = {
           url: "/attendance/student",
           icon: List,
         },
-        {
-          title: "Monthly Report",
-          url: "/attendance/student/monthly",
-          icon: Calendar,
-        },
       ],
     },
   ],
@@ -275,18 +270,24 @@ const data = {
   ],
   result: [
     {
+      title: "Category",
+      url: "/exam/category",
+      icon: Layers3,
+      items: [],
+    },
+    {
       title: "Exam",
       url: "",
       icon: NotebookPen,
       items: [
         {
           title: "New",
-          url: "/result/exam/new",
+          url: "/exam/new",
           icon: PlusCircle,
         },
         {
           title: "List",
-          url: "/result/exam",
+          url: "/exam",
           icon: List,
         },
       ],
@@ -298,12 +299,12 @@ const data = {
       items: [
         {
           title: "New",
-          url: "/result/combine/new",
+          url: "/exam/combine/new",
           icon: PlusCircle,
         },
         {
           title: "List",
-          url: "/result/combine",
+          url: "/exam/combine",
           icon: List,
         },
       ],

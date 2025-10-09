@@ -1,4 +1,4 @@
-import { NewStudentAttendanceForm } from "@/app/attendance/student/form/new-student-attendance-form";
+import { NewStudentAttendanceForm } from "@/modules/attendance/ui/form/new-student-attendance-form";
 
 export const NewStudentAttendanceView = () => {
   return <NewStudentAttendanceForm />;

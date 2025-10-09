@@ -4,6 +4,7 @@ import z from "zod";
 import { adminProcedure } from "../trpc";
 
 import { SubjectSchema } from "@workspace/utils/schemas";
+import { getLevelByClassName } from "@workspace/utils";
 
 export const subjectRouter = {
   createOne: adminProcedure
@@ -95,6 +96,32 @@ export const subjectRouter = {
         console.error("Error deleting subject", error);
         return { success: false, message: "Internal Server Error" };
       }
+    }),
+  getByClass: adminProcedure
+    .input(z.string().nullish())
+    .query(async ({ input, ctx }) => {
+      const classId = input;
+
+      if (!classId) {
+        return [];
+      }
+
+      const className = await ctx.db.className.findUnique({
+        where: { id: classId },
+      });
+
+      if (!className) {
+        return [];
+      }
+
+      const level = getLevelByClassName(className.name);
+
+      const subjects = await ctx.db.subject.findMany({
+        where: {
+          level,
+        },
+      });
+      return subjects;
     }),
   getByLevel: adminProcedure
     .input(
