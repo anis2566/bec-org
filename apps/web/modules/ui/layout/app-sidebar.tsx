@@ -243,7 +243,7 @@ const data = {
         },
         {
           title: "List",
-          url: "/homework/exam",
+          url: "/homework",
           icon: List,
         },
       ],
