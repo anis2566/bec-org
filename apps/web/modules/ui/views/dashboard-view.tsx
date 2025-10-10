@@ -1,7 +1,7 @@
 "use client";
 
 import { useTRPC } from "@/trpc/react";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import { StatCard } from "@workspace/ui/shared/stat-card";
 import {
@@ -17,29 +17,29 @@ import { ThisMonthSalaries } from "../chart/this-month-salaries";
 export const DashboardView = () => {
   const trpc = useTRPC();
 
-  const { data } = useSuspenseQuery(trpc.dashboard.admin.queryOptions());
+  const { data } = useQuery(trpc.dashboard.admin.queryOptions());
 
   return (
     <div className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatCard
           title="Total Students"
-          value={data?.totalStudent?.toString()}
+          value={data?.totalStudent?.toString() || "0"}
           icon={UsersRound}
         />
         <StatCard
           title="Present Students"
-          value={data?.presentStudent?.toString()}
+          value={data?.presentStudent?.toString() || "0"}
           icon={UserRoundCheck}
         />
         <StatCard
           title="Absent Students"
-          value={data?.absentStudent?.toString()}
+          value={data?.absentStudent?.toString() || "0"}
           icon={UserRoundX}
         />
         <StatCard
           title="Total Teachers"
-          value={data?.totalTeacher?.toString()}
+          value={data?.totalTeacher?.toString() || "0"}
           icon={UserRoundPen}
         />
       </div>
