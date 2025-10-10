@@ -9,6 +9,7 @@ import { Toaster } from "@workspace/ui/components/sonner";
 import "@workspace/ui/globals.css";
 import { DashboardLayout } from "@/modules/ui/layout";
 import { ModalProvider } from "@/components/modal-provider";
+import { Metadata } from "next";
 
 const fontSans = Geist({
   subsets: ["latin"],
@@ -19,6 +20,15 @@ const fontMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
 });
+
+export const metadata: Metadata = {
+  title: {
+    template: "%s | BEC",
+    default: "BEC | Basic Education Care",
+  },
+  description:
+    "Basic Education Care is a web application for educational institutions to manage their students and teachers.",
+};
 
 export default function RootLayout({
   children,
