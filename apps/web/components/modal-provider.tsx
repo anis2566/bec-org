@@ -16,6 +16,7 @@ import { EditCounterModal } from "@/modules/counter/ui/modal/edit-counter-modal"
 import { CreateCategoryModal } from "@/modules/exam-category/ui/modal/create-category-modal";
 import { DeleteCategoryModal } from "@/modules/exam-category/ui/modal/delete-category-modal";
 import { EditCategoryModal } from "@/modules/exam-category/ui/modal/edit-category-modal";
+import { DeleteExamModal } from "@/modules/exam/ui/modal/delete-exam-modal";
 import { TransactionModal } from "@/modules/fee/ui/transaction-modal";
 import { DeleteHomeworkModal } from "@/modules/homework/ui/modal/delete-homework-modal";
 import { DeleteHouseModal } from "@/modules/house/ui/modal/delete-house-modal";
@@ -74,6 +75,7 @@ export const ModalProvider = () => {
       <CreateCategoryModal />
       <EditCategoryModal />
       <DeleteCategoryModal />
+      <DeleteExamModal />
     </>
   );
 };

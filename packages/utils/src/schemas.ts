@@ -255,7 +255,42 @@ export const HomeworkSchema = z.object({
 export type HomeworkSchemaType = z.infer<typeof HomeworkSchema>;
 
 export const ExamCategory = z.object({
-  name: requiredString
+  name: requiredString,
 });
 
 export type ExamCategoryType = z.infer<typeof ExamCategory>;
+
+export const ExamSchema = z
+  .object({
+    name: requiredString,
+    topic: requiredString,
+    subjectId: requiredString,
+    batchId: requiredString,
+    classNameId: requiredString,
+    examCategoryId: requiredString,
+    date: requiredString,
+    cq: z.string().optional(),
+    mcq: z.string().optional(),
+    written: z.string().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (!data.cq && !data.mcq && !data.written) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "At least one of cq, mcq, or written is required",
+        path: ["cq"],
+      });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "At least one of cq, mcq, or written is required",
+        path: ["mcq"],
+      });
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "At least one of cq, mcq, or written is required",
+        path: ["written"],
+      });
+    }
+  });
+
+export type ExamSchemaType = z.infer<typeof ExamSchema>;

@@ -10,6 +10,7 @@ import { appRouter, createTRPCContext } from "@workspace/api";
 
 import { auth } from "@/auth/server";
 import { createQueryClient } from "./query-client";
+import Loader from "@/components/loader";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
@@ -37,7 +38,7 @@ export function HydrateClient(props: { children: React.ReactNode }) {
   const queryClient = getQueryClient();
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loader />}>
         <ErrorBoundary fallback={<p>Error</p>}>{props.children}</ErrorBoundary>
       </Suspense>
     </HydrationBoundary>

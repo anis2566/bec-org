@@ -1,0 +1,55 @@
+"use client";
+
+import { useTRPC } from "@/trpc/react";
+import { useSuspenseQuery } from "@tanstack/react-query";
+
+import { StatCard } from "@workspace/ui/shared/stat-card";
+import {
+  UserRoundCheck,
+  UserRoundPen,
+  UserRoundX,
+  UsersRound,
+} from "lucide-react";
+import { StudentsOverview } from "../chart/students-overview";
+import { ThisMonthAdmmissionsLeavings } from "../chart/this-month-admissions-leavings";
+import { ThisMonthSalaries } from "../chart/this-month-salaries";
+
+export const DashboardView = () => {
+  const trpc = useTRPC();
+
+  const { data } = useSuspenseQuery(trpc.dashboard.admin.queryOptions());
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <StatCard
+          title="Total Students"
+          value={data?.totalStudent?.toString()}
+          icon={UsersRound}
+        />
+        <StatCard
+          title="Present Students"
+          value={data?.presentStudent?.toString()}
+          icon={UserRoundCheck}
+        />
+        <StatCard
+          title="Absent Students"
+          value={data?.absentStudent?.toString()}
+          icon={UserRoundX}
+        />
+        <StatCard
+          title="Total Teachers"
+          value={data?.totalTeacher?.toString()}
+          icon={UserRoundPen}
+        />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <ThisMonthAdmmissionsLeavings
+          thisMonthAdmissionsLeavings={data?.thisMonthAdmissionsLeavings || []}
+        />
+        <ThisMonthSalaries thisMonthSalaries={data?.salariesByClass || []} />
+        <StudentsOverview studentsByClass={data?.studentsByClass || []} />
+      </div>
+    </div>
+  );
+};

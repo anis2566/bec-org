@@ -1,6 +1,7 @@
 import { FieldValues, Path, Controller } from "react-hook-form";
 import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
+import { useState } from "react";
 
 import {
   FormItem,
@@ -32,6 +33,7 @@ export function FormCalendar<T extends FieldValues>({
   disableFuture = false,
   disablePast = false,
 }: FormCalendarProps<T>) {
+  const [open, setOpen] = useState<boolean>(false);
   return (
     <Controller
       control={form.control}
@@ -39,7 +41,7 @@ export function FormCalendar<T extends FieldValues>({
       render={({ field, fieldState }) => (
         <FormItem className="flex flex-col">
           <FormLabel>{label}</FormLabel>
-          <Popover>
+          <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
               <FormControl>
                 <Button
@@ -65,6 +67,7 @@ export function FormCalendar<T extends FieldValues>({
                 selected={field.value ? new Date(field.value) : undefined}
                 onSelect={(date) => {
                   field.onChange(date ? date.toISOString() : "");
+                  setOpen(false);
                 }}
                 disabled={(date) => {
                   if (disabled) return true;

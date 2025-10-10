@@ -19,7 +19,7 @@ export const ListActionButton = ({
 }: ListActionButtonProps) => {
   return (
     <>
-      <Separator />
+      {isDanger && <Separator />}
       <DropdownMenuItem
         className={cn(
           "flex items-center gap-x-3 rounded-[0px] h-7",

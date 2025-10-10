@@ -43,6 +43,7 @@ import {
   Coins,
   UserRoundPen,
   Wallet,
+  LayoutDashboard,
 } from "lucide-react";
 
 import {
@@ -70,29 +71,16 @@ import { NavTeacher } from "./nav-teacher";
 import { NavRoomHouse } from "./nav-room-house";
 import { NavBatch } from "./nav-batch";
 import { NavReport } from "./nav-report";
+import { NavDashboard } from "./nav-dashboard";
 
 // This is sample data.
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
+  dashboard: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
+      title: "Dashboard",
+      url: "/",
+      icon: LayoutDashboard,
+      items: [],
     },
   ],
   academic: [
@@ -575,6 +563,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <Header />
       </SidebarHeader>
       <SidebarContent className="bg-[#1D1E4E]">
+        <NavDashboard items={data.dashboard} />
         <NavAcademic items={data.academic} />
         <NavStudent items={data.student} />
         <NavAttendance items={data.attendance} />
