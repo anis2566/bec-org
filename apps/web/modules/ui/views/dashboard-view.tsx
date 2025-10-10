@@ -13,11 +13,14 @@ import {
 import { StudentsOverview } from "../chart/students-overview";
 import { ThisMonthAdmmissionsLeavings } from "../chart/this-month-admissions-leavings";
 import { ThisMonthSalaries } from "../chart/this-month-salaries";
+import Loader from "@/components/loader";
 
 export const DashboardView = () => {
   const trpc = useTRPC();
 
-  const { data } = useQuery(trpc.dashboard.admin.queryOptions());
+  const { data, isLoading } = useQuery(trpc.dashboard.admin.queryOptions());
+
+  if (isLoading) return <Loader />;
 
   return (
     <div className="space-y-6">
