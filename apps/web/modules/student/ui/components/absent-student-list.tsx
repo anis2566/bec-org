@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRightLeft, Edit, Eye, Trash2, UserRoundX } from "lucide-react";
+import { Edit, Eye, Trash2, UserRoundCheck } from "lucide-react";
 import Link from "next/link";
 
 import { ClassName, Student, StudentStatus } from "@workspace/db";
@@ -18,18 +18,11 @@ import { STUDENT_STATUS } from "@workspace/utils/constant";
 
 import { ListActionButton } from "@/components/list-action-button";
 import { ListActionLink } from "@/components/list-action-link";
-import {
-  useBatchTransfer,
-  useDeleteStudent,
-  useMarkAbsentStudent,
-} from "@/hooks/use-student";
+import { useDeleteStudent, useMarkPesentStudent } from "@/hooks/use-student";
 
 interface StudentWithRelation extends Student {
   className: ClassName;
   studentStatus: StudentStatus | null;
-  batch: {
-    name: string;
-  } | null;
   salaryPayments: {
     id: string;
   }[];
@@ -39,10 +32,9 @@ interface StudentListProps {
   students: StudentWithRelation[];
 }
 
-export const StudentList = ({ students }: StudentListProps) => {
+export const AbsentStudentList = ({ students }: StudentListProps) => {
   const { onOpen } = useDeleteStudent();
-  const { onOpen: onOpenBatchTransfer } = useBatchTransfer();
-  const { onOpen: onMarkAsAbsent } = useMarkAbsentStudent();
+  const { onOpen: onOpenMarkPresent } = useMarkPesentStudent();
 
   return (
     <Table>
@@ -54,7 +46,6 @@ export const StudentList = ({ students }: StudentListProps) => {
           <TableHead>Institute</TableHead>
           <TableHead>Class</TableHead>
           <TableHead>Group</TableHead>
-          <TableHead>Batch</TableHead>
           <TableHead>F. Phone</TableHead>
           <TableHead>M. Phone</TableHead>
           <TableHead>Session</TableHead>
@@ -76,7 +67,6 @@ export const StudentList = ({ students }: StudentListProps) => {
             <TableCell>{student.school}</TableCell>
             <TableCell>{student.className.name}</TableCell>
             <TableCell>{student.group ? student.group : "-"}</TableCell>
-            <TableCell>{student?.batch?.name || "-"}</TableCell>
             <TableCell>{student.fPhone}</TableCell>
             <TableCell>{student.mPhone}</TableCell>
             <TableCell>{student.session}</TableCell>
@@ -114,22 +104,9 @@ export const StudentList = ({ students }: StudentListProps) => {
                   icon={Edit}
                 />
                 <ListActionButton
-                  title="Batch Transfer"
-                  icon={ArrowRightLeft}
-                  onClick={() =>
-                    onOpenBatchTransfer(
-                      student.id,
-                      student?.batch?.name || "",
-                      student.classNameId,
-                      student.batchId || ""
-                    )
-                  }
-                />
-                <ListActionButton
-                  isDanger
-                  title="Mark as Absent"
-                  icon={UserRoundX}
-                  onClick={() => onMarkAsAbsent(student.id)}
+                  title="Mark as Present"
+                  icon={UserRoundCheck}
+                  onClick={() => onOpenMarkPresent(student.id)}
                 />
                 <ListActionButton
                   isDanger

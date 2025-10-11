@@ -212,6 +212,46 @@ export const homeworkRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
+  getByStudent: adminProcedure
+    .input(
+      z.object({
+        studentId: z.string(),
+        page: z.number(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { studentId, page } = input;
+
+      const [homeworks, totalCount] = await Promise.all([
+        ctx.db.homework.findMany({
+          where: {
+            studentId,
+          },
+          include: {
+            subject: {
+              select: {
+                name: true,
+              },
+            }
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 5,
+          skip: (page - 1) * 5,
+        }),
+        ctx.db.homework.count({
+          where: {
+            studentId,
+          },
+        }),
+      ]);
+
+      return {
+        homeworks,
+        totalCount,
+      };
+    }),
   getMany: adminProcedure
     .input(
       z.object({

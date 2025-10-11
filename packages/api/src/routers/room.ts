@@ -188,6 +188,7 @@ export const roomRouter = {
             house: {
               select: {
                 name: true,
+                id: true,
               },
             },
           },

@@ -151,6 +151,13 @@ export const houseRouter = {
               },
             }),
           },
+          include: {
+            rooms: {
+              select: {
+                id: true,
+              }
+            }
+          },
           orderBy: {
             createdAt: sort === "asc" ? "asc" : "desc",
           },

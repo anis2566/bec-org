@@ -82,29 +82,48 @@ export const salaryPaymentRouter = {
     .input(
       z.object({
         studentId: z.string(),
+        page: z.number(),
       })
     )
     .query(async ({ input, ctx }) => {
-      const { studentId } = input;
+      const { studentId, page } = input;
 
-      const salaryPaymentData = await ctx.db.salaryPayment.findMany({
-        where: {
-          studentId,
-          status: {
-            notIn: [SALARY_STATUS["N/A"], SALARY_STATUS.Initiated],
+      const [salaries, totalCount] = await Promise.all([
+        ctx.db.salaryPayment.findMany({
+          where: {
+            studentId,
+            status: {
+              notIn: [SALARY_STATUS["N/A"], SALARY_STATUS.Initiated],
+            },
           },
-        },
-        select: {
-          method: true,
-          amount: true,
-          status: true,
-          month: true,
-          paymentStatus: true,
-          id: true,
-        },
-      });
+          select: {
+            method: true,
+            amount: true,
+            status: true,
+            month: true,
+            paymentStatus: true,
+            id: true,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 5,
+          skip: (page - 1) * 5,
+        }),
+        ctx.db.salaryPayment.count({
+          where: {
+            studentId,
+            status: {
+              notIn: [SALARY_STATUS["N/A"], SALARY_STATUS.Initiated],
+            },
+          },
+        }),
+      ]);
 
-      return salaryPaymentData;
+      return {
+        salaries,
+        totalCount,
+      };
     }),
   getOne: adminProcedure
     .input(

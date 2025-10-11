@@ -6,8 +6,8 @@ import { ContentLayout } from "@/modules/ui/layout/content-layout";
 import { ExamResultView } from "@/modules/exam/ui/views/exam-result-view";
 
 export const metadata: Metadata = {
-  title: "Exam Result",
-  description: "Exam Result",
+  title: "Exam Result Details",
+  description: "View details of an existing exam result",
 };
 
 interface Props {
@@ -17,7 +17,7 @@ interface Props {
 const ExamResult = async ({ params }: Props) => {
   const { id } = await params;
 
-  prefetch(trpc.exam.getForResult.queryOptions(id));
+  prefetch(trpc.examResult.getOne.queryOptions(id));
 
   return (
     <ContentLayout>

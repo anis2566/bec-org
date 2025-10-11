@@ -29,3 +29,31 @@ export function getLevelByClassName(className: string): LEVELS {
 
   return LEVELS.Primary;
 }
+
+export function getGrade(obtainedMarks: number, totalMarks: number): string {
+  if (obtainedMarks < 0 || totalMarks <= 0) {
+    throw new Error("Invalid marks provided");
+  }
+
+  if (obtainedMarks > totalMarks) {
+    throw new Error("Obtained marks cannot exceed total marks");
+  }
+
+  const percentage = (obtainedMarks / totalMarks) * 100;
+
+  if (percentage >= 80) {
+    return "A+";
+  } else if (percentage >= 70) {
+    return "A";
+  } else if (percentage >= 60) {
+    return "A-";
+  } else if (percentage >= 50) {
+    return "B";
+  } else if (percentage >= 40) {
+    return "C";
+  } else if (percentage >= 33) {
+    return "D";
+  } else {
+    return "F";
+  }
+}

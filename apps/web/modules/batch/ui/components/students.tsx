@@ -1,7 +1,7 @@
 "use client";
 
 import { useTRPC } from "@/trpc/react";
-import { Download, Eye, Loader2, Trash2 } from "lucide-react";
+import { ArrowRightLeft, Download, Eye, Loader2, Trash2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 import {
@@ -23,6 +23,7 @@ import { ListActionLink } from "@/components/list-action-link";
 import { ListActionButton } from "@/components/list-action-button";
 import { ListCardWrapper } from "@workspace/ui/shared/list-card-wrapper";
 import { useRemoveFromBatch } from "@/hooks/use-batch";
+import { useBatchTransfer } from "@/hooks/use-student";
 
 interface StudentsProps {
   batchId: string;
@@ -32,6 +33,7 @@ interface StudentsProps {
 export const Students = ({ batchId, className }: StudentsProps) => {
   const trpc = useTRPC();
   const { onOpen } = useRemoveFromBatch();
+  const { onOpen: onOpenBatchTransfer } = useBatchTransfer();
 
   const { data: students, isLoading } = useQuery(
     trpc.student.getByBatch.queryOptions(batchId)
@@ -85,6 +87,18 @@ export const Students = ({ batchId, className }: StudentsProps) => {
                     title="View"
                     href={`/student/${student.id}`}
                     icon={Eye}
+                  />
+                  <ListActionButton
+                    title="Batch Transfer"
+                    icon={ArrowRightLeft}
+                    onClick={() =>
+                      onOpenBatchTransfer(
+                        student.id,
+                        student?.batch?.name || "",
+                        student?.classNameId || "",
+                        student.batchId || ""
+                      )
+                    }
                   />
                   <ListActionButton
                     isDanger

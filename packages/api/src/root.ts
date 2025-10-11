@@ -26,6 +26,7 @@ import { homeworkRouter } from "./routers/homework";
 import { examCategoryRouter } from "./routers/exam-category";
 import { examRouter } from "./routers/exam";
 import { dashboardRouter } from "./routers/dashboard";
+import { examResultRouter } from "./routers/exam-result";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -53,7 +54,8 @@ export const appRouter = createTRPCRouter({
   homework: homeworkRouter,
   examCategory: examCategoryRouter,
   exam: examRouter,
-  dashboard: dashboardRouter
+  dashboard: dashboardRouter,
+  examResult: examResultRouter
 });
 
 // export type definition of API

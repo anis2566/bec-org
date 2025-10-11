@@ -44,6 +44,7 @@ import {
   UserRoundPen,
   Wallet,
   LayoutDashboard,
+  FileUser,
 } from "lucide-react";
 
 import {
@@ -281,22 +282,39 @@ const data = {
       ],
     },
     {
-      title: "Combine",
+      title: "Result",
       url: "",
-      icon: Combine,
+      icon: FileUser,
       items: [
         {
           title: "New",
-          url: "/exam/combine/new",
+          url: "/exam/result/new",
           icon: PlusCircle,
         },
         {
           title: "List",
-          url: "/exam/combine",
+          url: "/exam/result",
           icon: List,
         },
       ],
     },
+    // {
+    //   title: "Combine",
+    //   url: "",
+    //   icon: Combine,
+    //   items: [
+    //     {
+    //       title: "New",
+    //       url: "/exam/combine/new",
+    //       icon: PlusCircle,
+    //     },
+    //     {
+    //       title: "List",
+    //       url: "/exam/combine",
+    //       icon: List,
+    //     },
+    //   ],
+    // },
   ],
   income: [
     {

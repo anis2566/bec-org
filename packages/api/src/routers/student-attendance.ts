@@ -195,6 +195,39 @@ export const studentAttendanceRouter = {
 
     return attendance;
   }),
+  getByStudent: adminProcedure
+    .input(
+      z.object({
+        studentId: z.string(),
+        page: z.number(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { studentId, page } = input;
+
+      const [attendances, totalCount] = await Promise.all([
+        ctx.db.attendance.findMany({
+          where: {
+            studentId,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 5,
+          skip: (page - 1) * 5,
+        }),
+        ctx.db.attendance.count({
+          where: {
+            studentId,
+          },
+        }),
+      ]);
+
+      return {
+        attendances,
+        totalCount,
+      };
+    }),
   getMany: adminProcedure
     .input(
       z.object({

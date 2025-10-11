@@ -6,13 +6,13 @@ import { UserRoundCheck, UserRoundX, UsersRound } from "lucide-react";
 
 import { Badge } from "@workspace/ui/components/badge";
 import { CardWrapper } from "@workspace/ui/shared/card-wrapper";
-import { EditResultsForm } from "../form/edit-results-form";
+import EditExamResultForm from "../form/edit-exam-result-form";
 
-interface ExamResultViewProps {
+interface EditExamResultViewProps {
   id: string;
 }
 
-export const ExamResultView = ({ id }: ExamResultViewProps) => {
+export const EditExamResultView = ({ id }: EditExamResultViewProps) => {
   const trpc = useTRPC();
 
   const { data } = useSuspenseQuery(trpc.examResult.getOne.queryOptions(id));
@@ -30,6 +30,12 @@ export const ExamResultView = ({ id }: ExamResultViewProps) => {
                 </p>
               </div>
               <div className="border-l-4 border-blue-500 pl-4 py-1">
+                <p className="text-sm font-medium mb-1">Category</p>
+                <p className="text-md font-semibold text-muted-foreground">
+                  {data?.examCategory?.name}
+                </p>
+              </div>
+              <div className="border-l-4 border-blue-500 pl-4 py-1">
                 <p className="text-sm font-medium mb-1">Subject</p>
                 <p className="text-md font-semibold text-muted-foreground">
                   {data?.subject?.name}
@@ -39,6 +45,12 @@ export const ExamResultView = ({ id }: ExamResultViewProps) => {
                 <p className="text-sm font-medium mb-1">Batch</p>
                 <p className="text-md font-semibold text-muted-foreground">
                   {data?.batch?.name}
+                </p>
+              </div>
+              <div className="border-l-4 border-blue-500 pl-4 py-1">
+                <p className="text-sm font-medium mb-1">Class</p>
+                <p className="text-md font-semibold text-muted-foreground">
+                  {data?.className?.name}
                 </p>
               </div>
             </div>
@@ -72,15 +84,10 @@ export const ExamResultView = ({ id }: ExamResultViewProps) => {
         </div>
       </CardWrapper>
 
-      <EditResultsForm
+      <EditExamResultForm
         resultId={id}
-        results={data?.examResults || []}
-        hasCq={(data?.exam?.cq || 0) > 0}
-        hasMcq={(data?.exam?.mcq || 0) > 0}
-        hasWritten={(data?.exam?.written || 0) > 0}
-        maxCqValue={data?.exam.cq || 0}
-        maxMcqValue={data?.exam.mcq || 0}
-        maxWrittenValue={data?.exam.written || 0}
+        examResults={data?.examResults || []}
+        allStudents={data?.batch?.students || []}
       />
     </div>
   );

@@ -17,6 +17,8 @@ import { CreateCategoryModal } from "@/modules/exam-category/ui/modal/create-cat
 import { DeleteCategoryModal } from "@/modules/exam-category/ui/modal/delete-category-modal";
 import { EditCategoryModal } from "@/modules/exam-category/ui/modal/edit-category-modal";
 import { DeleteExamModal } from "@/modules/exam/ui/modal/delete-exam-modal";
+import { DeleteResultModal } from "@/modules/exam/ui/modal/delete-result-modal";
+import { ToggleStatusModal } from "@/modules/exam/ui/modal/toggle-status-modal";
 import { TransactionModal } from "@/modules/fee/ui/transaction-modal";
 import { DeleteHomeworkModal } from "@/modules/homework/ui/modal/delete-homework-modal";
 import { DeleteHouseModal } from "@/modules/house/ui/modal/delete-house-modal";
@@ -27,7 +29,10 @@ import { DeleteRoomModal } from "@/modules/room/ui/modal/delete-room-modal";
 import { CreateSalaryFeeModal } from "@/modules/salary-fee/ui/modal/create-salary-fee-modal";
 import { DeleteSalaryFeeModal } from "@/modules/salary-fee/ui/modal/delete-salary-fee-modal";
 import { EditSalaryFeeModal } from "@/modules/salary-fee/ui/modal/edit-salary-fee-modal";
+import { BatchTransferModal } from "@/modules/student/ui/modal/batch-transfer-modal";
 import { DeleteStudentModal } from "@/modules/student/ui/modal/delete-student-modal";
+import { MarkAsAbsentModal } from "@/modules/student/ui/modal/mark-as-absent-modal";
+import { MarkAsPresentModal } from "@/modules/student/ui/modal/mark-as-present-modal";
 import { CreateSubjectModal } from "@/modules/subject/ui/modal/create-subject-modal";
 import { DeleteSubjectModal } from "@/modules/subject/ui/modal/delete-subject-modal";
 import { EditSubjectModal } from "@/modules/subject/ui/modal/edit-subject-modal";
@@ -76,6 +81,11 @@ export const ModalProvider = () => {
       <EditCategoryModal />
       <DeleteCategoryModal />
       <DeleteExamModal />
+      <ToggleStatusModal />
+      <DeleteResultModal />
+      <BatchTransferModal />
+      <MarkAsAbsentModal />
+      <MarkAsPresentModal />
     </>
   );
 };

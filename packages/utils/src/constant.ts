@@ -126,6 +126,11 @@ export enum ATTENDANCE_STATUS {
   Absent = "Absent",
 }
 
+export enum EXAM_STATUS {
+  Published = "Published",
+  Unpublished = "Unpublished",
+}
+
 export const DEFAULT_PAGE = 1;
 export const DEFAULT_LIMIT = 5;
 export const DEFAULT_PAGE_SIZE = 5;

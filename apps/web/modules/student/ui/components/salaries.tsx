@@ -22,15 +22,20 @@ import {
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
 
+import { useGetSalaries } from "../../filters/use-get-salaries";
+import { DesktopPagination } from "@workspace/ui/shared/desktop-pagination";
+import { MobilePagination } from "@workspace/ui/shared/mobile-pagination";
+
 interface SalariesProps {
   studentId: string;
 }
 
 export const Salaries = ({ studentId }: SalariesProps) => {
   const trpc = useTRPC();
+  const [filters, setFilters] = useGetSalaries();
 
   const { data, isLoading } = useQuery(
-    trpc.salaryPayment.getByStudent.queryOptions({ studentId })
+    trpc.salaryPayment.getByStudent.queryOptions({ studentId, ...filters })
   );
 
   if (isLoading) {
@@ -44,7 +49,7 @@ export const Salaries = ({ studentId }: SalariesProps) => {
   return (
     <ListCardWrapper
       title="Salaries"
-      value={data?.length}
+      value={data?.totalCount}
       actionButtons
       actionButtonText="Export to CSV"
       actionButtonVariant="secondary"
@@ -63,7 +68,7 @@ export const Salaries = ({ studentId }: SalariesProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.map((payment) => (
+          {data?.salaries?.map((payment) => (
             <TableRow key={payment.id}>
               <TableCell>{payment.month}</TableCell>
               <TableCell>{payment.amount}</TableCell>
@@ -100,7 +105,7 @@ export const Salaries = ({ studentId }: SalariesProps) => {
                   className={cn(
                     "hidden",
                     payment.paymentStatus === SALARY_PAYMENT_STATUS.Unpaid &&
-                      "block"
+                      "flex w-full max-w-fit"
                   )}
                 >
                   <Link href={`/fee/salary/${payment.id}`}>Pay now</Link>
@@ -110,6 +115,18 @@ export const Salaries = ({ studentId }: SalariesProps) => {
           ))}
         </TableBody>
       </Table>
+      <DesktopPagination
+        totalCount={data?.totalCount || 0}
+        currentPage={filters.page}
+        pageSize={5}
+        onPageChange={(page) => setFilters({ page })}
+      />
+      <MobilePagination
+        totalCount={data?.totalCount || 0}
+        currentPage={filters.page}
+        pageSize={5}
+        onPageChange={(page) => setFilters({ page })}
+      />
     </ListCardWrapper>
   );
 };

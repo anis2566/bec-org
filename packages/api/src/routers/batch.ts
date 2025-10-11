@@ -29,7 +29,9 @@ export const batchRouter = {
 
       try {
         const existingBatch = await ctx.db.batch.findFirst({
-          where: { classNameId },
+          where: {
+            name,
+          },
         });
 
         if (existingBatch) {
@@ -360,6 +362,40 @@ export const batchRouter = {
 
       const batches = await ctx.db.batch.findMany({
         where: { classNameId: classId },
+        include: {
+          students: {
+            select: {
+              name: true,
+              studentId: true,
+              imageUrl: true,
+              mPhone: true,
+              id: true,
+            },
+          },
+        },
+      });
+
+      return batches;
+    }),
+  getForBatchTransfer: adminProcedure
+    .input(
+      z.object({
+        classNameId: z.string().nullish(),
+        batchId: z.string().nullish(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { classNameId, batchId } = input;
+
+      if (!classNameId) {
+        return [];
+      }
+
+      const batches = await ctx.db.batch.findMany({
+        where: {
+          ...(batchId && { id: { not: batchId } }),
+          classNameId,
+        },
       });
 
       return batches;
@@ -422,6 +458,11 @@ export const batchRouter = {
             room: {
               select: {
                 name: true,
+              },
+            },
+            students: {
+              select: {
+                id: true,
               },
             },
           },

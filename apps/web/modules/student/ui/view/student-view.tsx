@@ -25,6 +25,9 @@ import {
 } from "@workspace/ui/components/tabs";
 import { Salaries } from "../components/salaries";
 import { StudentProfile } from "../components/profile";
+import { Attendances } from "../components/attendances";
+import { Homeworks } from "../components/homeworks";
+import { Results } from "../components/results";
 
 interface StudentViewProps {
   id: string;
@@ -93,11 +96,19 @@ export const StudentView = ({ id }: StudentViewProps) => {
           <TabsTrigger value="attendance">Attendance</TabsTrigger>
           <TabsTrigger value="result">Result</TabsTrigger>
           <TabsTrigger value="homework">Homework</TabsTrigger>
-          <TabsTrigger value="monthly-report">Monthly Report</TabsTrigger>
           <TabsTrigger value="profile">Profile</TabsTrigger>
         </TabsList>
         <TabsContent value="salaries">
           <Salaries studentId={id} />
+        </TabsContent>
+        <TabsContent value="attendance">
+          <Attendances studentId={id} />
+        </TabsContent>
+        <TabsContent value="homework">
+          <Homeworks studentId={id} />
+        </TabsContent>
+        <TabsContent value="result">
+          <Results studentId={id} />
         </TabsContent>
         <TabsContent value="profile">
           <StudentProfile student={student} />

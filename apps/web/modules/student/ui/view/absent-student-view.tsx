@@ -9,6 +9,7 @@ import { MobilePagination } from "@workspace/ui/shared/mobile-pagination";
 
 import { useGetAbsentStudents } from "../../filters/use-get-absent-students";
 import { AbsentFilter } from "../components/absent-filter";
+import { AbsentStudentList } from "../components/absent-student-list";
 
 export const AbsentStudentsView = () => {
   const trpc = useTRPC();
@@ -21,6 +22,7 @@ export const AbsentStudentsView = () => {
   return (
     <ListCardWrapper title="Manage Absent Student" value={data?.totalCount}>
       <AbsentFilter />
+      <AbsentStudentList students={data?.students} />
       <DesktopPagination
         totalCount={data?.totalCount}
         currentPage={filters.page}

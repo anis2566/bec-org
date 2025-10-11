@@ -180,6 +180,92 @@ export const studentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
+  batchTransfer: adminProcedure
+    .input(
+      z.object({
+        studentId: z.string(),
+        batchId: z.string(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      const { studentId, batchId } = input;
+
+      try {
+        await ctx.db.student.update({
+          where: { id: studentId },
+          data: {
+            batchId,
+          },
+        });
+
+        return { success: true, message: "Batch transfer successfull" };
+      } catch (error) {
+        console.error("Error updating batch transfer", error);
+        return { success: false, message: "Internal Server Error" };
+      }
+    }),
+  markAsAbsent: adminProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      const studentId = input;
+
+      try {
+        const existingStudent = await ctx.db.student.findUnique({
+          where: { id: studentId },
+        });
+
+        if (!existingStudent) {
+          return { success: false, message: "Student not found" };
+        }
+
+        await ctx.db.$transaction(async (tx) => {
+          await tx.student.update({
+            where: { id: studentId },
+            data: {
+              batchId: null,
+            },
+          });
+          await tx.studentStatus.update({
+            where: { studentId },
+            data: {
+              status: STUDENT_STATUS.Absent,
+            },
+          });
+        });
+
+        return { success: true, message: "Marked as absent" };
+      } catch (error) {
+        console.error("Error updating mark as absent", error);
+        return { success: false, message: "Internal Server Error" };
+      }
+    }),
+  markAsPresent: adminProcedure
+    .input(z.string())
+    .mutation(async ({ input, ctx }) => {
+      const studentId = input;
+
+      try {
+        const existingStudent = await ctx.db.student.findUnique({
+          where: { id: studentId },
+        });
+
+        if (!existingStudent) {
+          return { success: false, message: "Student not found" };
+        }
+
+        await ctx.db.studentStatus.update({
+          where: { studentId },
+          data: {
+            status: STUDENT_STATUS.Present,
+          },
+        });
+
+        return { success: true, message: "Marked as present" };
+      } catch (error) {
+        console.error("Error updating mark as present", error);
+        return { success: false, message: "Internal Server Error" };
+      }
+    }),
   deleteOne: adminProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
@@ -321,6 +407,13 @@ export const studentRouter = {
               id: true,
             },
           },
+          batch: {
+            select: {
+              name: true,
+            },
+          },
+          classNameId: true,
+          batchId: true,
         },
       });
 
@@ -384,6 +477,14 @@ export const studentRouter = {
           include: {
             className: true,
             studentStatus: true,
+            salaryPayments: {
+              where: {
+                paymentStatus: SALARY_PAYMENT_STATUS.Unpaid,
+              },
+              select: {
+                id: true,
+              },
+            },
           },
           orderBy: {
             createdAt: sort === "asc" ? "asc" : "desc",
@@ -440,6 +541,9 @@ export const studentRouter = {
       const [students, totalCount] = await Promise.all([
         ctx.db.student.findMany({
           where: {
+            studentStatus: {
+              status: STUDENT_STATUS.Present,
+            },
             ...(search && {
               name: {
                 contains: search,
@@ -461,6 +565,19 @@ export const studentRouter = {
           include: {
             className: true,
             studentStatus: true,
+            batch: {
+              select: {
+                name: true,
+              },
+            },
+            salaryPayments: {
+              where: {
+                paymentStatus: SALARY_PAYMENT_STATUS.Unpaid,
+              },
+              select: {
+                id: true,
+              },
+            },
           },
           orderBy: {
             createdAt: sort === "asc" ? "asc" : "desc",
@@ -470,6 +587,9 @@ export const studentRouter = {
         }),
         ctx.db.student.count({
           where: {
+            studentStatus: {
+              status: STUDENT_STATUS.Present,
+            },
             ...(search && {
               name: {
                 contains: search,

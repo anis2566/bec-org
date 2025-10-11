@@ -24,6 +24,9 @@ interface BatchWithRelations extends Batch {
   room: {
     name: string;
   };
+  students: {
+    id: string;
+  }[]
 }
 
 interface BatchListProps {
@@ -59,7 +62,7 @@ export const BatchList = ({ batches }: BatchListProps) => {
               {formatTime(batch.time[batch.time.length - 1] ?? "", "end")}
             </TableCell>
             <TableCell>{batch.room.name}</TableCell>
-            <TableCell>{5}</TableCell>
+            <TableCell>{batch.students.length}</TableCell>
             <TableCell>
               <ListActions>
                 <ListActionLink

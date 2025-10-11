@@ -43,6 +43,22 @@ export const examRouter = {
           return { success: false, message: "Batch not found" };
         }
 
+        await ctx.db.exam.create({
+          data: {
+            name,
+            topic,
+            subjectId,
+            batchId,
+            classNameId,
+            examCategoryId,
+            date: new Date(date),
+            cq: cq ? parseInt(cq) : null,
+            mcq: mcq ? parseInt(mcq) : null,
+            written: written ? parseInt(written) : null,
+            total,
+          },
+        });
+
         return { success: true, message: "Exam created" };
       } catch (error) {
         console.error("Error creating exam:", error);
@@ -111,6 +127,33 @@ export const examRouter = {
               contains: search,
               mode: "insensitive",
             },
+          }),
+        },
+      });
+
+      return exams;
+    }),
+  getByBathchCategory: adminProcedure
+    .input(
+      z.object({
+        batchId: z.string().nullish(),
+        categoryId: z.string().nullish(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { batchId, categoryId } = input;
+
+      if (!batchId && !categoryId) {
+        return [];
+      }
+
+      const exams = await ctx.db.exam.findMany({
+        where: {
+          ...(batchId && {
+            batchId,
+          }),
+          ...(categoryId && {
+            examCategoryId: categoryId,
           }),
         },
       });

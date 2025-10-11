@@ -25,6 +25,7 @@ import {
   Collapsible,
   CollapsibleContent,
 } from "@workspace/ui/components/collapsible";
+import { useGetExams } from "../../filters/use-get-exams";
 
 export const NewExamForm = () => {
   const [buttonState, setButtonState] = useState<ButtonState>("idle");
@@ -36,6 +37,7 @@ export const NewExamForm = () => {
   const trpc = useTRPC();
   const router = useRouter();
   const queryClient = useQueryClient();
+  const [filters] = useGetExams()
 
   const { mutate: createExam, isPending } = useMutation(
     trpc.exam.createOne.mutationOptions({
@@ -53,9 +55,9 @@ export const NewExamForm = () => {
         }
         setButtonState("success");
         toast.success(data.message);
-        // queryClient.invalidateQueries(
-        //   trpc.homework.getMany.queryOptions({ ...filters })
-        // );
+        queryClient.invalidateQueries(
+          trpc.exam.getMany.queryOptions({ ...filters })
+        );
         router.push("/exam");
       },
     })
