@@ -45,6 +45,9 @@ import {
   Wallet,
   LayoutDashboard,
   FileUser,
+  Files,
+  ClipboardList,
+  Printer,
 } from "lucide-react";
 
 import {
@@ -73,6 +76,7 @@ import { NavRoomHouse } from "./nav-room-house";
 import { NavBatch } from "./nav-batch";
 import { NavReport } from "./nav-report";
 import { NavDashboard } from "./nav-dashboard";
+import { NavTask } from "./nav-task";
 
 // This is sample data.
 const data = {
@@ -257,12 +261,31 @@ const data = {
       ],
     },
   ],
+  task: [
+    {
+      title: "Print",
+      url: "/task/print",
+      icon: Printer,
+      items: [],
+    },
+  ],
   result: [
     {
-      title: "Category",
-      url: "/exam/category",
-      icon: Layers3,
-      items: [],
+      title: "Documents",
+      url: "",
+      icon: Files,
+      items: [
+        {
+          title: "New",
+          url: "/exam/document/new",
+          icon: PlusCircle,
+        },
+        {
+          title: "List",
+          url: "/exam/document",
+          icon: List,
+        },
+      ],
     },
     {
       title: "Exam",
@@ -297,6 +320,12 @@ const data = {
           icon: List,
         },
       ],
+    },
+    {
+      title: "Category",
+      url: "/exam/category",
+      icon: Layers3,
+      items: [],
     },
     // {
     //   title: "Combine",
@@ -588,6 +617,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavBatch items={data.batch} />
         <NavFee items={data.fee} />
         <NavHomework items={data.homework} />
+        <NavTask items={data.task} />
         <NavTeacher items={data.teacher} />
         <NavResult items={data.result} />
         <NavIncome items={data.income} />

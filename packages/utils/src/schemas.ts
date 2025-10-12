@@ -294,3 +294,14 @@ export const ExamSchema = z
   });
 
 export type ExamSchemaType = z.infer<typeof ExamSchema>;
+
+export const DocumentSchema = z.object({
+  type: requiredString,
+  name: requiredString,
+  deliveryDate: requiredString,
+  noOfCopy: requiredString,
+  classNameId: requiredString,
+  subjectId: requiredString,
+});
+
+export type DocumentSchemaType = z.infer<typeof DocumentSchema>;

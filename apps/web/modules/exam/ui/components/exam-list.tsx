@@ -1,6 +1,11 @@
 "use client";
 
-import { Edit, Eye, FileUser, Send, Trash2 } from "lucide-react";
+import {
+  ArrowUpFromLine,
+  Edit,
+  FileUser,
+  Trash2,
+} from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
 
@@ -17,7 +22,8 @@ import {
 
 import { ListActionButton } from "@/components/list-action-button";
 import { ListActionLink } from "@/components/list-action-link";
-import { useDeleteExam } from "@/hooks/use-exam";
+
+import { useDeleteExam, usePushToDocument } from "@/hooks/use-exam";
 
 interface ExamWithRelation extends Exam {
   className: {
@@ -40,6 +46,7 @@ interface HomeworkListProps {
 
 export const ExamList = ({ exams }: HomeworkListProps) => {
   const { onOpen } = useDeleteExam();
+  const { onOpen: onPush } = usePushToDocument();
 
   return (
     <Table>
@@ -86,6 +93,13 @@ export const ExamList = ({ exams }: HomeworkListProps) => {
                   title="Result"
                   href={`/exam/${exam.id}/result`}
                   icon={FileUser}
+                />
+                <ListActionButton
+                  title="Push to Document"
+                  icon={ArrowUpFromLine}
+                  onClick={() =>
+                    onPush(exam.name, exam.classNameId, exam.subjectId)
+                  }
                 />
                 <ListActionButton
                   isDanger

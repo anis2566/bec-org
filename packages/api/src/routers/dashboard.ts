@@ -1,11 +1,12 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
-import { endOfMonth, startOfMonth } from "date-fns";
+import { endOfMonth, startOfMonth, getMonth, startOfDay, endOfDay } from "date-fns";
 
 import { adminProcedure } from "../trpc";
 import {
   MONTH,
   SALARY_PAYMENT_STATUS,
+  SALARY_STATUS,
   STUDENT_STATUS,
   TEACHER_STATUS,
 } from "@workspace/utils/constant";
@@ -122,8 +123,8 @@ export const dashboardRouter = {
           name: true,
         },
         orderBy: {
-          position: "asc"
-        }
+          position: "asc",
+        },
       }),
     ]);
 

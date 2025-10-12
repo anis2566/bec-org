@@ -131,6 +131,16 @@ export enum EXAM_STATUS {
   Unpublished = "Unpublished",
 }
 
+export enum DOCUMENT_TYPE {
+  Question = "Question",
+  Sheet = "Sheet"
+}
+
+export enum PRINT_TASK_STATUS {
+  Pending = "Pending",
+  Printed = "Printed",
+}
+
 export const DEFAULT_PAGE = 1;
 export const DEFAULT_LIMIT = 5;
 export const DEFAULT_PAGE_SIZE = 5;

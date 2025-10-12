@@ -88,6 +88,7 @@ model ClassName {
   homeworkGroups   HomeworkGroup[]
   exams            Exam[]
   examResults      ExamResultGroup[]
+  documents        Document[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -103,6 +104,7 @@ model Subject {
   homeworkGroups   HomeworkGroup[]
   exams            Exam[]
   examResultGroups ExamResultGroup[]
+  documents        Document[]
 
   createdAt  DateTime     @default(now())
   updatedAt  DateTime     @updatedAt
@@ -667,6 +669,40 @@ model ExamResult {
   remarks  String?
   grade    String?
   merit    Int?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Document {
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  type       String
+  name       String
+  deliveryDate DateTime
+  hasReceived  Boolean  @default(true)
+  hasFinished  Boolean  @default(false)
+  hasPrinted   Boolean  @default(false)
+  noOfCopy     Int
+
+  classNameId String    @db.ObjectId
+  className   ClassName @relation(fields: [classNameId], references: [id], onDelete: Cascade)
+
+  subjectId String  @db.ObjectId
+  subject   Subject @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+
+  printTasks PrintTask[]
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model PrintTask {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  status String @default("Pending")
+
+  documentId String @db.ObjectId
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

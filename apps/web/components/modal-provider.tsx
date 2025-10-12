@@ -16,8 +16,13 @@ import { EditCounterModal } from "@/modules/counter/ui/modal/edit-counter-modal"
 import { CreateCategoryModal } from "@/modules/exam-category/ui/modal/create-category-modal";
 import { DeleteCategoryModal } from "@/modules/exam-category/ui/modal/delete-category-modal";
 import { EditCategoryModal } from "@/modules/exam-category/ui/modal/edit-category-modal";
+import { DeleteDocumentModal } from "@/modules/exam/ui/modal/delete-document-modal";
 import { DeleteExamModal } from "@/modules/exam/ui/modal/delete-exam-modal";
 import { DeleteResultModal } from "@/modules/exam/ui/modal/delete-result-modal";
+import { PushToDocumentModal } from "@/modules/exam/ui/modal/push-to-document-modal";
+import { PushToPrintModal } from "@/modules/exam/ui/modal/push-to-print-modal";
+import { ToggleFinishedModal } from "@/modules/exam/ui/modal/toggle-finished-modal";
+import { ToggleReceivedModal } from "@/modules/exam/ui/modal/toggle-received-modal";
 import { ToggleStatusModal } from "@/modules/exam/ui/modal/toggle-status-modal";
 import { TransactionModal } from "@/modules/fee/ui/transaction-modal";
 import { DeleteHomeworkModal } from "@/modules/homework/ui/modal/delete-homework-modal";
@@ -36,6 +41,7 @@ import { MarkAsPresentModal } from "@/modules/student/ui/modal/mark-as-present-m
 import { CreateSubjectModal } from "@/modules/subject/ui/modal/create-subject-modal";
 import { DeleteSubjectModal } from "@/modules/subject/ui/modal/delete-subject-modal";
 import { EditSubjectModal } from "@/modules/subject/ui/modal/edit-subject-modal";
+import { TogglePrntTaskStatusModal } from "@/modules/task/ui/modal/toggle-status-modal";
 import { AdvanceStatusModal } from "@/modules/teacher-advance/ui/modal/advance-status-modal";
 import { DeleteTeacherPaymentModal } from "@/modules/teacher-payment/ui/modal/delete-teacher-payment-modal";
 import { TeacherPaymentStatusModal } from "@/modules/teacher-payment/ui/modal/payment-status-modal";
@@ -86,6 +92,12 @@ export const ModalProvider = () => {
       <BatchTransferModal />
       <MarkAsAbsentModal />
       <MarkAsPresentModal />
+      <DeleteDocumentModal />
+      <ToggleReceivedModal />
+      <ToggleFinishedModal />
+      <PushToDocumentModal />
+      <PushToPrintModal />
+      <TogglePrntTaskStatusModal />
     </>
   );
 };

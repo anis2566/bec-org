@@ -1,58 +1,24 @@
-"use client";
-
-import { useTRPC } from "@/trpc/react";
-import { useQuery } from "@tanstack/react-query";
-
-import { StatCard } from "@workspace/ui/shared/stat-card";
 import {
-  UserRoundCheck,
-  UserRoundPen,
-  UserRoundX,
-  UsersRound,
-} from "lucide-react";
-import { StudentsOverview } from "../chart/students-overview";
-import { ThisMonthAdmmissionsLeavings } from "../chart/this-month-admissions-leavings";
-import { ThisMonthSalaries } from "../chart/this-month-salaries";
-import Loader from "@/components/loader";
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
+
+import { AdminDashboardView } from "../components/admin-dashboard-view";
 
 export const DashboardView = () => {
-  const trpc = useTRPC();
-
-  const { data, isLoading } = useQuery(trpc.dashboard.admin.queryOptions());
-
-  if (isLoading) return <Loader />;
-
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard
-          title="Total Students"
-          value={data?.totalStudent?.toString() || "0"}
-          icon={UsersRound}
-        />
-        <StatCard
-          title="Present Students"
-          value={data?.presentStudent?.toString() || "0"}
-          icon={UserRoundCheck}
-        />
-        <StatCard
-          title="Absent Students"
-          value={data?.absentStudent?.toString() || "0"}
-          icon={UserRoundX}
-        />
-        <StatCard
-          title="Total Teachers"
-          value={data?.totalTeacher?.toString() || "0"}
-          icon={UserRoundPen}
-        />
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <ThisMonthAdmmissionsLeavings
-          thisMonthAdmissionsLeavings={data?.thisMonthAdmissionsLeavings || []}
-        />
-        <ThisMonthSalaries thisMonthSalaries={data?.salariesByClass || []} />
-        <StudentsOverview studentsByClass={data?.studentsByClass || []} />
-      </div>
+      <Tabs defaultValue="admin" className="w-full">
+        <TabsList className="w-full rounded-xs mb-2 bg-muted">
+          <TabsTrigger value="admin">Admin</TabsTrigger>
+          <TabsTrigger value="account">Account</TabsTrigger>
+        </TabsList>
+        <TabsContent value="admin">
+          <AdminDashboardView />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

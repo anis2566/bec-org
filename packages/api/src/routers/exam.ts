@@ -59,7 +59,7 @@ export const examRouter = {
           },
         });
 
-        return { success: true, message: "Exam created" };
+        return { success: false, message: "Exam created" };
       } catch (error) {
         console.error("Error creating exam:", error);
         return { success: false, message: "Internal server error" };
