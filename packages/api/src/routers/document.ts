@@ -9,8 +9,15 @@ export const documentRouter = {
   createOne: adminProcedure
     .input(DocumentSchema)
     .mutation(async ({ ctx, input }) => {
-      const { type, name, deliveryDate, noOfCopy, classNameId, subjectId, userId } =
-        input;
+      const {
+        type,
+        name,
+        deliveryDate,
+        noOfCopy,
+        classNameId,
+        subjectId,
+        userId,
+      } = input;
 
       try {
         await ctx.db.document.create({
@@ -21,7 +28,7 @@ export const documentRouter = {
             noOfCopy: parseInt(noOfCopy),
             classNameId,
             subjectId,
-            userId
+            userId,
           },
         });
 
@@ -47,7 +54,7 @@ export const documentRouter = {
         classNameId,
         subjectId,
         type,
-        userId
+        userId,
       } = input;
 
       try {
@@ -72,7 +79,7 @@ export const documentRouter = {
             classNameId,
             subjectId,
             type,
-            userId
+            userId,
           },
         });
 
@@ -82,7 +89,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  toggleReceived: protectedProcedure
+  toggleReceived: adminProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const documentId = input;
@@ -113,7 +120,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  toggleFinished: protectedProcedure
+  toggleFinished: adminProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const documentId = input;
@@ -144,7 +151,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  pushToPrint: protectedProcedure
+  pushToPrint: adminProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const documentId = input;
@@ -220,7 +227,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const documentId = input;
 
     const documentData = await ctx.db.document.findUnique({
@@ -233,7 +240,7 @@ export const documentRouter = {
 
     return documentData;
   }),
-  getMany: protectedProcedure
+  getMany: adminProcedure
     .input(
       z.object({
         page: z.number(),

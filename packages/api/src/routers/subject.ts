@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure, protectedProcedure } from "../trpc";
+import { adminProcedure } from "../trpc";
 
 import { SubjectSchema } from "@workspace/utils/schemas";
 import { getLevelByClassName } from "@workspace/utils";
@@ -123,7 +123,7 @@ export const subjectRouter = {
       });
       return subjects;
     }),
-  getByLevel: protectedProcedure
+  getByLevel: adminProcedure
     .input(
       z.object({
         level: z.string(),
