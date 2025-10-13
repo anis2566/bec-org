@@ -30,6 +30,7 @@ export const documentRouter = {
             classNameId,
             subjectId,
             userId,
+            hasReceived: false,
           },
         });
 
