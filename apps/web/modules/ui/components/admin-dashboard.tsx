@@ -15,7 +15,7 @@ import { ThisMonthAdmmissionsLeavings } from "../chart/this-month-admissions-lea
 import { ThisMonthSalaries } from "../chart/this-month-salaries";
 import Loader from "@/components/loader";
 
-export const AdminDashboardView = () => {
+export const AdminDashboard = () => {
   const trpc = useTRPC();
 
   const { data, isLoading } = useQuery(trpc.dashboard.admin.queryOptions());
@@ -23,8 +23,8 @@ export const AdminDashboardView = () => {
   if (isLoading) return <Loader />;
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div className="space-y-6 w-full">
+      <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-4">
         <StatCard
           title="Total Students"
           value={data?.totalStudent?.toString() || "0"}

@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { adminProcedure, protectedProcedure } from "../trpc";
 
 import { ClassNameSchema } from "@workspace/utils/schemas";
 
@@ -99,7 +99,7 @@ export const classRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  forSelect: adminProcedure
+  forSelect: protectedProcedure
     .input(
       z.object({
         search: z.string().nullish(),

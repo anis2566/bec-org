@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { adminProcedure, protectedProcedure } from "../trpc";
 
 import { PRINT_TASK_STATUS } from "@workspace/utils/constant";
 
@@ -68,7 +68,7 @@ export const printTaskRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getMany: adminProcedure
+  getMany: protectedProcedure
     .input(
       z.object({
         page: z.number(),

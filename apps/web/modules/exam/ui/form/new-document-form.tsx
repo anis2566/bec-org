@@ -4,11 +4,7 @@ import { Send } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  useMutation,
-  useQueries,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useMutation, useQueries, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useTRPC } from "@/trpc/react";
@@ -69,15 +65,17 @@ export const NewDocumentForm = () => {
       subjectId: "",
       deliveryDate: "",
       noOfCopy: "",
+      userId: "",
     },
   });
 
   const classNameId = form.watch("classNameId");
 
-  const [{ data: classes }, { data: subjects }] = useQueries({
+  const [{ data: classes }, { data: subjects }, { data: users }] = useQueries({
     queries: [
       trpc.class.forSelect.queryOptions({ search: "" }),
       trpc.subject.getByClass.queryOptions(classNameId),
+      trpc.user.forSelect.queryOptions({ search: "" }),
     ],
   });
 
@@ -150,6 +148,17 @@ export const NewDocumentForm = () => {
             label="Number of Copy"
             disabled={isPending}
             type="number"
+          />
+          <FormSelect
+            form={form}
+            name="userId"
+            label="User"
+            placeholder="Select user"
+            options={(users ?? []).map((user) => ({
+              label: user.name || "",
+              value: user.id,
+            }))}
+            disabled={isPending}
           />
           <LoadingButton
             type="submit"

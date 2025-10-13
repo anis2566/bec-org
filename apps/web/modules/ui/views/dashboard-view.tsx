@@ -5,18 +5,22 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 
-import { AdminDashboardView } from "../components/admin-dashboard-view";
+import { AdminDashboard } from "../components/admin-dashboard";
+import { AccountDashboard } from "../components/account-dashboard";
 
 export const DashboardView = () => {
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="admin" className="w-full">
-        <TabsList className="w-full rounded-xs mb-2 bg-muted">
+      <Tabs defaultValue="admin">
+        <TabsList className="w-full max-w-fit rounded-xs mb-2 bg-muted">
           <TabsTrigger value="admin">Admin</TabsTrigger>
           <TabsTrigger value="account">Account</TabsTrigger>
         </TabsList>
         <TabsContent value="admin">
-          <AdminDashboardView />
+          <AdminDashboard />
+        </TabsContent>
+        <TabsContent value="account">
+          <AccountDashboard />
         </TabsContent>
       </Tabs>
     </div>

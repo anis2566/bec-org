@@ -141,6 +141,11 @@ export enum PRINT_TASK_STATUS {
   Printed = "Printed",
 }
 
+export enum TODO_STATUS  {
+  Pending = "Pending",
+  Completed = "Completed"
+};
+
 export const DEFAULT_PAGE = 1;
 export const DEFAULT_LIMIT = 5;
 export const DEFAULT_PAGE_SIZE = 5;

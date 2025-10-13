@@ -32,6 +32,9 @@ interface DocumentWithRelation extends Document {
   subject: {
     name: string;
   };
+  user: {
+    name: string | null;
+  };
 }
 
 interface HomeworkListProps {
@@ -42,7 +45,7 @@ export const DocumentList = ({ documents }: HomeworkListProps) => {
   const { onOpen } = useDeleteDocument();
   const { onOpen: onReceived } = useToggleReceived();
   const { onOpen: onFinished } = useToggleFinished();
-  const {onOpen: onPrint} = usePushToPrintTask()
+  const { onOpen: onPrint } = usePushToPrintTask();
 
   return (
     <Table>
@@ -57,6 +60,7 @@ export const DocumentList = ({ documents }: HomeworkListProps) => {
           <TableHead>Received</TableHead>
           <TableHead>Finished</TableHead>
           <TableHead>Printed</TableHead>
+          <TableHead>User</TableHead>
           <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -86,6 +90,7 @@ export const DocumentList = ({ documents }: HomeworkListProps) => {
                 {document.hasPrinted ? "Yes" : "No"}
               </Badge>
             </TableCell>
+            <TableCell>{document.user?.name}</TableCell>
             <TableCell>
               <ListActions>
                 <ListActionLink
@@ -106,9 +111,7 @@ export const DocumentList = ({ documents }: HomeworkListProps) => {
                 <ListActionButton
                   title="Push to Print"
                   icon={Printer}
-                  onClick={() =>
-                    onPrint(document.id)
-                  }
+                  onClick={() => onPrint(document.id)}
                 />
                 <ListActionButton
                   isDanger

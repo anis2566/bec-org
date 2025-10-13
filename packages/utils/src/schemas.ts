@@ -302,6 +302,13 @@ export const DocumentSchema = z.object({
   noOfCopy: requiredString,
   classNameId: requiredString,
   subjectId: requiredString,
+  userId: requiredString,
 });
 
 export type DocumentSchemaType = z.infer<typeof DocumentSchema>;
+
+export const TodoSchema = z.object({
+  text: requiredString,
+});
+
+export type TodoSchemaType = z.infer<typeof TodoSchema>;

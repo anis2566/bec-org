@@ -1,6 +1,10 @@
 import type { TRPCRouterRecord } from "@trpc/server";
-import z from "zod";
-import { endOfMonth, startOfMonth, getMonth, startOfDay, endOfDay } from "date-fns";
+import {
+  endOfMonth,
+  startOfMonth,
+  startOfDay,
+  endOfDay,
+} from "date-fns";
 
 import { adminProcedure } from "../trpc";
 import {
@@ -184,6 +188,249 @@ export const dashboardRouter = {
       studentsByClass: studentsByClassWithNames,
       thisMonthAdmissionsLeavings: MonthAdmissionsLeavingsChart,
       salariesByClass: formattedSalaries,
+    };
+  }),
+  account: adminProcedure.query(async ({ ctx }) => {
+    const currentMonth = Object.values(MONTH)[new Date().getMonth()];
+    const lastMonth = Object.values(MONTH)[new Date().getMonth() - 1];
+
+    const startDate = startOfDay(new Date());
+    const endDate = endOfDay(new Date());
+
+    const [
+      thisMonthSalaryCount,
+      thisMonthPaidSalaryCount,
+      lastMonthSalaryCount,
+      lastMonthPaidSalaryCount,
+      totalSalaryCount,
+      totalPaidSalaryCount,
+      thisMonthSalaries,
+      thisMonthPaidSalaries,
+      lastMonthSalaries,
+      lastMonthPaidSalaries,
+      overallSalaries,
+      overallPaidSalaries,
+      todaySalaries,
+      thisMonthUnpaidSalaries,
+      recentSalaries,
+      classesNames,
+    ] = await Promise.all([
+      ctx.db.salaryPayment.count({
+        where: {
+          month: currentMonth,
+          status: SALARY_STATUS.Present,
+        },
+      }),
+      ctx.db.salaryPayment.count({
+        where: {
+          month: currentMonth,
+          status: SALARY_STATUS.Present,
+          paymentStatus: SALARY_PAYMENT_STATUS.Paid,
+        },
+      }),
+      ctx.db.salaryPayment.count({
+        where: {
+          month: lastMonth,
+          status: SALARY_STATUS.Present,
+        },
+      }),
+      ctx.db.salaryPayment.count({
+        where: {
+          month: lastMonth,
+          status: SALARY_STATUS.Present,
+          paymentStatus: SALARY_PAYMENT_STATUS.Paid,
+        },
+      }),
+      ctx.db.salaryPayment.count({
+        where: {
+          status: SALARY_STATUS.Present,
+        },
+      }),
+      ctx.db.salaryPayment.count({
+        where: {
+          status: SALARY_STATUS.Present,
+          paymentStatus: SALARY_PAYMENT_STATUS.Paid,
+        },
+      }),
+      ctx.db.salaryPayment.groupBy({
+        by: ["className"],
+        where: {
+          month: currentMonth,
+          status: SALARY_STATUS.Present,
+        },
+        _count: {
+          _all: true,
+        },
+      }),
+      ctx.db.salaryPayment.groupBy({
+        by: ["className"],
+        where: {
+          month: currentMonth,
+          status: SALARY_STATUS.Present,
+          paymentStatus: SALARY_PAYMENT_STATUS.Paid,
+        },
+        _count: {
+          _all: true,
+        },
+      }),
+      ctx.db.salaryPayment.groupBy({
+        by: ["className"],
+        where: {
+          month: lastMonth,
+          status: SALARY_STATUS.Present,
+        },
+        _count: {
+          _all: true,
+        },
+      }),
+      ctx.db.salaryPayment.groupBy({
+        by: ["className"],
+        where: {
+          month: lastMonth,
+          status: SALARY_STATUS.Present,
+          paymentStatus: SALARY_PAYMENT_STATUS.Paid,
+        },
+        _count: {
+          _all: true,
+        },
+      }),
+      ctx.db.salaryPayment.groupBy({
+        by: ["className"],
+        where: {
+          status: SALARY_STATUS.Present,
+        },
+        _count: {
+          _all: true,
+        },
+      }),
+      ctx.db.salaryPayment.groupBy({
+        by: ["className"],
+        where: {
+          status: SALARY_STATUS.Present,
+          paymentStatus: SALARY_PAYMENT_STATUS.Paid,
+        },
+        _count: {
+          _all: true,
+        },
+      }),
+      ctx.db.salaryPayment.groupBy({
+        by: ["className"],
+        where: {
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+          status: SALARY_STATUS.Present,
+          paymentStatus: SALARY_PAYMENT_STATUS.Paid,
+        },
+        _count: {
+          _all: true,
+        },
+      }),
+      ctx.db.salaryPayment.groupBy({
+        by: ["className"],
+        where: {
+          month: currentMonth,
+          status: SALARY_STATUS.Present,
+          paymentStatus: SALARY_PAYMENT_STATUS.Unpaid,
+        },
+        _count: {
+          _all: true,
+        },
+      }),
+      ctx.db.salaryPayment.findMany({
+        where: {
+          createdAt: {
+            gte: startDate,
+            lte: endDate,
+          },
+          status: SALARY_STATUS.Present,
+          paymentStatus: SALARY_PAYMENT_STATUS.Paid,
+        },
+        include: {
+          student: {
+            select: {
+              studentId: true,
+              name: true,
+              className: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 5,
+      }),
+      ctx.db.className.findMany({
+        select: {
+          id: true,
+          name: true,
+        },
+        orderBy: {
+          position: "asc",
+        },
+      }),
+    ]);
+
+    const classes = classesNames.map((className) => className.name);
+
+    const thisMonthFormattedSalaries = classes.map((className) => ({
+      className,
+      total:
+        thisMonthSalaries.find((salary) => salary.className === className)
+          ?._count._all || 0,
+      paid:
+        thisMonthPaidSalaries.find((salary) => salary.className === className)
+          ?._count._all || 0,
+    }));
+
+    const todayFormattedSalaries = classes.map((className) => ({
+      className,
+      total:
+        todaySalaries.find((salary) => salary.className === className)?._count
+          ._all || 50,
+    }));
+
+    const thisMonthFormattedUnpaidSalaries = classes.map((className) => ({
+      className,
+      total:
+        thisMonthUnpaidSalaries.find((salary) => salary.className === className)
+          ?._count._all || 0,
+    }));
+
+    const lastMonthFormattedSalaries = classes.map((className) => ({
+      className,
+      total:
+        lastMonthSalaries.find((salary) => salary.className === className)
+          ?._count._all || 0,
+      paid:
+        lastMonthPaidSalaries.find((salary) => salary.className === className)
+          ?._count._all || 0,
+    }));
+
+    const overallFormattedSalaries = classes.map((className) => ({
+      className,
+      total:
+        overallSalaries.find((salary) => salary.className === className)?._count
+          ._all || 0,
+      paid:
+        overallPaidSalaries.find((salary) => salary.className === className)
+          ?._count._all || 0,
+    }));
+
+    return {
+      thisMonthSalaryCount,
+      thisMonthPaidSalaryCount,
+      lastMonthSalaryCount,
+      lastMonthPaidSalaryCount,
+      totalSalaryCount,
+      totalPaidSalaryCount,
+      thisMonthSalaries: thisMonthFormattedSalaries,
+      lastMonthSalaries: lastMonthFormattedSalaries,
+      overallSalaries: overallFormattedSalaries,
+      todaySalaries: todayFormattedSalaries,
+      thisMonthUnpaidSalaries: thisMonthFormattedUnpaidSalaries,
+      recentSalaries,
     };
   }),
 } satisfies TRPCRouterRecord;

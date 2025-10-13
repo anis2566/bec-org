@@ -21,7 +21,6 @@ import {
   LoadingButton,
 } from "@workspace/ui/shared/loadign-button";
 import { Form } from "@workspace/ui/components/form";
-import { FormCalendar } from "@workspace/ui/shared/form-calendar";
 import { DocumentSchema, DocumentSchemaType } from "@workspace/utils/schemas";
 import { DOCUMENT_TYPE } from "@workspace/utils/constant";
 import { FormInput } from "@workspace/ui/shared/form-input";
@@ -79,15 +78,17 @@ export const EditDocumentForm = ({ id }: EditDocumentFormProps) => {
       subjectId: "",
       deliveryDate: "",
       noOfCopy: "",
+      userId: "",
     },
   });
 
   const classNameId = form.watch("classNameId");
 
-  const [{ data: classes }, { data: subjects }] = useQueries({
+  const [{ data: classes }, { data: subjects }, { data: users }] = useQueries({
     queries: [
       trpc.class.forSelect.queryOptions({ search: "" }),
       trpc.subject.getByClass.queryOptions(classNameId),
+      trpc.user.forSelect.queryOptions({ search: "" }),
     ],
   });
 
@@ -100,9 +101,10 @@ export const EditDocumentForm = ({ id }: EditDocumentFormProps) => {
         subjectId: document.subjectId,
         deliveryDate: document.deliveryDate.toISOString(),
         noOfCopy: document.noOfCopy.toString(),
+        userId: document.userId,
       });
     }
-  }, [document, form, classes, subjects]);
+  }, [document, form, classes, subjects, users]);
 
   const onSubmit = (data: DocumentSchemaType) => {
     setButtonState("loading");
@@ -176,6 +178,17 @@ export const EditDocumentForm = ({ id }: EditDocumentFormProps) => {
             label="Number of Copy"
             disabled={isPending}
             type="number"
+          />
+          <FormSelect
+            form={form}
+            name="userId"
+            label="User"
+            placeholder="Select user"
+            options={(users ?? []).map((user) => ({
+              label: user.name || "",
+              value: user.id,
+            }))}
+            disabled={isPending}
           />
           <LoadingButton
             type="submit"

@@ -17,7 +17,7 @@ interface ListStatCardProps {
 
 export const StatCard = ({ title, value, icon: Icon }: ListStatCardProps) => {
   return (
-    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card px-2 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs">
+    <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs">
       <Card className="@container/card rounded-xs p-3">
         <CardHeader className="p-0">
           <CardDescription>{title}</CardDescription>

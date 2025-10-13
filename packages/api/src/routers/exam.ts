@@ -23,8 +23,10 @@ export const examRouter = {
       } = input;
 
       try {
-        const total =
-          parseInt(cq ?? "0") + parseInt(mcq ?? "0") + parseInt(written ?? "0");
+        const numberCq = cq ? parseInt(cq) : 0;
+        const numberMcq = mcq ? parseInt(mcq) : 0;
+        const numberWritten = written ? parseInt(written) : 0;
+        const total = numberCq + numberMcq + numberWritten;
 
         const batch = await ctx.db.batch.findUnique({
           where: {
@@ -52,14 +54,14 @@ export const examRouter = {
             classNameId,
             examCategoryId,
             date: new Date(date),
-            cq: cq ? parseInt(cq) : null,
-            mcq: mcq ? parseInt(mcq) : null,
-            written: written ? parseInt(written) : null,
+            cq: numberCq,
+            mcq: numberMcq,
+            written: numberWritten,
             total,
           },
         });
 
-        return { success: false, message: "Exam created" };
+        return { success: true, message: "Exam created" };
       } catch (error) {
         console.error("Error creating exam:", error);
         return { success: false, message: "Internal server error" };

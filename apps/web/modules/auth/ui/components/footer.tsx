@@ -15,7 +15,7 @@ interface FooterProps {
 export const Footer = ({ type }: FooterProps) => {
   return (
     <FieldGroup>
-      <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card">
+      <FieldSeparator className="*:data-[slot=field-separator-content]:bg-card mt-2">
         Or continue with
       </FieldSeparator>
       <Field className="grid grid-cols-2 gap-4">

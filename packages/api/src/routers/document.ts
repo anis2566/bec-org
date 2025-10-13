@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { adminProcedure, protectedProcedure } from "../trpc";
 
 import { DocumentSchema } from "@workspace/utils/schemas";
 
@@ -9,7 +9,7 @@ export const documentRouter = {
   createOne: adminProcedure
     .input(DocumentSchema)
     .mutation(async ({ ctx, input }) => {
-      const { type, name, deliveryDate, noOfCopy, classNameId, subjectId } =
+      const { type, name, deliveryDate, noOfCopy, classNameId, subjectId, userId } =
         input;
 
       try {
@@ -21,6 +21,7 @@ export const documentRouter = {
             noOfCopy: parseInt(noOfCopy),
             classNameId,
             subjectId,
+            userId
           },
         });
 
@@ -46,6 +47,7 @@ export const documentRouter = {
         classNameId,
         subjectId,
         type,
+        userId
       } = input;
 
       try {
@@ -70,6 +72,7 @@ export const documentRouter = {
             classNameId,
             subjectId,
             type,
+            userId
           },
         });
 
@@ -79,7 +82,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  toggleReceived: adminProcedure
+  toggleReceived: protectedProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const documentId = input;
@@ -110,7 +113,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  toggleFinished: adminProcedure
+  toggleFinished: protectedProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const documentId = input;
@@ -141,7 +144,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  pushToPrint: adminProcedure
+  pushToPrint: protectedProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const documentId = input;
@@ -217,7 +220,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const documentId = input;
 
     const documentData = await ctx.db.document.findUnique({
@@ -230,7 +233,7 @@ export const documentRouter = {
 
     return documentData;
   }),
-  getMany: adminProcedure
+  getMany: protectedProcedure
     .input(
       z.object({
         page: z.number(),
@@ -293,6 +296,11 @@ export const documentRouter = {
               },
             },
             subject: {
+              select: {
+                name: true,
+              },
+            },
+            user: {
               select: {
                 name: true,
               },
