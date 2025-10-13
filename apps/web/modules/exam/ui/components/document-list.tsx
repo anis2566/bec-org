@@ -111,7 +111,9 @@ export const DocumentList = ({ documents }: HomeworkListProps) => {
                 <ListActionButton
                   title="Push to Print"
                   icon={Printer}
-                  onClick={() => onPrint(document.id)}
+                  onClick={() =>
+                    onPrint(document.id, document.noOfCopy.toString())
+                  }
                 />
                 <ListActionButton
                   isDanger

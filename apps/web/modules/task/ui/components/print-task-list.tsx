@@ -1,6 +1,6 @@
 "use client";
 
-import { RefreshCcw, Trash2 } from "lucide-react";
+import { Copy, RefreshCcw, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 import { Document, PrintTask } from "@workspace/db";
@@ -19,6 +19,8 @@ import { Badge } from "@workspace/ui/components/badge";
 
 import { PRINT_TASK_STATUS } from "@workspace/utils/constant";
 import { useDeletePrintTask, useTogglePrintTask } from "@/hooks/use-print-task";
+import { Button } from "@workspace/ui/components/button";
+import { toast } from "sonner";
 
 interface DocumentWithRelation extends Document {
   className: {
@@ -41,12 +43,18 @@ export const PrintTaskList = ({ tasks }: HomeworkListProps) => {
   const { onOpen } = useDeletePrintTask();
   const { onOpen: onToggle } = useTogglePrintTask();
 
+  const handleCopy = (path: string) => {
+    navigator.clipboard.writeText(path);
+    toast.success("Copied to clipboard");
+  };
+
   return (
     <Table>
       <TableHeader>
         <TableRow className="bg-background/60">
           <TableHead>Type</TableHead>
           <TableHead>Name</TableHead>
+          <TableHead>Path</TableHead>
           <TableHead>Subject</TableHead>
           <TableHead>Class</TableHead>
           <TableHead>D. Date</TableHead>
@@ -60,6 +68,18 @@ export const PrintTaskList = ({ tasks }: HomeworkListProps) => {
           <TableRow key={task.id}>
             <TableCell>{task.document.type}</TableCell>
             <TableCell>{task.document.name}</TableCell>
+            <TableCell>
+              <div className="flex items-center gap-x-1">
+                <span className="max-w-[100px] truncate">{task?.path}</span>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleCopy(task?.path || "")}
+                >
+                  <Copy />
+                </Button>
+              </div>
+            </TableCell>
             <TableCell>{task.document.subject.name}</TableCell>
             <TableCell>{task.document.className.name}</TableCell>
             <TableCell>

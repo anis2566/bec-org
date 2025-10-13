@@ -41,6 +41,7 @@ import { MarkAsPresentModal } from "@/modules/student/ui/modal/mark-as-present-m
 import { CreateSubjectModal } from "@/modules/subject/ui/modal/create-subject-modal";
 import { DeleteSubjectModal } from "@/modules/subject/ui/modal/delete-subject-modal";
 import { EditSubjectModal } from "@/modules/subject/ui/modal/edit-subject-modal";
+import { DeletePrintTaskModal } from "@/modules/task/ui/modal/delete-print-task-modal";
 import { TogglePrntTaskStatusModal } from "@/modules/task/ui/modal/toggle-status-modal";
 import { AdvanceStatusModal } from "@/modules/teacher-advance/ui/modal/advance-status-modal";
 import { DeleteTeacherPaymentModal } from "@/modules/teacher-payment/ui/modal/delete-teacher-payment-modal";
@@ -98,6 +99,7 @@ export const ModalProvider = () => {
       <PushToDocumentModal />
       <PushToPrintModal />
       <TogglePrntTaskStatusModal />
+      <DeletePrintTaskModal />
     </>
   );
 };

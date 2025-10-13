@@ -153,9 +153,15 @@ export const documentRouter = {
       }
     }),
   pushToPrint: adminProcedure
-    .input(z.string())
+    .input(
+      z.object({
+        documentId: z.string(),
+        noOfCopy: z.string(),
+        path: z.string().optional(),
+      })
+    )
     .mutation(async ({ input, ctx }) => {
-      const documentId = input;
+      const { documentId, noOfCopy, path } = input;
 
       try {
         const existingDocument = await ctx.db.document.findUnique({
@@ -185,11 +191,13 @@ export const documentRouter = {
             },
             data: {
               hasPrinted: true,
+              noOfCopy: parseInt(noOfCopy),
             },
           });
           await ctx.db.printTask.create({
             data: {
               documentId,
+              path,
             },
           });
         });

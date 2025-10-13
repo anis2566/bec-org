@@ -51,13 +51,16 @@ export const useToggleFinished = create<ToggleFinishedState>((set) => ({
 interface PushToPrintTaskState {
   isOpen: boolean;
   documentId: string;
-  onOpen: (id: string) => void;
+  noOfCopy: string;
+  onOpen: (id: string, noOfCopy: string) => void;
   onClose: () => void;
 }
 
 export const usePushToPrintTask = create<PushToPrintTaskState>((set) => ({
   isOpen: false,
   documentId: "",
-  onOpen: (id: string) => set({ isOpen: true, documentId: id }),
-  onClose: () => set({ isOpen: false, documentId: "" }),
+  noOfCopy: "",
+  onOpen: (id: string, noOfCopy: string) =>
+    set({ isOpen: true, documentId: id, noOfCopy }),
+  onClose: () => set({ isOpen: false, documentId: "", noOfCopy: "" }),
 }));

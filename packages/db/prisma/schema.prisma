@@ -703,6 +703,7 @@ model Document {
 model PrintTask {
   id     String @id @default(auto()) @map("_id") @db.ObjectId
   status String @default("Pending")
+  path   String?
 
   documentId String   @db.ObjectId
   document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
