@@ -4,6 +4,7 @@ import z from "zod";
 import { adminProcedure, protectedProcedure } from "../trpc";
 
 import { PRINT_TASK_STATUS } from "@workspace/utils/constant";
+import { endOfDay, startOfDay } from "date-fns";
 
 export const printTaskRouter = {
   toggleStatus: adminProcedure
@@ -85,6 +86,9 @@ export const printTaskRouter = {
       const { page, limit, sort, classNameId, subjectId, date, type, status } =
         input;
 
+      const startOfTheDay = startOfDay(date || new Date());
+      const endOfTheDay = endOfDay(date || new Date());
+
       const [tasks, totalCount] = await Promise.all([
         ctx.db.printTask.findMany({
           where: {
@@ -108,7 +112,10 @@ export const printTaskRouter = {
             }),
             ...(date && {
               document: {
-                deliveryDate: new Date(date),
+                deliveryDate: {
+                  gte: startOfTheDay,
+                  lte: endOfTheDay,
+                },
               },
             }),
           },

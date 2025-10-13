@@ -4,6 +4,7 @@ import z from "zod";
 import { adminProcedure, protectedProcedure } from "../trpc";
 
 import { DocumentSchema } from "@workspace/utils/schemas";
+import { endOfDay, startOfDay } from "date-fns";
 
 export const documentRouter = {
   createOne: adminProcedure
@@ -273,6 +274,9 @@ export const documentRouter = {
       const booleanHasFinished = hasFinished === "true" ? true : undefined;
       const booleanHasPrinted = hasPrinted === "true" ? true : false;
 
+      const startOfTheDay = startOfDay(date || new Date());
+      const endOfTheDay = endOfDay(date || new Date());
+
       const [documents, totalCount] = await Promise.all([
         ctx.db.document.findMany({
           where: {
@@ -287,7 +291,10 @@ export const documentRouter = {
               subjectId,
             }),
             ...(date && {
-              deliveryDate: new Date(date),
+              deliveryDate: {
+                gte: startOfTheDay,
+                lte: endOfTheDay,
+              },
             }),
             ...(hasReceived && {
               hasReceived: booleanHasReceived,
