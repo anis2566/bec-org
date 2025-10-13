@@ -7,19 +7,12 @@ import { initAuth } from "@workspace/auth";
 
 import { env } from "../env";
 
-const baseUrl =
-  env.VERCEL_ENV === "production"
-    ? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
-    : env.VERCEL_ENV === "preview"
-      ? `https://${env.VERCEL_URL}`
-      : "http://localhost:3000";
-
 export const auth = initAuth({
-  baseUrl,
-  productionUrl: `https://${env.VERCEL_PROJECT_PRODUCTION_URL ?? "turbo.t3.gg"}`,
+  baseUrl: `http://localhost:3000`,
+  productionUrl: `https://bec-xi.vercel.app`,
   secret: env.AUTH_SECRET,
 });
 
 export const getSession = cache(async () =>
-  auth.api.getSession({ headers: await headers() }),
+  auth.api.getSession({ headers: await headers() })
 );
