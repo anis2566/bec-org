@@ -35,11 +35,32 @@ export const FilterCalendar = ({
   const isMobile = useIsMobile();
 
   const getDisabledDates = (date: Date) => {
-    if (disableFuture && date > new Date()) return true;
-    if (disablePast && date < new Date()) return true;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (disableFuture && date > today) return true;
+    if (disablePast && date < today) return true;
     if (minDate && date < minDate) return true;
     if (maxDate && date > maxDate) return true;
     return false;
+  };
+
+  const handleDateChange = (date: Date | undefined) => {
+    if (date) {
+      // Normalize the date to avoid timezone issues
+      const normalizedDate = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate(),
+        12,
+        0,
+        0,
+        0
+      );
+      onChange(normalizedDate);
+    } else {
+      onChange(undefined);
+    }
   };
 
   return (
@@ -53,7 +74,7 @@ export const FilterCalendar = ({
             !showInMobile && isMobile && "hidden",
             className
           )}
-          disabled={disabled} 
+          disabled={disabled}
         >
           {value ? format(value, "PPP") : <span>{placeholder}</span>}
           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -63,7 +84,7 @@ export const FilterCalendar = ({
         <Calendar
           mode="single"
           selected={value}
-          onSelect={onChange}
+          onSelect={handleDateChange}
           disabled={getDisabledDates}
           captionLayout="dropdown"
           initialFocus
