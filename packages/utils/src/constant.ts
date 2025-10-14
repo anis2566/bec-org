@@ -133,7 +133,7 @@ export enum EXAM_STATUS {
 
 export enum DOCUMENT_TYPE {
   Question = "Question",
-  Sheet = "Sheet"
+  Sheet = "Sheet",
 }
 
 export enum PRINT_TASK_STATUS {
@@ -141,10 +141,20 @@ export enum PRINT_TASK_STATUS {
   Printed = "Printed",
 }
 
-export enum TODO_STATUS  {
+export enum TODO_STATUS {
   Pending = "Pending",
-  Completed = "Completed"
-};
+  Completed = "Completed",
+}
+
+export enum ROLE {
+  User = "User",
+  "Office Assistant" = "Office Assistant",
+  Management = "Management",
+  HR = "HR",
+  Accountant = "Accountant",
+  "Computer Operator" = "Computer Operator",
+  Admin = "Admin",
+}
 
 export const DEFAULT_PAGE = 1;
 export const DEFAULT_LIMIT = 5;
@@ -321,3 +331,68 @@ export const secondaryLevels = [
 ];
 
 export const higherSecondaryLevels = ["HSC 1st Year", "HSC 2nd Year"];
+
+export const modules = [
+  {
+    name: "Dashboard",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Academic",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Student",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Attendance",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Fee",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Homework",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Teacher",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Task",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Result",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Income",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Expense",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "SMS",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "RoomHouses",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Utils",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Fees",
+    actions: ["create", "read", "update", "delete"],
+  },
+];
+
+export const actions = ["create", "read", "update", "delete"];

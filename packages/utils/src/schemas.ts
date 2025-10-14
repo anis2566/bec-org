@@ -312,3 +312,19 @@ export const TodoSchema = z.object({
 });
 
 export type TodoSchemaType = z.infer<typeof TodoSchema>;
+
+export const RoleSchema = z.object({
+  name: requiredString,
+  description: z.string().optional(),
+});
+
+export type RoleSchemaType = z.infer<typeof RoleSchema>;
+
+export const PermissionSchema = z.object({
+  name: requiredString,
+  description: z.string().optional(),
+  module: requiredString,
+  actions: z.array(z.string()).min(1, { message: "required" }),
+});
+
+export type PermissionSchemaType = z.infer<typeof PermissionSchema>;

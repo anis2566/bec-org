@@ -19,14 +19,14 @@ export function middleware(request: NextRequest) {
 
   // Check for Better Auth session token cookie
   // Better Auth uses this cookie name by default
-  const sessionToken = request.cookies.get("better-auth.session_token")?.value;
+  // const sessionToken = request.cookies.get("better-auth.session_token")?.value;
 
-  // If no session token exists, redirect to sign-in
-  if (!sessionToken) {
-    const signInUrl = new URL("/sign-in", request.url);
-    signInUrl.searchParams.set("redirect", pathname);
-    return NextResponse.redirect(signInUrl);
-  }
+  // // If no session token exists, redirect to sign-in
+  // if (!sessionToken) {
+  //   const signInUrl = new URL("/sign-in", request.url);
+  //   signInUrl.searchParams.set("redirect", pathname);
+  //   return NextResponse.redirect(signInUrl);
+  // }
 
   // If session token exists, allow access
   return NextResponse.next();

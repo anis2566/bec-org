@@ -48,6 +48,8 @@ import {
   Files,
   ClipboardList,
   Printer,
+  UserCog,
+  Key,
 } from "lucide-react";
 
 import {
@@ -469,9 +471,15 @@ const data = {
   ],
   rolePermission: [
     {
-      title: "Role & Permission",
-      url: "",
-      icon: Wallpaper,
+      title: "Role",
+      url: "/role",
+      icon: UserCog,
+      items: [],
+    },
+    {
+      title: "Permission",
+      url: "/permission",
+      icon: Key,
       items: [],
     },
   ],

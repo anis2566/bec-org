@@ -24,6 +24,7 @@ interface FormInputProps<T extends FieldValues> {
     label: string;
     value: string;
   }[];
+  onClick?: (option: string) => void;
 }
 
 export function FormSelect<T extends FieldValues>({
@@ -33,6 +34,7 @@ export function FormSelect<T extends FieldValues>({
   placeholder,
   options,
   disabled = false,
+  onClick,
 }: FormInputProps<T>) {
   return (
     <Controller
@@ -42,7 +44,10 @@ export function FormSelect<T extends FieldValues>({
         <FormItem>
           <FormLabel>{label}</FormLabel>
           <Select
-            onValueChange={field.onChange}
+            onValueChange={value => {
+              field.onChange(value);
+              onClick?.(value);
+            }}
             defaultValue={field.value}
             disabled={disabled}
             value={field.value}

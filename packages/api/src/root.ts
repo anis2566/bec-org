@@ -31,6 +31,8 @@ import { documentRouter } from "./routers/document";
 import { printTaskRouter } from "./routers/print-task";
 import { todoRouter } from "./routers/todo";
 import { userRouter } from "./routers/user";
+import { roleRouter } from "./routers/role";
+import { permissionRouter } from "./routers/permission";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -63,7 +65,9 @@ export const appRouter = createTRPCRouter({
   document: documentRouter,
   printTask: printTaskRouter,
   todo: todoRouter,
-  user: userRouter
+  user: userRouter,
+  role: roleRouter,
+  permission: permissionRouter
 });
 
 // export type definition of API

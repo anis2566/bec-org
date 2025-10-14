@@ -12,20 +12,57 @@ datasource db {
 model User {
   id            String  @id @default(auto()) @map("_id") @db.ObjectId
   name          String?
-  email         String? @unique
+  email         String?
   emailVerified Boolean @default(false)
   password      String?
   image         String?
-  role          String  @default("User")
+  role          String  @default("User") // Better Auth's simple role field
   status        String  @default("Pending")
   phone         String?
 
-  accounts Account[]
-  sessions Session[]
+  // RBAC System - for granular permissions
+  roleIds String[] @db.ObjectId
+  roles   Role[]   @relation(fields: [roleIds], references: [id])
+
+  accounts  Account[]
+  sessions  Session[]
   documents Document[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
+
+model Role {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String  @unique
+  description String?
+
+  userIds String[] @db.ObjectId
+  users   User[]   @relation(fields: [userIds], references: [id])
+
+  permissionIds String[]     @db.ObjectId
+  permissions   Permission[] @relation(fields: [permissionIds], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Permission {
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
+  name        String  @unique
+  description String?
+  module      String
+  action      String
+
+  roleIds String[] @db.ObjectId
+  roles   Role[]   @relation(fields: [roleIds], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([module, action])
 }
 
 model Account {
@@ -701,9 +738,9 @@ model Document {
 }
 
 model PrintTask {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  status String @default("Pending")
-  path   String?
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  status            String  @default("Pending")
+  path              String?
   correctionPrinted Boolean @default(false)
 
   documentId String   @db.ObjectId
@@ -713,12 +750,11 @@ model PrintTask {
   updatedAt DateTime @updatedAt
 }
 
-
 model Todo {
-  id            String          @id @default(auto()) @map("_id") @db.ObjectId
-  text          String
-  status        String          @default("Pending")
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  text   String
+  status String @default("Pending")
 
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

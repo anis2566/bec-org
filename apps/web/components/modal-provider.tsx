@@ -30,6 +30,11 @@ import { DeleteHouseModal } from "@/modules/house/ui/modal/delete-house-modal";
 import { CreateInstituteModal } from "@/modules/institute/ui/modal/create-institute-modal";
 import { DeleteInstituteModal } from "@/modules/institute/ui/modal/delete-institute-modal";
 import { EditInstituteModal } from "@/modules/institute/ui/modal/edit-institute-modal";
+import { CreatePermissionModal } from "@/modules/permission/ui/modal/create-permission-modal";
+import { EditPermissionModal } from "@/modules/permission/ui/modal/edit-permission-modal";
+import { CreateRoleModal } from "@/modules/role/ui/modal/create-role-modal";
+import { DeleteRoleModal } from "@/modules/role/ui/modal/delete-role-modal";
+import { EditRoleModal } from "@/modules/role/ui/modal/edit-role-modal";
 import { DeleteRoomModal } from "@/modules/room/ui/modal/delete-room-modal";
 import { CreateSalaryFeeModal } from "@/modules/salary-fee/ui/modal/create-salary-fee-modal";
 import { DeleteSalaryFeeModal } from "@/modules/salary-fee/ui/modal/delete-salary-fee-modal";
@@ -100,6 +105,11 @@ export const ModalProvider = () => {
       <PushToPrintModal />
       <TogglePrntTaskStatusModal />
       <DeletePrintTaskModal />
+      <CreateRoleModal />
+      <EditRoleModal />
+      <DeleteRoleModal />
+      <CreatePermissionModal />
+      <EditPermissionModal />
     </>
   );
 };
