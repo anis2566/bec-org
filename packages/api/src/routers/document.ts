@@ -348,7 +348,10 @@ export const documentRouter = {
               subjectId,
             }),
             ...(date && {
-              deliveryDate: new Date(date),
+              deliveryDate: {
+                gte: startOfTheDay,
+                lte: endOfTheDay,
+              },
             }),
             ...(hasReceived && {
               hasReceived: booleanHasReceived,

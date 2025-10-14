@@ -87,7 +87,6 @@ export const FilterCalendar = ({
           onSelect={handleDateChange}
           disabled={getDisabledDates}
           captionLayout="dropdown"
-          initialFocus
         />
       </PopoverContent>
     </Popover>
