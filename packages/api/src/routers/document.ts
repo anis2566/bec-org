@@ -303,9 +303,13 @@ export const documentRouter = {
 
       // Build the where clause to be reused
       const whereClause = {
-        ...(booleanHasPrinted !== undefined && {
-          hasPrinted: booleanHasPrinted,
-        }),
+        ...(booleanHasPrinted !== undefined
+          ? {
+              hasPrinted: booleanHasPrinted,
+            }
+          : {
+              hasPrinted: false,
+            }),
         ...(type && {
           type,
         }),
