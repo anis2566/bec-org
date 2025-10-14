@@ -141,6 +141,7 @@ export const NewDocumentForm = () => {
             label="Delivery Date"
             showTime
             timeFormat="12h"
+            disablePast
           />
           <FormInput
             form={form}

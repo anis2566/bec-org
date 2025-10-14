@@ -69,7 +69,7 @@ export const printTaskRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getMany: protectedProcedure
+  getMany: adminProcedure
     .input(
       z.object({
         page: z.number(),

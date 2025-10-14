@@ -142,6 +142,13 @@ export function FormDateTimePicker<T extends FieldValues>({
     return format(date, "PPP");
   };
 
+  // Helper function to normalize date to start of day for comparison
+  const normalizeDate = (date: Date) => {
+    const normalized = new Date(date);
+    normalized.setHours(0, 0, 0, 0);
+    return normalized;
+  };
+
   return (
     <Controller
       control={form.control}
@@ -176,8 +183,13 @@ export function FormDateTimePicker<T extends FieldValues>({
                 }
                 disabled={(date) => {
                   if (disabled) return true;
-                  if (disableFuture && date > new Date()) return true;
-                  if (disablePast && date < new Date()) return true;
+                  
+                  const today = normalizeDate(new Date());
+                  const checkDate = normalizeDate(date);
+                  
+                  if (disableFuture && checkDate > today) return true;
+                  if (disablePast && checkDate < today) return true;
+                  
                   return false;
                 }}
               />
