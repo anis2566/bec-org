@@ -279,39 +279,59 @@ export const documentRouter = {
         hasPrinted,
       } = input;
 
-      const booleanHasReceived = hasReceived === "true" ? true : undefined;
-      const booleanHasFinished = hasFinished === "true" ? true : undefined;
-      const booleanHasPrinted = hasPrinted === "true" ? true : false;
+      const booleanHasReceived =
+        hasReceived === "true"
+          ? true
+          : hasReceived === "false"
+            ? false
+            : undefined;
+      const booleanHasFinished =
+        hasFinished === "true"
+          ? true
+          : hasFinished === "false"
+            ? false
+            : undefined;
+      const booleanHasPrinted =
+        hasPrinted === "true"
+          ? true
+          : hasPrinted === "false"
+            ? false
+            : undefined;
 
       const startOfTheDay = startOfDay(date || new Date());
       const endOfTheDay = endOfDay(date || new Date());
 
+      // Build the where clause to be reused
+      const whereClause = {
+        ...(booleanHasPrinted !== undefined && {
+          hasPrinted: booleanHasPrinted,
+        }),
+        ...(type && {
+          type,
+        }),
+        ...(classNameId && {
+          classNameId,
+        }),
+        ...(subjectId && {
+          subjectId,
+        }),
+        ...(date && {
+          deliveryDate: {
+            gte: startOfTheDay,
+            lte: endOfTheDay,
+          },
+        }),
+        ...(booleanHasReceived !== undefined && {
+          hasReceived: booleanHasReceived,
+        }),
+        ...(booleanHasFinished !== undefined && {
+          hasFinished: booleanHasFinished,
+        }),
+      };
+
       const [documents, totalCount] = await Promise.all([
         ctx.db.document.findMany({
-          where: {
-            hasPrinted: booleanHasPrinted,
-            ...(type && {
-              type,
-            }),
-            ...(classNameId && {
-              classNameId,
-            }),
-            ...(subjectId && {
-              subjectId,
-            }),
-            ...(date && {
-              deliveryDate: {
-                gte: startOfTheDay,
-                lte: endOfTheDay,
-              },
-            }),
-            ...(hasReceived && {
-              hasReceived: booleanHasReceived,
-            }),
-            ...(hasFinished && {
-              hasFinished: booleanHasFinished,
-            }),
-          },
+          where: whereClause,
           include: {
             className: {
               select: {
@@ -336,30 +356,7 @@ export const documentRouter = {
           skip: (page - 1) * limit,
         }),
         ctx.db.document.count({
-          where: {
-            hasPrinted: booleanHasPrinted,
-            ...(type && {
-              type,
-            }),
-            ...(classNameId && {
-              classNameId,
-            }),
-            ...(subjectId && {
-              subjectId,
-            }),
-            ...(date && {
-              deliveryDate: {
-                gte: startOfTheDay,
-                lte: endOfTheDay,
-              },
-            }),
-            ...(hasReceived && {
-              hasReceived: booleanHasReceived,
-            }),
-            ...(hasFinished && {
-              hasFinished: booleanHasFinished,
-            }),
-          },
+          where: whereClause,
         }),
       ]);
 
