@@ -2,13 +2,13 @@ import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 import { format } from "date-fns";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { AttendanceSchema } from "@workspace/utils/schemas";
 import { MONTH } from "@workspace/utils/constant";
 
 export const studentAttendanceRouter = {
-  createMany: adminProcedure
+  createMany: permissionProcedure("student", "create")
     .input(AttendanceSchema)
     .mutation(async ({ input, ctx }) => {
       const { attendances, batchId, date } = input;
@@ -82,7 +82,7 @@ export const studentAttendanceRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateMany: adminProcedure
+  updateMany: permissionProcedure("student", "update")
     .input(
       z.object({
         attendances: AttendanceSchema.shape.attendances,
@@ -137,7 +137,7 @@ export const studentAttendanceRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("student", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const attendanceId = input;
@@ -161,7 +161,7 @@ export const studentAttendanceRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const attendanceId = input;
 
     const attendance = await ctx.db.attendanceGroup.findUnique({
@@ -195,7 +195,7 @@ export const studentAttendanceRouter = {
 
     return attendance;
   }),
-  getByStudent: adminProcedure
+  getByStudent: protectedProcedure
     .input(
       z.object({
         studentId: z.string(),
@@ -228,7 +228,7 @@ export const studentAttendanceRouter = {
         totalCount,
       };
     }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("student", "read")
     .input(
       z.object({
         page: z.number(),

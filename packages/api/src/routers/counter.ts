@@ -1,12 +1,12 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { CounterSchema } from "@workspace/utils/schemas";
 
 export const counterRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("counter", "create")
     .input(CounterSchema)
     .mutation(async ({ input, ctx }) => {
       const { type } = input;
@@ -24,7 +24,7 @@ export const counterRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("counter", "update")
     .input(
       z.object({
         ...CounterSchema.shape,
@@ -70,7 +70,7 @@ export const counterRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("counter", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const counterId = input;
@@ -94,7 +94,7 @@ export const counterRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getForAdmission: adminProcedure
+  getForAdmission: protectedProcedure
     .input(
       z.object({
         classNameId: z.string().nullish(),
@@ -131,14 +131,14 @@ export const counterRouter = {
         count: counterData.value + 1,
       };
     }),
-  getForTeacher: adminProcedure.query(async ({ ctx }) => {
+  getForTeacher: protectedProcedure.query(async ({ ctx }) => {
     const counterData = await ctx.db.counter.findUnique({
       where: {
         type: "Teacher",
       },
     });
 
-    console.log(counterData)
+    console.log(counterData);
 
     if (!counterData) {
       return { count: null };
@@ -148,7 +148,7 @@ export const counterRouter = {
       count: counterData.value + 1,
     };
   }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const counterId = input;
 
     const counterData = await ctx.db.counter.findUnique({
@@ -161,7 +161,7 @@ export const counterRouter = {
 
     return counterData;
   }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("counter", "read")
     .input(
       z.object({
         page: z.number(),

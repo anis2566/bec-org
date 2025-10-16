@@ -1,13 +1,17 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import {
+  adminProcedure,
+  permissionProcedure,
+  protectedProcedure,
+} from "../trpc";
 
 import { TeacherSchema } from "@workspace/utils/schemas";
 import { splitTimeRange, TEACHER_STATUS } from "@workspace/utils/constant";
 
 export const teacherRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("teacher", "create")
     .input(TeacherSchema)
     .mutation(async ({ input, ctx }) => {
       try {
@@ -67,7 +71,7 @@ export const teacherRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("teacher", "update")
     .input(
       z.object({
         ...TeacherSchema.shape,
@@ -124,7 +128,7 @@ export const teacherRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("teacher", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const teacherId = input;
@@ -148,7 +152,7 @@ export const teacherRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  forSelect: adminProcedure
+  forSelect: protectedProcedure
     .input(
       z.object({
         name: z.string().nullish(),
@@ -182,7 +186,7 @@ export const teacherRouter = {
         teachers,
       };
     }),
-  getByAvailablity: adminProcedure
+  getByAvailablity: protectedProcedure
     .input(
       z.object({
         days: z.array(z.string()),
@@ -228,28 +232,30 @@ export const teacherRouter = {
 
       return teachers;
     }),
-  getByBatch: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
-    const batchId = input;
+  getByBatch: protectedProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      const batchId = input;
 
-    const teachers = await ctx.db.teacher.findMany({
-      // where: {
-      //   classes: {
-      //     some: {
-      //       batchId,
-      //     },
-      //   },
-      // },
-      select: {
-        id: true,
-        name: true,
-        teacherId: true,
-        imageUrl: true,
-      },
-    });
+      const teachers = await ctx.db.teacher.findMany({
+        where: {
+          BatchClass: {
+            some: {
+              batchId,
+            },
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          teacherId: true,
+          imageUrl: true,
+        },
+      });
 
-    return teachers;
-  }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+      return teachers;
+    }),
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const teacherId = input;
 
     const teacherData = await ctx.db.teacher.findUnique({
@@ -265,7 +271,7 @@ export const teacherRouter = {
 
     return teacherData;
   }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("teacher", "read")
     .input(
       z.object({
         page: z.number(),

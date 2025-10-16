@@ -1,12 +1,15 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import {
+  permissionProcedure,
+  protectedProcedure,
+} from "../trpc";
 
 import { SalaryFeeSchema } from "@workspace/utils/schemas";
 
 export const salaryFeeRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("fee_utils", "create")
     .input(SalaryFeeSchema)
     .mutation(async ({ input, ctx }) => {
       const { classNameId, amount, group, type } = input;
@@ -35,7 +38,7 @@ export const salaryFeeRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("fee_utils", "update")
     .input(
       z.object({
         ...SalaryFeeSchema.shape,
@@ -70,7 +73,7 @@ export const salaryFeeRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("fee_utils", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const feeId = input;
@@ -94,7 +97,7 @@ export const salaryFeeRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getForAdmission: adminProcedure
+  getForAdmission: protectedProcedure
     .input(
       z.object({
         classNameId: z.string().nullish(),
@@ -125,7 +128,7 @@ export const salaryFeeRouter = {
         fee: feeData.amount,
       };
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const feeId = input;
 
     const feeData = await ctx.db.salaryFee.findUnique({
@@ -138,7 +141,7 @@ export const salaryFeeRouter = {
 
     return feeData;
   }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("fee_utils", "read")
     .input(
       z.object({
         page: z.number(),

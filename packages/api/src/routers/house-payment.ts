@@ -1,13 +1,19 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import {
+  allPermissionsProcedure,
+  protectedProcedure,
+} from "../trpc";
 
 import { HousePaymentSchema } from "@workspace/utils/schemas";
 import { MONTH } from "@workspace/utils/constant";
 
 export const housePaymentRouter = {
-  createOne: adminProcedure
+  createOne: allPermissionsProcedure([
+    { module: "house_rent", action: "create" },
+    { module: "expense", action: "create" },
+  ])
     .input(HousePaymentSchema)
     .mutation(async ({ input, ctx }) => {
       const { houseId, month, amount, method, paymentStatus } = input;
@@ -55,7 +61,7 @@ export const housePaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const paymentId = input;
 
     const paymentData = await ctx.db.housePayment.findUnique({
@@ -68,7 +74,10 @@ export const housePaymentRouter = {
 
     return paymentData;
   }),
-  getMany: adminProcedure
+  getMany: allPermissionsProcedure([
+    { module: "house_rent", action: "read" },
+    { module: "expense", action: "read" },
+  ])
     .input(
       z.object({
         page: z.number(),

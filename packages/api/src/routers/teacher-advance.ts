@@ -1,13 +1,16 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { allPermissionsProcedure, protectedProcedure } from "../trpc";
 
 import { TeacherAdvanceSchema } from "@workspace/utils/schemas";
 import { MONTH, TEACHER_ADVANCE_STATUS } from "@workspace/utils/constant";
 
 export const teacherAdvanceRouter = {
-  createOne: adminProcedure
+  createOne: allPermissionsProcedure([
+    { module: "teacher_advance", action: "create" },
+    { module: "expense", action: "create" },
+  ])
     .input(TeacherAdvanceSchema)
     .mutation(async ({ input, ctx }) => {
       const { teacherId, amount } = input;
@@ -54,7 +57,10 @@ export const teacherAdvanceRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: allPermissionsProcedure([
+    { module: "teacher_advance", action: "update" },
+    { module: "expense", action: "update" },
+  ])
     .input(
       z.object({
         ...TeacherAdvanceSchema.shape,
@@ -90,7 +96,10 @@ export const teacherAdvanceRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  changeStatus: adminProcedure
+  changeStatus: allPermissionsProcedure([
+    { module: "teacher_advance", action: "update" },
+    { module: "expense", action: "update" },
+  ])
     .input(
       z.object({
         id: z.string(),
@@ -122,7 +131,10 @@ export const teacherAdvanceRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: allPermissionsProcedure([
+    { module: "teacher_advance", action: "delete" },
+    { module: "expense", action: "delete" },
+  ])
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const advanceId = input;
@@ -146,7 +158,7 @@ export const teacherAdvanceRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getByTeacher: adminProcedure
+  getByTeacher: protectedProcedure
     .input(
       z.object({
         teacherId: z.string(),
@@ -188,7 +200,7 @@ export const teacherAdvanceRouter = {
         totalCount,
       };
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const advanceIt = input;
 
     const advanceData = await ctx.db.teacherAdvance.findUnique({
@@ -201,7 +213,10 @@ export const teacherAdvanceRouter = {
 
     return advanceData;
   }),
-  getMany: adminProcedure
+  getMany: allPermissionsProcedure([
+    { module: "teacher_advance", action: "read" },
+    { module: "expense", action: "read" },
+  ])
     .input(
       z.object({
         page: z.number(),

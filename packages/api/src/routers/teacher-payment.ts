@@ -1,12 +1,16 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import {
+  allPermissionsProcedure,
+  permissionProcedure,
+  protectedProcedure,
+} from "../trpc";
 
 import { TeacherPaymentSchema } from "@workspace/utils/schemas";
 
 export const teacherPaymentRouter = {
-  createOne: adminProcedure
+  createOne: allPermissionsProcedure([{ module: "teacher_bill", action: "create" }, { module: "expense", action: "create" }])
     .input(TeacherPaymentSchema)
     .mutation(async ({ input, ctx }) => {
       const { teacherId, month, classUnit, incentive, deductionUnit, note } =
@@ -68,7 +72,7 @@ export const teacherPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: allPermissionsProcedure([{ module: "teacher_bill", action: "update" }, { module: "expense", action: "update" }])
     .input(
       z.object({
         ...TeacherPaymentSchema.shape,
@@ -123,7 +127,7 @@ export const teacherPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  changeStatus: adminProcedure
+  changeStatus: allPermissionsProcedure([{ module: "teacher_bill", action: "update" }, { module: "expense", action: "update" }])
     .input(
       z.object({
         id: z.string(),
@@ -155,7 +159,7 @@ export const teacherPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: allPermissionsProcedure([{ module: "teacher_bill", action: "delete" }, { module: "expense", action: "delete" }])
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const counterId = input;
@@ -179,7 +183,7 @@ export const teacherPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getByTeacher: adminProcedure
+  getByTeacher: protectedProcedure
     .input(
       z.object({
         teacherId: z.string(),
@@ -219,7 +223,7 @@ export const teacherPaymentRouter = {
         totalCount,
       };
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const paymentId = input;
 
     const teacherPaymentData = await ctx.db.teacherPayment.findUnique({
@@ -240,7 +244,7 @@ export const teacherPaymentRouter = {
 
     return teacherPaymentData;
   }),
-  getMany: adminProcedure
+  getMany: allPermissionsProcedure([{ module: "teacher_bill", action: "read" }, { module: "expense", action: "read" }])
     .input(
       z.object({
         page: z.number(),

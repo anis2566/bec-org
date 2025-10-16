@@ -1,12 +1,12 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import {  permissionProcedure, protectedProcedure } from "../trpc";
 
 import { RoomSchema } from "@workspace/utils/schemas";
 
 export const roomRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("room", "create")
     .input(RoomSchema)
     .mutation(async ({ input, ctx }) => {
       const { name, capacity, availableTimes, houseId } = input;
@@ -63,7 +63,7 @@ export const roomRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("room", "update")
     .input(
       z.object({
         ...RoomSchema.shape,
@@ -98,7 +98,7 @@ export const roomRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("room", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const roomId = input;
@@ -122,7 +122,7 @@ export const roomRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  forSelect: adminProcedure
+  forSelect: protectedProcedure
     .input(
       z.object({
         query: z.string().nullish(),
@@ -149,7 +149,7 @@ export const roomRouter = {
 
       return rooms;
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const roomId = input;
 
     const roomData = await ctx.db.room.findUnique({
@@ -162,7 +162,7 @@ export const roomRouter = {
 
     return roomData;
   }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("room", "read")
     .input(
       z.object({
         page: z.number(),

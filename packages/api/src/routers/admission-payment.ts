@@ -1,11 +1,11 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 import { ADMISSION_PAYMENT_STATUS } from "@workspace/utils/constant";
 
 export const admissionPaymentRouter = {
-  changeStatus: adminProcedure
+  changeStatus: permissionProcedure("fee", "update")
     .input(
       z.object({
         id: z.string(),
@@ -44,7 +44,7 @@ export const admissionPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const paymentId = input;
 
     const paymentData = await ctx.db.admissionPayment.findUnique({
@@ -71,7 +71,7 @@ export const admissionPaymentRouter = {
 
     return { success: true, data: paymentData };
   }),
-  getDueMany: adminProcedure
+  getDueMany: permissionProcedure("fee", "read")
     .input(
       z.object({
         page: z.number(),
@@ -161,7 +161,7 @@ export const admissionPaymentRouter = {
         totalCount,
       };
     }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("fee", "read")
     .input(
       z.object({
         page: z.number(),

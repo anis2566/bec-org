@@ -2,7 +2,7 @@ import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 import { startOfDay, endOfDay } from "date-fns";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure } from "../trpc";
 
 import {
   ADMISSION_PAYMENT_STATUS,
@@ -10,7 +10,6 @@ import {
   SALARY_PAYMENT_STATUS,
   TEACHER_PAYMENT_STATUS,
 } from "@workspace/utils/constant";
-import { date } from "zod/v4";
 
 type GroupedData = {
   month: string;
@@ -28,7 +27,7 @@ const calculateTotal = (data: { month: string; total: number }[]): number => {
 };
 
 export const reportRouter = {
-  daily: adminProcedure
+  daily: permissionProcedure("report", "daily")
     .input(
       z.object({
         session: z.string().nullish(),
@@ -159,7 +158,7 @@ export const reportRouter = {
         dailyTeacherAdvance,
       };
     }),
-  salaryIncome: adminProcedure
+  salaryIncome: permissionProcedure("report", "income")
     .input(
       z.object({
         session: z.string().nullish(),
@@ -228,7 +227,7 @@ export const reportRouter = {
         totalSalary,
       };
     }),
-  admissionIncome: adminProcedure
+  admissionIncome: permissionProcedure("report", "income")
     .input(
       z.object({
         session: z.string().nullish(),
@@ -297,7 +296,7 @@ export const reportRouter = {
         totalAdmission,
       };
     }),
-  otherIncome: adminProcedure
+  otherIncome: permissionProcedure("report", "income")
     .input(
       z.object({
         session: z.string().nullish(),
@@ -360,7 +359,7 @@ export const reportRouter = {
         totalOthers,
       };
     }),
-  income: adminProcedure
+  income: permissionProcedure("report", "income")
     .input(
       z.object({
         session: z.string().nullish(),
@@ -474,7 +473,7 @@ export const reportRouter = {
         others: modifiedOthers,
       };
     }),
-  teacherExpense: adminProcedure
+  teacherExpense: permissionProcedure("report", "expense")
     .input(
       z.object({
         session: z.string().nullish(),
@@ -548,7 +547,7 @@ export const reportRouter = {
         totalPayment,
       };
     }),
-  houseExpense: adminProcedure
+  houseExpense: permissionProcedure("report", "expense")
     .input(
       z.object({
         session: z.string().nullish(),
@@ -616,7 +615,7 @@ export const reportRouter = {
         totalPayment,
       };
     }),
-  utilityExpense: adminProcedure
+  utilityExpense: permissionProcedure("report", "expense")
     .input(
       z.object({
         session: z.string().nullish(),
@@ -679,7 +678,7 @@ export const reportRouter = {
         totalPayment,
       };
     }),
-  expense: adminProcedure
+  expense: permissionProcedure("report", "expense")
     .input(
       z.object({
         session: z.string().nullish(),
@@ -789,7 +788,7 @@ export const reportRouter = {
         utilities: modifiedUtilities,
       };
     }),
-  overview: adminProcedure
+  overview: permissionProcedure("report", "final")
     .input(
       z.object({
         session: z.string().nullish(),

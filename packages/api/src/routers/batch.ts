@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { BatchSchema } from "@workspace/utils/schemas";
 import { sortTimeSlots } from "@workspace/utils/constant";
@@ -21,7 +21,7 @@ type ACC = {
 };
 
 export const batchRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("batch", "create")
     .input(BatchSchema)
     .mutation(async ({ input, ctx }) => {
       const { name, classNameId, capacity, classTime, time, level, roomId } =
@@ -98,7 +98,7 @@ export const batchRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("batch", "update")
     .input(
       z.object({
         ...BatchSchema.shape,
@@ -227,7 +227,7 @@ export const batchRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  removeStudent: adminProcedure
+  removeStudent: permissionProcedure("batch", "update")
     .input(
       z.object({
         studentId: z.string(),
@@ -258,7 +258,7 @@ export const batchRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("batch", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const batchId = input;
@@ -282,55 +282,41 @@ export const batchRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getRoomPlan: adminProcedure.query(async ({ ctx }) => {
-    const classes = await ctx.db.batchClass.findMany();
+  getRoomPlan: permissionProcedure("batch", "room_plan").query(
+    async ({ ctx }) => {
+      const classes = await ctx.db.batchClass.findMany();
 
-    const roomPlan = classes.reduce<ACC[]>((acc, item) => {
-      const existingRoom = acc.find((room) => room.roomName === item.roomName);
-
-      if (existingRoom) {
-        const existingBatch = existingRoom.batches.find(
-          (batch) => batch.batchName === item.batchName
+      const roomPlan = classes.reduce<ACC[]>((acc, item) => {
+        const existingRoom = acc.find(
+          (room) => room.roomName === item.roomName
         );
 
-        if (existingBatch) {
-          // Find a class with the same batchTime
-          const existingClass = existingBatch.classes.find(
-            (cls) => cls.time === item.time
+        if (existingRoom) {
+          const existingBatch = existingRoom.batches.find(
+            (batch) => batch.batchName === item.batchName
           );
 
-          if (existingClass) {
-            // If subject doesn't exist, push it
-            if (!existingClass.subjectName.includes(item.subjectName)) {
-              existingClass.subjectName.push(item.subjectName);
-              existingClass.teachers.push(item.teacherName);
-            }
-          } else {
-            existingBatch.classes.push({
-              subjectName: [item.subjectName],
-              teachers: [item.teacherName],
-              time: item.time, // Use batchTime for grouping
-            });
-          }
-        } else {
-          existingRoom.batches.push({
-            batchName: item.batchName,
-            batchTime: item.batchTime,
-            batchId: item.batchId,
-            classes: [
-              {
+          if (existingBatch) {
+            // Find a class with the same batchTime
+            const existingClass = existingBatch.classes.find(
+              (cls) => cls.time === item.time
+            );
+
+            if (existingClass) {
+              // If subject doesn't exist, push it
+              if (!existingClass.subjectName.includes(item.subjectName)) {
+                existingClass.subjectName.push(item.subjectName);
+                existingClass.teachers.push(item.teacherName);
+              }
+            } else {
+              existingBatch.classes.push({
                 subjectName: [item.subjectName],
                 teachers: [item.teacherName],
-                time: item.time, // Use batchTime
-              },
-            ],
-          });
-        }
-      } else {
-        acc.push({
-          roomName: item.roomName,
-          batches: [
-            {
+                time: item.time, // Use batchTime for grouping
+              });
+            }
+          } else {
+            existingRoom.batches.push({
               batchName: item.batchName,
               batchTime: item.batchTime,
               batchId: item.batchId,
@@ -341,17 +327,35 @@ export const batchRouter = {
                   time: item.time, // Use batchTime
                 },
               ],
-            },
-          ],
-        });
-      }
+            });
+          }
+        } else {
+          acc.push({
+            roomName: item.roomName,
+            batches: [
+              {
+                batchName: item.batchName,
+                batchTime: item.batchTime,
+                batchId: item.batchId,
+                classes: [
+                  {
+                    subjectName: [item.subjectName],
+                    teachers: [item.teacherName],
+                    time: item.time, // Use batchTime
+                  },
+                ],
+              },
+            ],
+          });
+        }
 
-      return acc;
-    }, []);
+        return acc;
+      }, []);
 
-    return { roomPlan };
-  }),
-  getByClass: adminProcedure
+      return { roomPlan };
+    }
+  ),
+  getByClass: protectedProcedure
     .input(z.string().nullish())
     .query(async ({ input, ctx }) => {
       const classId = input;
@@ -377,7 +381,7 @@ export const batchRouter = {
 
       return batches;
     }),
-  getForBatchTransfer: adminProcedure
+  getForBatchTransfer: protectedProcedure
     .input(
       z.object({
         classNameId: z.string().nullish(),
@@ -400,7 +404,7 @@ export const batchRouter = {
 
       return batches;
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const batchId = input;
 
     const batchData = await ctx.db.batch.findUnique({
@@ -420,7 +424,7 @@ export const batchRouter = {
 
     return batchData;
   }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("batch", "read")
     .input(
       z.object({
         page: z.number(),

@@ -1,12 +1,12 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { InstituteSchema } from "@workspace/utils/schemas";
 
 export const instituteRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("institute", "create")
     .input(InstituteSchema)
     .mutation(async ({ input, ctx }) => {
       const { type, name } = input;
@@ -36,7 +36,7 @@ export const instituteRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("institute", "update")
     .input(
       z.object({
         ...InstituteSchema.shape,
@@ -69,7 +69,7 @@ export const instituteRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("institute", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const instituteId = input;
@@ -93,7 +93,7 @@ export const instituteRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const instituteId = input;
 
     const instituteData = await ctx.db.institute.findUnique({
@@ -106,7 +106,7 @@ export const instituteRouter = {
 
     return instituteData;
   }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("institute", "read")
     .input(
       z.object({
         page: z.number(),

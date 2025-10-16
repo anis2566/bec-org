@@ -363,21 +363,21 @@ export const navigationData: NavGroup[] = [
         title: "Documents",
         url: "",
         icon: Files,
-        permission: { module: "exam", action: "read" },
+        permission: { module: "document", action: "read" },
         items: [
           {
             title: "New",
             url: "/exam/document/new",
             icon: PlusCircle,
             items: [],
-            permission: { module: "exam", action: "create" },
+            permission: { module: "document", action: "create" },
           },
           {
             title: "List",
             url: "/exam/document",
             icon: List,
             items: [],
-            permission: { module: "exam", action: "read" },
+            permission: { module: "document", action: "read" },
           },
         ],
       },
@@ -766,7 +766,7 @@ export const navigationData: NavGroup[] = [
         url: "/utils/counter",
         icon: ShieldEllipsis,
         items: [],
-        permission: { module: "utils", action: "read" },
+        permission: { module: "counter_utils", action: "read" },
       },
     ],
   },
@@ -864,63 +864,65 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const renderNavItems = (items: NavItem[]) => {
     return (
       <SidebarMenu>
-        {items.map((item) => {
-          const isActive = pathname === item.url;
-          const Icon = item.icon;
+        {items
+          .filter((item) => itemAllowed(item))
+          .map((item) => {
+            const isActive = pathname === item.url;
+            const Icon = item.icon;
 
-          if (!item.items || item.items.length === 0) {
-            return (
-              <SidebarMenuButton
-                tooltip={item.title}
-                isActive={isActive}
-                key={item.title}
-                asChild
-              >
-                <Link href={item.url} prefetch>
-                  {Icon && <Icon />}
-                  <span>{item.title}</span>
-                </Link>
-              </SidebarMenuButton>
-            );
-          }
-
-          return (
-            <Collapsible
-              key={item.title}
-              asChild
-              defaultOpen={isActive}
-              className="group/collapsible"
-            >
-              <SidebarMenuItem>
-                <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={item.title}>
+            if (!item.items || item.items.length === 0) {
+              return (
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  isActive={isActive}
+                  key={item.title}
+                  asChild
+                >
+                  <Link href={item.url} prefetch>
                     {Icon && <Icon />}
                     <span>{item.title}</span>
-                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
-                  </SidebarMenuButton>
-                </CollapsibleTrigger>
+                  </Link>
+                </SidebarMenuButton>
+              );
+            }
 
-                <CollapsibleContent>
-                  <SidebarMenuSub>
-                    {item.items.map((subItem) => (
-                      <SidebarMenuSubItem key={subItem.title}>
-                        <SidebarMenuSubButton
-                          asChild
-                          isActive={pathname === subItem.url}
-                        >
-                          <Link href={subItem.url} prefetch>
-                            {subItem.icon && <subItem.icon />}
-                            <span>{subItem.title}</span>
-                          </Link>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
-                    ))}
-                  </SidebarMenuSub>
-                </CollapsibleContent>
-              </SidebarMenuItem>
-            </Collapsible>
-          );
-        })}
+            return (
+              <Collapsible
+                key={item.title}
+                asChild
+                defaultOpen={isActive}
+                className="group/collapsible"
+              >
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton tooltip={item.title}>
+                      {Icon && <Icon />}
+                      <span>{item.title}</span>
+                      <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {item.items.map((subItem) => (
+                        <SidebarMenuSubItem key={subItem.title}>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={pathname === subItem.url}
+                          >
+                            <Link href={subItem.url} prefetch>
+                              {subItem.icon && <subItem.icon />}
+                              <span>{subItem.title}</span>
+                            </Link>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            );
+          })}
       </SidebarMenu>
     );
   };
@@ -936,18 +938,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <Loader className="w-4 h-4 animate-spin" />
           </div>
         )}
-        {navigationData.map((group, idx) => (
-          <SidebarGroup key={idx}>
-            {group.label && (
-              <SidebarGroupLabel className="text-gray-400 uppercase tracking-wide px-2 py-1 text-xs">
-                {group.label}
-              </SidebarGroupLabel>
-            )}
-            <SidebarGroupContent>
-              {renderNavItems(group.items)}
-            </SidebarGroupContent>
-          </SidebarGroup>
-        ))}
+        {!isLoading &&
+          filteredNavigation.map((group, idx) => (
+            <SidebarGroup key={idx}>
+              {group.label && (
+                <SidebarGroupLabel className="text-gray-400 uppercase tracking-wide px-2 py-1 text-xs">
+                  {group.label}
+                </SidebarGroupLabel>
+              )}
+              <SidebarGroupContent>
+                {renderNavItems(group.items)}
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ))}
       </SidebarContent>
 
       <SidebarRail />

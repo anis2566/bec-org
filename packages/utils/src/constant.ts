@@ -346,19 +346,26 @@ export const modules = [
     actions: ["create", "read", "update", "delete"],
   },
   {
-    name: "Dashboard",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Academic",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
     name: "Student",
-    actions: ["create", "read", "update", "delete"],
+    actions: [
+      "create",
+      "read",
+      "update",
+      "delete",
+      "batch_transfer",
+      "toggle_present",
+    ],
   },
   {
     name: "Attendance",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Batch",
+    actions: ["create", "read", "update", "delete", "room_plan"],
+  },
+  {
+    name: "Academic",
     actions: ["create", "read", "update", "delete"],
   },
   {
@@ -394,15 +401,67 @@ export const modules = [
     actions: ["create", "read", "update", "delete"],
   },
   {
-    name: "RoomHouses",
+    name: "Room",
     actions: ["create", "read", "update", "delete"],
   },
   {
-    name: "Utils",
+    name: "House",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Role",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Permission",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Dashboard",
+    actions: ["admin", "account", "hr", "management", "read"],
+  },
+  {
+    name: "Report",
+    actions: ["daily", "income", "expense", "final", "read"],
+  },
+  {
+    name: "Fee_Utils",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Counter_Utils",
     actions: ["create", "read", "update", "delete"],
   },
   {
     name: "Fees",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Exam",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Exam Category",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Document",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Teacher_Advance",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Teacher_Bill",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "House_Rent",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Utility_Bill",
     actions: ["create", "read", "update", "delete"],
   },
 ];

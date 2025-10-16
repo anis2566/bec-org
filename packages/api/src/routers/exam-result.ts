@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 import { EXAM_STATUS } from "@workspace/utils/constant";
 import { getGrade } from "@workspace/utils";
 
@@ -13,7 +13,7 @@ const resultSchema = z.object({
 });
 
 export const examResultRouter = {
-  createMany: adminProcedure
+  createMany: permissionProcedure("exam", "create")
     .input(
       z.object({
         examId: z.string(),
@@ -90,7 +90,7 @@ export const examResultRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  updateMany: adminProcedure
+  updateMany: permissionProcedure("exam", "update")
     .input(
       z.object({
         resultId: z.string(),
@@ -173,7 +173,7 @@ export const examResultRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  updateResults: adminProcedure
+  updateResults: permissionProcedure("exam", "update")
     .input(
       z.object({
         resultId: z.string(),
@@ -216,7 +216,7 @@ export const examResultRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  toggleStatus: adminProcedure
+  toggleStatus: permissionProcedure("exam", "update")
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
       const resultId = input;
@@ -309,7 +309,7 @@ export const examResultRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("exam", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const resultId = input;
@@ -337,7 +337,7 @@ export const examResultRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getByStudent: adminProcedure
+  getByStudent: protectedProcedure
     .input(
       z.object({
         studentId: z.string(),
@@ -391,7 +391,7 @@ export const examResultRouter = {
         totalCount,
       };
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ ctx, input }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ ctx, input }) => {
     const resultId = input;
 
     const result = await ctx.db.examResultGroup.findUnique({
@@ -454,7 +454,7 @@ export const examResultRouter = {
 
     return result;
   }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("exam", "read")
     .input(
       z.object({
         page: z.number(),

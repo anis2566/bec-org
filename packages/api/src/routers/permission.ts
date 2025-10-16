@@ -1,12 +1,12 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure } from "../trpc";
 
-import { PermissionSchema, RoleSchema } from "@workspace/utils/schemas";
+import { PermissionSchema } from "@workspace/utils/schemas";
 
 export const permissionRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("permission", "create")
     .input(PermissionSchema)
     .mutation(async ({ ctx, input }) => {
       const { name, description, module, actions } = input;
@@ -48,7 +48,7 @@ export const permissionRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("permission", "update")
     .input(
       z.object({
         permissionId: z.string(),
@@ -104,60 +104,7 @@ export const permissionRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  forSelect: adminProcedure
-    .input(
-      z.object({
-        search: z.string().nullish(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const { search } = input;
-
-      const roles = await ctx.db.role.findMany({
-        where: {
-          ...(search && {
-            name: {
-              contains: search,
-              mode: "insensitive",
-            },
-          }),
-        },
-        orderBy: {
-          createdAt: "asc",
-        },
-      });
-
-      return roles;
-    }),
-  deleteOne: adminProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(async ({ ctx, input }) => {
-      const { id } = input;
-
-      try {
-        const existingRole = await ctx.db.role.findFirst({
-          where: {
-            id,
-          },
-        });
-
-        if (!existingRole) {
-          return { success: false, message: "Role not found" };
-        }
-
-        await ctx.db.role.delete({
-          where: {
-            id,
-          },
-        });
-
-        return { success: true, message: "Role deleted" };
-      } catch (error) {
-        console.error("Error deleting role:", error);
-        return { success: false, message: "Internal server error" };
-      }
-    }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("permission", "read")
     .input(
       z.object({
         page: z.number(),
@@ -251,13 +198,9 @@ export const permissionRouter = {
       // Convert to array and apply pagination
       const groupedArray = Object.values(groupedByModule);
       const totalCount = groupedArray.length;
-      const paginatedGroups = groupedArray.slice(
-        (page - 1) * limit,
-        page * limit
-      );
 
       return {
-        permissions: paginatedGroups,
+        permissions: groupedArray,
         totalCount,
       };
     }),

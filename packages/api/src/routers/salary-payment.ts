@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 import {
   MONTH,
   SALARY_PAYMENT_STATUS,
@@ -10,7 +10,7 @@ import {
 import { generateTransactionIdFromObjectId } from "@workspace/utils";
 
 export const salaryPaymentRouter = {
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("fee", "update")
     .input(
       z.object({
         id: z.string(),
@@ -78,7 +78,7 @@ export const salaryPaymentRouter = {
         };
       }
     }),
-  getByStudent: adminProcedure
+  getByStudent: protectedProcedure
     .input(
       z.object({
         studentId: z.string(),
@@ -125,7 +125,7 @@ export const salaryPaymentRouter = {
         totalCount,
       };
     }),
-  getOne: adminProcedure
+  getOne: protectedProcedure
     .input(
       z.object({
         id: z.string(),
@@ -163,7 +163,7 @@ export const salaryPaymentRouter = {
 
       return salaryPaymentData;
     }),
-  getOverview: adminProcedure
+  getOverview: permissionProcedure("fee", "read")
     .input(
       z.object({
         page: z.number(),
@@ -309,7 +309,7 @@ export const salaryPaymentRouter = {
         totalCount,
       };
     }),
-  getDueMany: adminProcedure
+  getDueMany: permissionProcedure("fee", "read")
     .input(
       z.object({
         page: z.number(),
@@ -413,7 +413,7 @@ export const salaryPaymentRouter = {
         totalCount,
       };
     }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("fee", "read")
     .input(
       z.object({
         page: z.number(),

@@ -1,12 +1,12 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { HouseSchema } from "@workspace/utils/schemas";
 
 export const houseRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("house", "create")
     .input(HouseSchema)
     .mutation(async ({ input, ctx }) => {
       const { name, roomCount } = input;
@@ -33,7 +33,7 @@ export const houseRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("house", "update")
     .input(
       z.object({
         ...HouseSchema.shape,
@@ -66,7 +66,7 @@ export const houseRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("house", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const houseId = input;
@@ -90,7 +90,7 @@ export const houseRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  forSelect: adminProcedure
+  forSelect: protectedProcedure
     .input(
       z.object({
         query: z.string().nullish(),
@@ -116,7 +116,7 @@ export const houseRouter = {
 
       return housess;
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const classId = input;
 
     const houseData = await ctx.db.house.findUnique({
@@ -129,7 +129,7 @@ export const houseRouter = {
 
     return houseData;
   }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("house", "read")
     .input(
       z.object({
         page: z.number(),
@@ -155,8 +155,8 @@ export const houseRouter = {
             rooms: {
               select: {
                 id: true,
-              }
-            }
+              },
+            },
           },
           orderBy: {
             createdAt: sort === "asc" ? "asc" : "desc",

@@ -1,13 +1,13 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure, protectedProcedure } from "../trpc";
+import { permissionProcedure } from "../trpc";
 
 import { PRINT_TASK_STATUS } from "@workspace/utils/constant";
 import { endOfDay, startOfDay } from "date-fns";
 
 export const printTaskRouter = {
-  toggleStatus: adminProcedure
+  toggleStatus: permissionProcedure("printTask", "update")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const printTaskId = input;
@@ -41,7 +41,7 @@ export const printTaskRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("printTask", "delete")
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
@@ -69,7 +69,7 @@ export const printTaskRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("printTask", "read")
     .input(
       z.object({
         page: z.number(),

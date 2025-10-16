@@ -1,13 +1,13 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { SubjectSchema } from "@workspace/utils/schemas";
 import { getLevelByClassName } from "@workspace/utils";
 
 export const subjectRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("subject", "create")
     .input(SubjectSchema)
     .mutation(async ({ input, ctx }) => {
       const { name, level, group } = input;
@@ -39,7 +39,7 @@ export const subjectRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("subject", "update")
     .input(
       z.object({
         ...SubjectSchema.shape,
@@ -73,7 +73,7 @@ export const subjectRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("subject", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const subjectId = input;
@@ -97,7 +97,7 @@ export const subjectRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getByClass: adminProcedure
+  getByClass: protectedProcedure
     .input(z.string().nullish())
     .query(async ({ input, ctx }) => {
       const classId = input;
@@ -123,7 +123,7 @@ export const subjectRouter = {
       });
       return subjects;
     }),
-  getByLevel: adminProcedure
+  getByLevel: protectedProcedure
     .input(
       z.object({
         level: z.string(),
@@ -145,7 +145,7 @@ export const subjectRouter = {
       });
       return subjects;
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const subjectId = input;
 
     const subjectData = await ctx.db.subject.findUnique({
@@ -158,7 +158,7 @@ export const subjectRouter = {
 
     return subjectData;
   }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("subject", "read")
     .input(
       z.object({
         page: z.number(),

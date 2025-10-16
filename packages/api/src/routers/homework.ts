@@ -1,14 +1,13 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
-import { ClassNameSchema } from "@workspace/utils/schemas";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { HomeworkSchema } from "../../../utils/src/schemas";
 import { format } from "date-fns";
 
 export const homeworkRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("homework", "create")
     .input(HomeworkSchema)
     .mutation(async ({ ctx, input }) => {
       const { date, classNameId, batchId, subjectId } = input;
@@ -91,7 +90,7 @@ export const homeworkRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  updateMany: adminProcedure
+  updateMany: permissionProcedure("homework", "update")
     .input(
       z.object({
         ids: z.array(z.string()),
@@ -141,7 +140,7 @@ export const homeworkRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getOne: adminProcedure
+  getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const { id } = input;
@@ -184,7 +183,7 @@ export const homeworkRouter = {
 
       return homework;
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("homework", "delete")
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
@@ -212,7 +211,7 @@ export const homeworkRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getByStudent: adminProcedure
+  getByStudent: protectedProcedure
     .input(
       z.object({
         studentId: z.string(),
@@ -232,7 +231,7 @@ export const homeworkRouter = {
               select: {
                 name: true,
               },
-            }
+            },
           },
           orderBy: {
             createdAt: "desc",
@@ -252,7 +251,7 @@ export const homeworkRouter = {
         totalCount,
       };
     }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("homework", "read")
     .input(
       z.object({
         page: z.number(),

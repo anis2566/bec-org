@@ -1,13 +1,13 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { OtherPayment } from "@workspace/utils/schemas";
 import { MONTH } from "@workspace/utils/constant";
 
 export const otherPaymentRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("income", "create")
     .input(OtherPayment)
     .mutation(async ({ input, ctx }) => {
       const { name, amount } = input;
@@ -28,7 +28,7 @@ export const otherPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("income", "update")
     .input(
       z.object({
         ...OtherPayment.shape,
@@ -61,7 +61,7 @@ export const otherPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("income", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const paymentId = input;
@@ -85,7 +85,7 @@ export const otherPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const paymentId = input;
 
     const paymentData = await ctx.db.otherPayment.findUnique({
@@ -98,7 +98,7 @@ export const otherPaymentRouter = {
 
     return paymentData;
   }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("income", "read")
     .input(
       z.object({
         page: z.number(),

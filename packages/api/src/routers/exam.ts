@@ -1,12 +1,12 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { ExamSchema } from "@workspace/utils/schemas";
 
 export const examRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("exam", "create")
     .input(ExamSchema)
     .mutation(async ({ ctx, input }) => {
       const {
@@ -67,7 +67,7 @@ export const examRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("exam", "update")
     .input(
       z.object({
         data: ExamSchema,
@@ -113,7 +113,7 @@ export const examRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  forSelect: adminProcedure
+  forSelect: protectedProcedure
     .input(
       z.object({
         search: z.string().nullish(),
@@ -135,7 +135,7 @@ export const examRouter = {
 
       return exams;
     }),
-  getByBathchCategory: adminProcedure
+  getByBathchCategory: protectedProcedure
     .input(
       z.object({
         batchId: z.string().nullish(),
@@ -162,7 +162,7 @@ export const examRouter = {
 
       return exams;
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("exam", "delete")
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
@@ -190,7 +190,7 @@ export const examRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getForResult: adminProcedure
+  getForResult: protectedProcedure
     .input(z.string())
     .query(async ({ input, ctx }) => {
       const examId = input;
@@ -232,7 +232,7 @@ export const examRouter = {
 
       return examData;
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const examId = input;
 
     const examData = await ctx.db.exam.findUnique({
@@ -245,7 +245,7 @@ export const examRouter = {
 
     return examData;
   }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("exam", "read")
     .input(
       z.object({
         page: z.number(),

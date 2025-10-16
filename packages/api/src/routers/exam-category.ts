@@ -1,12 +1,12 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { ExamCategory } from "@workspace/utils/schemas";
 
 export const examCategoryRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("exam category", "create")
     .input(ExamCategory)
     .mutation(async ({ ctx, input }) => {
       const { name } = input;
@@ -37,7 +37,7 @@ export const examCategoryRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("exam category", "update")
     .input(
       z.object({
         ...ExamCategory.shape,
@@ -73,7 +73,7 @@ export const examCategoryRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  forSelect: adminProcedure
+  forSelect: protectedProcedure
     .input(
       z.object({
         search: z.string().nullish(),
@@ -95,7 +95,7 @@ export const examCategoryRouter = {
 
       return categories;
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("exam category", "delete")
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
@@ -123,7 +123,7 @@ export const examCategoryRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("exam category", "read")
     .input(
       z.object({
         page: z.number(),

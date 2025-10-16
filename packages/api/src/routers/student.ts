@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { FindStudentSchema, StudentSchema } from "@workspace/utils/schemas";
 import {
@@ -14,7 +14,7 @@ import {
 } from "@workspace/utils/constant";
 
 export const studentRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("student", "create")
     .input(StudentSchema)
     .mutation(async ({ input, ctx }) => {
       try {
@@ -141,7 +141,7 @@ export const studentRouter = {
         };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("student", "update")
     .input(
       z.object({
         ...StudentSchema.shape,
@@ -180,7 +180,7 @@ export const studentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  batchTransfer: adminProcedure
+  batchTransfer: permissionProcedure("student", "batch_transfer")
     .input(
       z.object({
         studentId: z.string(),
@@ -204,7 +204,7 @@ export const studentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  markAsAbsent: adminProcedure
+  markAsAbsent: permissionProcedure("student", "toggle_present")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const studentId = input;
@@ -239,7 +239,7 @@ export const studentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  markAsPresent: adminProcedure
+  markAsPresent: permissionProcedure("student", "toggle_present")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const studentId = input;
@@ -266,7 +266,7 @@ export const studentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("student", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const studentId = input;
@@ -290,7 +290,7 @@ export const studentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  forPaymentSelect: adminProcedure
+  forPaymentSelect: protectedProcedure
     .input(FindStudentSchema)
     .mutation(async ({ input, ctx }) => {
       const { classNameId, search } = input;
@@ -380,7 +380,7 @@ export const studentRouter = {
         };
       }
     }),
-  getByBatch: adminProcedure
+  getByBatch: protectedProcedure
     .input(z.string().nullish())
     .query(async ({ input, ctx }) => {
       const batchId = input;
@@ -419,7 +419,7 @@ export const studentRouter = {
 
       return students;
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const studentId = input;
 
     const studentData = await ctx.db.student.findUnique({
@@ -435,7 +435,7 @@ export const studentRouter = {
 
     return studentData;
   }),
-  getAbsentMany: adminProcedure
+  getAbsentMany: permissionProcedure("student", "read")
     .input(
       z.object({
         page: z.number(),
@@ -523,7 +523,7 @@ export const studentRouter = {
         totalCount,
       };
     }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("student", "read")
     .input(
       z.object({
         page: z.number(),

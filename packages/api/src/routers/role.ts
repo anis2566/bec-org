@@ -1,12 +1,12 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { RoleSchema } from "@workspace/utils/schemas";
 
 export const roleRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("role", "create")
     .input(RoleSchema)
     .mutation(async ({ ctx, input }) => {
       const { name, description } = input;
@@ -38,7 +38,7 @@ export const roleRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("role", "update")
     .input(
       z.object({
         ...RoleSchema.shape,
@@ -75,7 +75,7 @@ export const roleRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  forSelect: adminProcedure
+  forSelect: protectedProcedure
     .input(
       z.object({
         search: z.string().nullish(),
@@ -100,7 +100,7 @@ export const roleRouter = {
 
       return roles;
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("role", "delete")
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
@@ -128,7 +128,7 @@ export const roleRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("role", "read")
     .input(
       z.object({
         page: z.number(),

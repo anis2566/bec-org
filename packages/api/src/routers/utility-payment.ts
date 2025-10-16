@@ -1,13 +1,17 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import {
+  allPermissionsProcedure,
+  permissionProcedure,
+  protectedProcedure,
+} from "../trpc";
 
 import { UtilityPaymentSchema } from "@workspace/utils/schemas";
 import { MONTH } from "@workspace/utils/constant";
 
 export const utilityPaymentRouter = {
-  createOne: adminProcedure
+  createOne: allPermissionsProcedure([{ module: "utility_bill", action: "create" }, { module: "expense", action: "create" }])
     .input(UtilityPaymentSchema)
     .mutation(async ({ input, ctx }) => {
       const { name, amount } = input;
@@ -28,7 +32,7 @@ export const utilityPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: allPermissionsProcedure([{ module: "utility_bill", action: "update" }, { module: "expense", action: "update" }])
     .input(
       z.object({
         ...UtilityPaymentSchema.shape,
@@ -61,7 +65,7 @@ export const utilityPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: allPermissionsProcedure([{ module: "utility_bill", action: "delete" }, { module: "expense", action: "delete" }])
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const paymentId = input;
@@ -85,7 +89,7 @@ export const utilityPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const paymentId = input;
 
     const paymentData = await ctx.db.utilityPayment.findUnique({
@@ -98,7 +102,7 @@ export const utilityPaymentRouter = {
 
     return paymentData;
   }),
-  getMany: adminProcedure
+  getMany: allPermissionsProcedure([{ module: "utility_bill", action: "read" }, { module: "expense", action: "read" }])
     .input(
       z.object({
         page: z.number(),

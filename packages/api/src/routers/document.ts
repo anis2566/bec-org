@@ -1,13 +1,13 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
-
-import { adminProcedure, protectedProcedure } from "../trpc";
-
-import { DocumentSchema } from "@workspace/utils/schemas";
 import { endOfDay, startOfDay } from "date-fns";
 
+import { permissionProcedure, protectedProcedure } from "../trpc";
+
+import { DocumentSchema } from "@workspace/utils/schemas";
+
 export const documentRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("document", "create")
     .input(DocumentSchema)
     .mutation(async ({ ctx, input }) => {
       const {
@@ -40,7 +40,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  updateOne: adminProcedure
+  updateOne: permissionProcedure("document", "update")
     .input(
       z.object({
         ...DocumentSchema.shape,
@@ -91,7 +91,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  toggleReceived: adminProcedure
+  toggleReceived: permissionProcedure("document", "update")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const documentId = input;
@@ -122,7 +122,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  toggleFinished: adminProcedure
+  toggleFinished: permissionProcedure("document", "update")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const documentId = input;
@@ -153,7 +153,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  pushToPrint: adminProcedure
+  pushToPrint: permissionProcedure("document", "update")
     .input(
       z.object({
         documentId: z.string(),
@@ -209,7 +209,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("document", "delete")
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
@@ -237,7 +237,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getOne: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
+  getOne: protectedProcedure.input(z.string()).query(async ({ input, ctx }) => {
     const documentId = input;
 
     const documentData = await ctx.db.document.findUnique({
@@ -250,7 +250,7 @@ export const documentRouter = {
 
     return documentData;
   }),
-  getMany: adminProcedure
+  getMany: permissionProcedure("document", "read")
     .input(
       z.object({
         page: z.number(),
