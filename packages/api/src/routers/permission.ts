@@ -12,7 +12,9 @@ export const permissionRouter = {
       const { name, description, module, actions } = input;
 
       try {
-        const constructedNames = actions.map((action) => `${name}.${action}`);
+        const constructedNames = actions.map(
+          (action) => `${name.toLocaleLowerCase()}.${action}`
+        );
 
         const existingPermission = await ctx.db.permission.findFirst({
           where: {
@@ -32,9 +34,9 @@ export const permissionRouter = {
         for (const action of actions) {
           await ctx.db.permission.create({
             data: {
-              name: `${name}.${action}`,
+              name: `${name.toLocaleLowerCase()}.${action}`,
               description,
-              module,
+              module: module.toLocaleLowerCase(),
               action,
             },
           });
@@ -59,7 +61,7 @@ export const permissionRouter = {
       try {
         const dbRoles = await ctx.db.role.findMany({
           where: {
-            id: {
+            name: {
               in: roles,
             },
           },
@@ -68,24 +70,35 @@ export const permissionRouter = {
           },
         });
 
-        console.log(dbRoles)
-
         if (dbRoles.length !== roles.length) {
           return { success: false, message: "Role not found" };
         }
 
-        // const selectedRoleIds = dbRoles.map((role) => role.id);
+        const selectedRoleIds = dbRoles.map((role) => role.id);
 
-        // await ctx.db.permission.update({
-        //   where: {
-        //     id: permissionId,
-        //   },
-        //   data: {
-        //     roleIds: selectedRoleIds,
-        //   },
-        // });
+        await ctx.db.permission.update({
+          where: {
+            id: permissionId,
+          },
+          data: {
+            roles: {
+              set: [],
+            },
+          },
+        });
 
-        return { success: false, message: "Permission updated" };
+        await ctx.db.permission.update({
+          where: {
+            id: permissionId,
+          },
+          data: {
+            roles: {
+              connect: selectedRoleIds.map((id) => ({ id })),
+            },
+          },
+        });
+
+        return { success: true, message: "Permission updated" };
       } catch (error) {
         console.error("Error updating permission:", error);
         return { success: false, message: "Internal server error" };

@@ -1,642 +1,955 @@
 "use client";
 
-import * as React from "react";
-import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Calendar,
-  Combine,
-  Command,
-  DollarSign,
-  Frame,
-  GalleryVerticalEnd,
-  House,
-  List,
-  LogIn,
-  Map,
-  NotebookPen,
-  PieChart,
-  PlusCircle,
-  School,
-  Send,
-  Settings,
-  Settings2,
-  Shapes,
-  ShieldEllipsis,
-  SquareTerminal,
-  UserPlus,
-  Users,
-  UserX,
-  Wallpaper,
-  Warehouse,
-  History,
-  MessageSquareMore,
-  BookMarked,
-  BringToFront,
-  UsersRound,
-  Layers3,
-  HandCoins,
-  Package,
-  CalendarDays,
-  TrendingUp,
-  Coins,
-  UserRoundPen,
-  Wallet,
-  LayoutDashboard,
-  FileUser,
-  Files,
-  ClipboardList,
-  Printer,
-  UserCog,
-  Key,
-} from "lucide-react";
-
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarRail,
 } from "@workspace/ui/components/sidebar";
-
+import {
+  LayoutDashboard,
+  Shapes,
+  School,
+  BookOpen,
+  UserPlus,
+  Users,
+  List,
+  UserX,
+  PlusCircle,
+  Layers3,
+  Warehouse,
+  Calendar,
+  History,
+  BringToFront,
+  LogIn,
+  BookMarked,
+  UsersRound,
+  Printer,
+  Files,
+  NotebookPen,
+  FileUser,
+  DollarSign,
+  HandCoins,
+  House,
+  Package,
+  MessageSquareMore,
+  Send,
+  Settings,
+  UserCog,
+  Key,
+  CalendarDays,
+  Coins,
+  UserRoundPen,
+  TrendingUp,
+  Wallet,
+  ShieldEllipsis,
+  ChevronRight,
+  Loader,
+} from "lucide-react";
 import { Header } from "./header";
-import { NavAcademic } from "./nav-academic";
-import { NavUtils } from "./nav-utils";
-import { NavFees } from "./nav-fees";
-import { NavStudent } from "./nav-student";
-import { NavAttendance } from "./nav-attendance";
-import { NavResult } from "./nav-result";
-import { NavIncome } from "./nav-income";
-import { NavExpense } from "./nav-expense";
-import { NavRolePermission } from "./nav-role-permission";
-import { NavSms } from "./nav-sms";
-import { NavHomework } from "./nav-homework";
-import { NavFee } from "./nav-fee";
-import { NavTeacher } from "./nav-teacher";
-import { NavRoomHouse } from "./nav-room-house";
-import { NavBatch } from "./nav-batch";
-import { NavReport } from "./nav-report";
-import { NavDashboard } from "./nav-dashboard";
-import { NavTask } from "./nav-task";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@workspace/ui/components/collapsible";
+import { cn } from "@workspace/ui/lib/utils";
+import { usePermissions } from "@/hooks/use-user-permission";
 
-// This is sample data.
-const data = {
-  dashboard: [
-    {
-      title: "Dashboard",
-      url: "/",
-      icon: LayoutDashboard,
-      items: [],
-    },
-  ],
-  academic: [
-    {
-      title: "Class",
-      url: "/class",
-      icon: Shapes,
-      items: [],
-    },
-    {
-      title: "Institute",
-      url: "/institute",
-      icon: School,
-      items: [],
-    },
-    {
-      title: "Subject",
-      url: "/subject",
-      icon: BookOpen,
-      items: [],
-    },
-  ],
-  student: [
-    {
-      title: "Admission",
-      url: "/admission",
-      icon: UserPlus,
-      items: [],
-    },
-    {
-      title: "Student",
-      url: "",
-      icon: Users,
-      items: [
-        {
-          title: "List",
-          url: "/student",
-          icon: List,
-        },
-        {
-          title: "Absent",
-          url: "/student/absent",
-          icon: UserX,
-        },
-      ],
-    },
-  ],
-  attendance: [
-    {
-      title: "Student",
-      url: "",
-      icon: Users,
-      items: [
-        {
-          title: "Create",
-          url: "/attendance/student/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/attendance/student",
-          icon: List,
-        },
-      ],
-    },
-  ],
-  batch: [
-    {
-      title: "Batch",
-      url: "",
-      icon: Layers3,
-      items: [
-        {
-          title: "New",
-          url: "/batch/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/batch",
-          icon: List,
-        },
-      ],
-    },
-    {
-      title: "Room Plan",
-      url: "/room-plan",
-      icon: Warehouse,
-      items: [],
-    },
-  ],
-  fee: [
-    {
-      title: "Salary",
-      url: "",
-      icon: Calendar,
-      items: [
-        {
-          title: "Receive Fee",
-          url: "/fee/salary/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "History",
-          url: "/fee/salary",
-          icon: History,
-        },
-        {
-          title: "Due",
-          url: "/fee/salary/due",
-          icon: List,
-        },
-        {
-          title: "Overview",
-          url: "/fee/salary/overview",
-          icon: BringToFront,
-        },
-      ],
-    },
-    {
-      title: "Admission",
-      url: "",
-      icon: LogIn,
-      items: [
-        {
-          title: "Due",
-          url: "/fee/admission/due",
-          icon: List,
-        },
-        {
-          title: "History",
-          url: "/fee/admission",
-          icon: History,
-        },
-      ],
-    },
-  ],
-  homework: [
-    {
-      title: "Homework",
-      url: "",
-      icon: BookMarked,
-      items: [
-        {
-          title: "New",
-          url: "/homework/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/homework",
-          icon: List,
-        },
-      ],
-    },
-  ],
-  teacher: [
-    {
-      title: "Teacher",
-      url: "",
-      icon: UsersRound,
-      items: [
-        {
-          title: "New",
-          url: "/teacher/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/teacher",
-          icon: List,
-        },
-      ],
-    },
-  ],
-  task: [
-    {
-      title: "Print",
-      url: "/task/print",
-      icon: Printer,
-      items: [],
-    },
-  ],
-  result: [
-    {
-      title: "Documents",
-      url: "",
-      icon: Files,
-      items: [
-        {
-          title: "New",
-          url: "/exam/document/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/exam/document",
-          icon: List,
-        },
-      ],
-    },
-    {
-      title: "Exam",
-      url: "",
-      icon: NotebookPen,
-      items: [
-        {
-          title: "New",
-          url: "/exam/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/exam",
-          icon: List,
-        },
-      ],
-    },
-    {
-      title: "Result",
-      url: "",
-      icon: FileUser,
-      items: [
-        {
-          title: "New",
-          url: "/exam/result/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/exam/result",
-          icon: List,
-        },
-      ],
-    },
-    {
-      title: "Category",
-      url: "/exam/category",
-      icon: Layers3,
-      items: [],
-    },
-    // {
-    //   title: "Combine",
-    //   url: "",
-    //   icon: Combine,
-    //   items: [
-    //     {
-    //       title: "New",
-    //       url: "/exam/combine/new",
-    //       icon: PlusCircle,
-    //     },
-    //     {
-    //       title: "List",
-    //       url: "/exam/combine",
-    //       icon: List,
-    //     },
-    //   ],
-    // },
-  ],
-  income: [
-    {
-      title: "Income",
-      url: "",
-      icon: DollarSign,
-      items: [
-        {
-          title: "New",
-          url: "/income/other/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/income/other",
-          icon: List,
-        },
-      ],
-    },
-  ],
-  expense: [
-    {
-      title: "Advance",
-      url: "",
-      icon: HandCoins,
-      items: [
-        {
-          title: "New",
-          url: "/expense/advance/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/expense/advance",
-          icon: List,
-        },
-      ],
-    },
-    {
-      title: "Teacher Bill",
-      url: "",
-      icon: UsersRound,
-      items: [
-        {
-          title: "New",
-          url: "/expense/teacher/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/expense/teacher",
-          icon: List,
-        },
-      ],
-    },
-    {
-      title: "House Rent",
-      url: "",
-      icon: House,
-      items: [
-        {
-          title: "New",
-          url: "/expense/house/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/expense/house",
-          icon: List,
-        },
-      ],
-    },
-    {
-      title: "Utility Bill",
-      url: "",
-      icon: Package,
-      items: [
-        {
-          title: "New",
-          url: "/expense/utility/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/expense/utility",
-          icon: List,
-        },
-      ],
-    },
-  ],
-  sms: [
-    {
-      title: "SMS",
-      url: "",
-      icon: MessageSquareMore,
-      items: [
-        {
-          title: "Bulk SMS",
-          url: "/sms/new",
-          icon: Send,
-          items: [],
-        },
-        {
-          title: "Due List SMS",
-          url: "/sms/due",
-          icon: Send,
-          items: [],
-        },
-        {
-          title: "History",
-          url: "/sms",
-          icon: History,
-          items: [],
-        },
-        {
-          title: "Settings",
-          url: "/sms/setting",
-          icon: Settings,
-          items: [],
-        },
-      ],
-    },
-  ],
-  rolePermission: [
-    {
-      title: "Role",
-      url: "/role",
-      icon: UserCog,
-      items: [],
-    },
-    {
-      title: "Permission",
-      url: "/permission",
-      icon: Key,
-      items: [],
-    },
-  ],
-  report: [
-    {
-      title: "Daily",
-      url: "/report/daily",
-      icon: CalendarDays,
-      items: [],
-    },
-    {
-      title: "Income",
-      url: "",
-      icon: HandCoins,
-      items: [
-        {
-          title: "Salary",
-          url: "/report/income/salary",
-          icon: DollarSign,
-        },
-        {
-          title: "Admission",
-          url: "/report/income/admission",
-          icon: DollarSign,
-        },
-        {
-          title: "Other",
-          url: "/report/income/other",
-          icon: DollarSign,
-        },
-        {
-          title: "Overview",
-          url: "/report/income",
-          icon: TrendingUp,
-        },
-      ],
-    },
-    {
-      title: "Expense",
-      url: "",
-      icon: Coins,
-      items: [
-        {
-          title: "Teacher Bill",
-          url: "/report/expense/teacher",
-          icon: UserRoundPen,
-        },
-        {
-          title: "House rent",
-          url: "/report/expense/house",
-          icon: House,
-        },
-        {
-          title: "Utility",
-          url: "/report/expense/utility",
-          icon: Package,
-        },
-        {
-          title: "Overview",
-          url: "/report/expense",
-          icon: TrendingUp,
-        },
-      ],
-    },
-    {
-      title: "Final",
-      url: "/report",
-      icon: Wallet,
-      items: [],
-    },
-  ],
-  roomHouses: [
-    {
-      title: "House",
-      url: "",
-      icon: House,
-      items: [
-        {
-          title: "New",
-          url: "/house/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/house",
-          icon: List,
-        },
-      ],
-    },
-    {
-      title: "Room",
-      url: "",
-      icon: Warehouse,
-      items: [
-        {
-          title: "New",
-          url: "/room/new",
-          icon: PlusCircle,
-        },
-        {
-          title: "List",
-          url: "/room",
-          icon: List,
-        },
-      ],
-    },
-  ],
-  utils: [
-    {
-      title: "Counter",
-      url: "/utils/counter",
-      icon: ShieldEllipsis,
-      items: [],
-    },
-  ],
-  fees: [
-    {
-      title: "Admission",
-      url: "/utils/fee/admission",
-      icon: LogIn,
-      items: [],
-    },
-    {
-      title: "Salary",
-      url: "/utils/fee/salary",
-      icon: Calendar,
-      items: [],
-    },
-  ],
-};
+// Type definitions
+export interface NavItem {
+  title: string;
+  url: string;
+  icon: any;
+  items: NavItem[];
+  permission?: {
+    module: string;
+    action: string;
+  };
+  role?: string;
+  anyPermissions?: Array<{
+    module: string;
+    action: string;
+  }>;
+}
+
+export interface NavGroup {
+  label?: string;
+  items: NavItem[];
+  permission?: {
+    module: string;
+    action: string;
+  };
+  role?: string;
+}
+
+// Navigation data with group labels and permission configuration
+export const navigationData: NavGroup[] = [
+  {
+    items: [
+      {
+        title: "Dashboard",
+        url: "/",
+        icon: LayoutDashboard,
+        items: [],
+        permission: { module: "dashboard", action: "read" },
+      },
+    ],
+  },
+  {
+    label: "Academic",
+    items: [
+      {
+        title: "Class",
+        url: "/class",
+        icon: Shapes,
+        items: [],
+        permission: { module: "class", action: "read" },
+      },
+      {
+        title: "Institute",
+        url: "/institute",
+        icon: School,
+        items: [],
+        permission: { module: "institute", action: "read" },
+      },
+      {
+        title: "Subject",
+        url: "/subject",
+        icon: BookOpen,
+        items: [],
+        permission: { module: "subject", action: "read" },
+      },
+    ],
+  },
+  {
+    label: "Student Management",
+    items: [
+      {
+        title: "Admission",
+        url: "/admission",
+        icon: UserPlus,
+        items: [],
+        permission: { module: "student", action: "create" },
+      },
+      {
+        title: "Student",
+        url: "",
+        icon: Users,
+        permission: { module: "student", action: "read" },
+        items: [
+          {
+            title: "List",
+            url: "/student",
+            icon: List,
+            items: [],
+            permission: { module: "student", action: "read" },
+          },
+          {
+            title: "Absent",
+            url: "/student/absent",
+            icon: UserX,
+            items: [],
+            permission: { module: "student", action: "read" },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Attendance",
+    items: [
+      {
+        title: "Student",
+        url: "",
+        icon: Users,
+        permission: { module: "attendance", action: "read" },
+        items: [
+          {
+            title: "Create",
+            url: "/attendance/student/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "attendance", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/attendance/student",
+            icon: List,
+            items: [],
+            permission: { module: "attendance", action: "read" },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Batch & Room",
+    items: [
+      {
+        title: "Batch",
+        url: "",
+        icon: Layers3,
+        permission: { module: "batch", action: "read" },
+        items: [
+          {
+            title: "New",
+            url: "/batch/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "batch", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/batch",
+            icon: List,
+            items: [],
+            permission: { module: "batch", action: "read" },
+          },
+        ],
+      },
+      {
+        title: "Room Plan",
+        url: "/room-plan",
+        icon: Warehouse,
+        items: [],
+        permission: { module: "room", action: "read" },
+      },
+    ],
+  },
+  {
+    label: "Fee Management",
+    items: [
+      {
+        title: "Salary",
+        url: "",
+        icon: Calendar,
+        permission: { module: "fee", action: "read" },
+        items: [
+          {
+            title: "Receive Fee",
+            url: "/fee/salary/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "fee", action: "create" },
+          },
+          {
+            title: "History",
+            url: "/fee/salary",
+            icon: History,
+            items: [],
+            permission: { module: "fee", action: "read" },
+          },
+          {
+            title: "Due",
+            url: "/fee/salary/due",
+            icon: List,
+            items: [],
+            permission: { module: "fee", action: "read" },
+          },
+          {
+            title: "Overview",
+            url: "/fee/salary/overview",
+            icon: BringToFront,
+            items: [],
+            permission: { module: "fee", action: "read" },
+          },
+        ],
+      },
+      {
+        title: "Admission",
+        url: "",
+        icon: LogIn,
+        permission: { module: "fee", action: "read" },
+        items: [
+          {
+            title: "Due",
+            url: "/fee/admission/due",
+            icon: List,
+            items: [],
+            permission: { module: "fee", action: "read" },
+          },
+          {
+            title: "History",
+            url: "/fee/admission",
+            icon: History,
+            items: [],
+            permission: { module: "fee", action: "read" },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Homework",
+    items: [
+      {
+        title: "Homework",
+        url: "",
+        icon: BookMarked,
+        permission: { module: "homework", action: "read" },
+        items: [
+          {
+            title: "New",
+            url: "/homework/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "homework", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/homework",
+            icon: List,
+            items: [],
+            permission: { module: "homework", action: "read" },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Teacher",
+    items: [
+      {
+        title: "Teacher",
+        url: "",
+        icon: UsersRound,
+        permission: { module: "teacher", action: "read" },
+        items: [
+          {
+            title: "New",
+            url: "/teacher/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "teacher", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/teacher",
+            icon: List,
+            items: [],
+            permission: { module: "teacher", action: "read" },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Tasks",
+    items: [
+      {
+        title: "Print",
+        url: "/task/print",
+        icon: Printer,
+        items: [],
+        permission: { module: "task", action: "read" },
+      },
+    ],
+  },
+  {
+    label: "Exam & Results",
+    items: [
+      {
+        title: "Documents",
+        url: "",
+        icon: Files,
+        permission: { module: "exam", action: "read" },
+        items: [
+          {
+            title: "New",
+            url: "/exam/document/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "exam", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/exam/document",
+            icon: List,
+            items: [],
+            permission: { module: "exam", action: "read" },
+          },
+        ],
+      },
+      {
+        title: "Exam",
+        url: "",
+        icon: NotebookPen,
+        permission: { module: "exam", action: "read" },
+        items: [
+          {
+            title: "New",
+            url: "/exam/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "exam", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/exam",
+            icon: List,
+            items: [],
+            permission: { module: "exam", action: "read" },
+          },
+        ],
+      },
+      {
+        title: "Result",
+        url: "",
+        icon: FileUser,
+        permission: { module: "result", action: "read" },
+        items: [
+          {
+            title: "New",
+            url: "/exam/result/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "result", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/exam/result",
+            icon: List,
+            items: [],
+            permission: { module: "result", action: "read" },
+          },
+        ],
+      },
+      {
+        title: "Category",
+        url: "/exam/category",
+        icon: Layers3,
+        items: [],
+        permission: { module: "exam", action: "read" },
+      },
+    ],
+  },
+  {
+    label: "Income",
+    items: [
+      {
+        title: "Income",
+        url: "",
+        icon: DollarSign,
+        permission: { module: "income", action: "read" },
+        items: [
+          {
+            title: "New",
+            url: "/income/other/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "income", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/income/other",
+            icon: List,
+            items: [],
+            permission: { module: "income", action: "read" },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Expense",
+    items: [
+      {
+        title: "Advance",
+        url: "",
+        icon: HandCoins,
+        permission: { module: "expense", action: "read" },
+        items: [
+          {
+            title: "New",
+            url: "/expense/advance/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "expense", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/expense/advance",
+            icon: List,
+            items: [],
+            permission: { module: "expense", action: "read" },
+          },
+        ],
+      },
+      {
+        title: "Teacher Bill",
+        url: "",
+        icon: UsersRound,
+        permission: { module: "expense", action: "read" },
+        items: [
+          {
+            title: "New",
+            url: "/expense/teacher/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "expense", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/expense/teacher",
+            icon: List,
+            items: [],
+            permission: { module: "expense", action: "read" },
+          },
+        ],
+      },
+      {
+        title: "House Rent",
+        url: "",
+        icon: House,
+        permission: { module: "expense", action: "read" },
+        items: [
+          {
+            title: "New",
+            url: "/expense/house/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "expense", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/expense/house",
+            icon: List,
+            items: [],
+            permission: { module: "expense", action: "read" },
+          },
+        ],
+      },
+      {
+        title: "Utility Bill",
+        url: "",
+        icon: Package,
+        permission: { module: "expense", action: "read" },
+        items: [
+          {
+            title: "New",
+            url: "/expense/utility/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "expense", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/expense/utility",
+            icon: List,
+            items: [],
+            permission: { module: "expense", action: "read" },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "SMS",
+    items: [
+      {
+        title: "SMS",
+        url: "",
+        icon: MessageSquareMore,
+        permission: { module: "sms", action: "read" },
+        items: [
+          {
+            title: "Bulk SMS",
+            url: "/sms/new",
+            icon: Send,
+            items: [],
+            permission: { module: "sms", action: "create" },
+          },
+          {
+            title: "Due List SMS",
+            url: "/sms/due",
+            icon: Send,
+            items: [],
+            permission: { module: "sms", action: "create" },
+          },
+          {
+            title: "History",
+            url: "/sms",
+            icon: History,
+            items: [],
+            permission: { module: "sms", action: "read" },
+          },
+          {
+            title: "Settings",
+            url: "/sms/setting",
+            icon: Settings,
+            items: [],
+            permission: { module: "sms", action: "manage" },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Role & Permission",
+    role: "Admin",
+    items: [
+      {
+        title: "Role",
+        url: "/role",
+        icon: UserCog,
+        items: [],
+        // permission: { module: "sms", action: "read" },
+        role: "Admin",
+      },
+      {
+        title: "Permission",
+        url: "/permission",
+        icon: Key,
+        items: [],
+        // permission: { module: "sms", action: "read" },
+        role: "Admin",
+      },
+    ],
+  },
+  {
+    label: "Reports",
+    permission: { module: "report", action: "read" },
+    items: [
+      {
+        title: "Daily",
+        url: "/report/daily",
+        icon: CalendarDays,
+        items: [],
+        permission: { module: "report", action: "read" },
+      },
+      {
+        title: "Income",
+        url: "",
+        icon: HandCoins,
+        permission: { module: "report", action: "read" },
+        items: [
+          {
+            title: "Salary",
+            url: "/report/income/salary",
+            icon: DollarSign,
+            items: [],
+            permission: { module: "report", action: "read" },
+          },
+          {
+            title: "Admission",
+            url: "/report/income/admission",
+            icon: DollarSign,
+            items: [],
+            permission: { module: "report", action: "read" },
+          },
+          {
+            title: "Other",
+            url: "/report/income/other",
+            icon: DollarSign,
+            items: [],
+            permission: { module: "report", action: "read" },
+          },
+          {
+            title: "Overview",
+            url: "/report/income",
+            icon: TrendingUp,
+            items: [],
+            permission: { module: "report", action: "read" },
+          },
+        ],
+      },
+      {
+        title: "Expense",
+        url: "",
+        icon: Coins,
+        permission: { module: "report", action: "read" },
+        items: [
+          {
+            title: "Teacher Bill",
+            url: "/report/expense/teacher",
+            icon: UserRoundPen,
+            items: [],
+            permission: { module: "report", action: "read" },
+          },
+          {
+            title: "House rent",
+            url: "/report/expense/house",
+            icon: House,
+            items: [],
+            permission: { module: "report", action: "read" },
+          },
+          {
+            title: "Utility",
+            url: "/report/expense/utility",
+            icon: Package,
+            items: [],
+            permission: { module: "report", action: "read" },
+          },
+          {
+            title: "Overview",
+            url: "/report/expense",
+            icon: TrendingUp,
+            items: [],
+            permission: { module: "report", action: "read" },
+          },
+        ],
+      },
+      {
+        title: "Final",
+        url: "/report",
+        icon: Wallet,
+        items: [],
+        permission: { module: "report", action: "read" },
+      },
+    ],
+  },
+  {
+    label: "Room & Houses",
+    items: [
+      {
+        title: "House",
+        url: "",
+        icon: House,
+        permission: { module: "house", action: "read" },
+        items: [
+          {
+            title: "New",
+            url: "/house/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "house", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/house",
+            icon: List,
+            items: [],
+            permission: { module: "house", action: "read" },
+          },
+        ],
+      },
+      {
+        title: "Room",
+        url: "",
+        icon: Warehouse,
+        permission: { module: "room", action: "read" },
+        items: [
+          {
+            title: "New",
+            url: "/room/new",
+            icon: PlusCircle,
+            items: [],
+            permission: { module: "room", action: "create" },
+          },
+          {
+            title: "List",
+            url: "/room",
+            icon: List,
+            items: [],
+            permission: { module: "room", action: "read" },
+          },
+        ],
+      },
+    ],
+  },
+  {
+    label: "Utilities",
+    items: [
+      {
+        title: "Counter",
+        url: "/utils/counter",
+        icon: ShieldEllipsis,
+        items: [],
+        permission: { module: "utils", action: "read" },
+      },
+    ],
+  },
+  {
+    label: "Fee Utils",
+    items: [
+      {
+        title: "Admission",
+        url: "/utils/fee/admission",
+        icon: LogIn,
+        items: [],
+        permission: { module: "fee", action: "read" },
+      },
+      {
+        title: "Salary",
+        url: "/utils/fee/salary",
+        icon: Calendar,
+        items: [],
+        permission: { module: "fee", action: "read" },
+      },
+    ],
+  },
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const pathname = usePathname();
+  const { hasPermission, hasAnyPermission, hasAllPermissions, isLoading } =
+    usePermissions();
+
+  // returns true if the item is allowed to be shown
+  const itemAllowed = (item: NavItem) => {
+    // No permission metadata => public
+    if (
+      !item.permission &&
+      !item.anyPermissions &&
+      !(item as any).allPermissions
+    ) {
+      return true;
+    }
+
+    // Single permission: hasPermission expects (module, action)
+    if (item.permission) {
+      const { module, action } = item.permission;
+      if (!hasPermission(module, action)) return false;
+    }
+
+    // anyPermissions: at least one must pass
+    if (item.anyPermissions) {
+      if (!hasAnyPermission(item.anyPermissions)) return false;
+    }
+
+    // optional allPermissions field (if you choose to use it)
+    // expecting shape: allPermissions: Array<{ module, action }>
+    if ((item as any).allPermissions) {
+      if (!hasAllPermissions((item as any).allPermissions)) return false;
+    }
+
+    return true;
+  };
+
+  // Recursive filter
+  const filterNavItems = (items: NavItem[]): NavItem[] => {
+    return items
+      .map((item) => {
+        const filteredChildren = item.items ? filterNavItems(item.items) : [];
+        return {
+          ...item,
+          items: filteredChildren,
+        };
+      })
+      .filter((item) => {
+        // keep if any child remains visible
+        if (item.items && item.items.length > 0) return true;
+
+        // otherwise, keep only if the item itself is allowed
+        return itemAllowed(item);
+      });
+  };
+
+  const filteredNavigation = navigationData
+    .filter((group) => {
+      // groups may have permission as well
+      if (group.permission) {
+        const { module, action } = group.permission;
+        return hasPermission(module, action);
+      }
+      return true;
+    })
+    .map((group) => ({
+      ...group,
+      items: filterNavItems(group.items),
+    }))
+    .filter((group) => group.items.length > 0);
+
+  const renderNavItems = (items: NavItem[]) => {
+    return (
+      <SidebarMenu>
+        {items.map((item) => {
+          const isActive = pathname === item.url;
+          const Icon = item.icon;
+
+          if (!item.items || item.items.length === 0) {
+            return (
+              <SidebarMenuButton
+                tooltip={item.title}
+                isActive={isActive}
+                key={item.title}
+                asChild
+              >
+                <Link href={item.url} prefetch>
+                  {Icon && <Icon />}
+                  <span>{item.title}</span>
+                </Link>
+              </SidebarMenuButton>
+            );
+          }
+
+          return (
+            <Collapsible
+              key={item.title}
+              asChild
+              defaultOpen={isActive}
+              className="group/collapsible"
+            >
+              <SidebarMenuItem>
+                <CollapsibleTrigger asChild>
+                  <SidebarMenuButton tooltip={item.title}>
+                    {Icon && <Icon />}
+                    <span>{item.title}</span>
+                    <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
+                  </SidebarMenuButton>
+                </CollapsibleTrigger>
+
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    {item.items.map((subItem) => (
+                      <SidebarMenuSubItem key={subItem.title}>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={pathname === subItem.url}
+                        >
+                          <Link href={subItem.url} prefetch>
+                            {subItem.icon && <subItem.icon />}
+                            <span>{subItem.title}</span>
+                          </Link>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </SidebarMenuItem>
+            </Collapsible>
+          );
+        })}
+      </SidebarMenu>
+    );
+  };
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="bg-[#1D1E4E]">
         <Header />
       </SidebarHeader>
-      <SidebarContent className="bg-[#1D1E4E]">
-        <NavDashboard items={data.dashboard} />
-        <NavAcademic items={data.academic} />
-        <NavStudent items={data.student} />
-        <NavAttendance items={data.attendance} />
-        <NavBatch items={data.batch} />
-        <NavFee items={data.fee} />
-        <NavHomework items={data.homework} />
-        <NavTask items={data.task} />
-        <NavTeacher items={data.teacher} />
-        <NavResult items={data.result} />
-        <NavIncome items={data.income} />
-        <NavReport items={data.report} />
-        <NavExpense items={data.expense} />
-        <NavRoomHouse items={data.roomHouses} />
-        <NavFees items={data.fees} />
-        <NavUtils items={data.utils} />
-        <NavSms items={data.sms} />
-        <NavRolePermission items={data.rolePermission} />
+      <SidebarContent className="bg-[#1D1E4E] text-white">
+        {isLoading && (
+          <div className="flex h-full items-center justify-center">
+            <Loader className="w-4 h-4 animate-spin" />
+          </div>
+        )}
+        {navigationData.map((group, idx) => (
+          <SidebarGroup key={idx}>
+            {group.label && (
+              <SidebarGroupLabel className="text-gray-400 uppercase tracking-wide px-2 py-1 text-xs">
+                {group.label}
+              </SidebarGroupLabel>
+            )}
+            <SidebarGroupContent>
+              {renderNavItems(group.items)}
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
+
       <SidebarRail />
     </Sidebar>
   );

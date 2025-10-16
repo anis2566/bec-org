@@ -33,6 +33,7 @@ import { todoRouter } from "./routers/todo";
 import { userRouter } from "./routers/user";
 import { roleRouter } from "./routers/role";
 import { permissionRouter } from "./routers/permission";
+import { rbacRouter } from "./routers/rbac";
 
 export const appRouter = createTRPCRouter({
   auth: authRouter,
@@ -67,7 +68,8 @@ export const appRouter = createTRPCRouter({
   todo: todoRouter,
   user: userRouter,
   role: roleRouter,
-  permission: permissionRouter
+  permission: permissionRouter,
+  rbac: rbacRouter
 });
 
 // export type definition of API

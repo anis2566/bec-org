@@ -63,7 +63,7 @@ export const PermissionList = ({ permissions }: PermissionListProps) => {
                   <TableCell>{item.action}</TableCell>
                   <TableCell className="flex items-center gap-x-2">
                     {item.roles.map((role, index) => (
-                      <Badge key={index}>{role.name}</Badge>
+                      <Badge key={index} variant="secondary" className="rounded-full">{role.name}</Badge>
                     ))}
                   </TableCell>
                   <TableCell>
@@ -75,7 +75,7 @@ export const PermissionList = ({ permissions }: PermissionListProps) => {
                           item.id,
                           permission.module,
                           item.action,
-                          item.roles.map((i) => i.id)
+                          item.roles.map((i) => i.name)
                         )
                       }
                     >

@@ -334,6 +334,18 @@ export const higherSecondaryLevels = ["HSC 1st Year", "HSC 2nd Year"];
 
 export const modules = [
   {
+    name: "Class",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Institute",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Subject",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
     name: "Dashboard",
     actions: ["create", "read", "update", "delete"],
   },

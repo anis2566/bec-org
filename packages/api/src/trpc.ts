@@ -13,6 +13,13 @@ import { z, ZodError } from "zod";
 import type { Auth, Session } from "@workspace/auth";
 import { prisma, PrismaClient } from "@workspace/db";
 
+import {
+  hasPermission,
+  hasAnyPermission,
+  hasAllPermissions,
+  createRBACContext,
+} from "./rbac";
+
 /**
  * 1. CONTEXT
  *
@@ -39,6 +46,7 @@ export const createTRPCContext = async (opts: {
   authApi: Auth["api"];
   session: Session | null;
   db: PrismaClient;
+  rbac: ReturnType<typeof createRBACContext>;
 }> => {
   const authApi = opts.auth.api;
   const session = await authApi.getSession({
@@ -48,6 +56,7 @@ export const createTRPCContext = async (opts: {
     authApi,
     session,
     db: prisma,
+    rbac: createRBACContext({ session, db: prisma }),
   };
 };
 
@@ -57,19 +66,26 @@ export const createTRPCContext = async (opts: {
  * This is where the trpc api is initialized, connecting the context and
  * transformer
  */
-const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter: ({ shape, error }) => ({
-    ...shape,
-    data: {
-      ...shape.data,
-      zodError:
-        error.cause instanceof ZodError
-          ? (error.cause as ZodError<Record<string, unknown>>).flatten()
-          : null,
-    },
-  }),
-});
+const t = initTRPC
+  .context<{
+    authApi: Auth["api"];
+    session: Session | null;
+    db: PrismaClient;
+    rbac: ReturnType<typeof createRBACContext>;
+  }>()
+  .create({
+    transformer: superjson,
+    errorFormatter: ({ shape, error }) => ({
+      ...shape,
+      data: {
+        ...shape.data,
+        zodError:
+          error.cause instanceof ZodError
+            ? (error.cause as ZodError<Record<string, unknown>>).flatten()
+            : null,
+      },
+    }),
+  });
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
@@ -151,3 +167,144 @@ export const adminProcedure = t.procedure
       },
     });
   });
+
+type AnyProcedure = ReturnType<typeof t.procedure.use>;
+
+export const permissionProcedure = (module: string, action: string) => {
+  return protectedProcedure.use(async ({ ctx, next }) => {
+    const userId = ctx.session.user.id;
+
+    const hasAccess = await hasPermission(ctx.db, userId, { module, action });
+
+    if (!hasAccess) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: `Missing required permission: ${module}:${action}`,
+      });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+      },
+    });
+  }) as AnyProcedure;
+};
+/**
+ * Any permission procedure
+ *
+ * User needs at least ONE of the specified permissions
+ *
+ * @example
+ * export const viewDashboard = anyPermissionProcedure([
+ *   { module: "dashboard", action: "view" },
+ *   { module: "admin", action: "access" }
+ * ]).query(async ({ ctx }) => {
+ *   // User has either dashboard:view OR admin:access
+ *   return { data: "dashboard data" };
+ * });
+ */
+export const anyPermissionProcedure = (
+  permissions: Array<{ module: string; action: string }>
+) => {
+  return protectedProcedure.use(async ({ ctx, next }) => {
+    const userId = ctx.session.user.id;
+
+    const hasAccess = await hasAnyPermission(ctx.db, userId, permissions);
+
+    if (!hasAccess) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: `Missing one of required permissions: ${permissions
+          .map((p) => `${p.module}:${p.action}`)
+          .join(", ")}`,
+      });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        rbac: createRBACContext({ session: ctx.session, db: ctx.db }),
+      },
+    });
+  }) as AnyProcedure;
+};
+
+/**
+ * All permissions procedure
+ *
+ * User needs ALL of the specified permissions
+ *
+ * @example
+ * export const exportUserData = allPermissionsProcedure([
+ *   { module: "users", action: "read" },
+ *   { module: "export", action: "execute" }
+ * ]).mutation(async ({ ctx }) => {
+ *   // User has BOTH users:read AND export:execute
+ *   return { exported: true };
+ * });
+ */
+export const allPermissionsProcedure = (
+  permissions: Array<{ module: string; action: string }>
+) => {
+  return protectedProcedure.use(async ({ ctx, next }) => {
+    const userId = ctx.session.user.id;
+
+    const hasAccess = await hasAllPermissions(ctx.db, userId, permissions);
+
+    if (!hasAccess) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: `Missing required permissions: ${permissions
+          .map((p) => `${p.module}:${p.action}`)
+          .join(", ")}`,
+      });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        rbac: createRBACContext({ session: ctx.session, db: ctx.db }),
+      },
+    });
+  }) as AnyProcedure;
+};
+
+/**
+ * Role-based procedure
+ *
+ * Use this when you need to check for a specific role name
+ *
+ * @example
+ * export const adminSettings = roleProcedure("Admin")
+ *   .query(async ({ ctx }) => {
+ *     // User has Admin role
+ *     return { settings: [] };
+ *   });
+ */
+export const roleProcedure = (roleName: string) => {
+  return protectedProcedure.use(async ({ ctx, next }) => {
+    const userId = ctx.session.user.id;
+
+    const user = await ctx.db.user.findUnique({
+      where: { id: userId },
+      include: { roles: true },
+    });
+
+    const hasRoleAccess = user?.roles.some((role) => role.name === roleName);
+
+    if (!hasRoleAccess) {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: `Missing required role: ${roleName}`,
+      });
+    }
+
+    return next({
+      ctx: {
+        ...ctx,
+        rbac: createRBACContext({ session: ctx.session, db: ctx.db }),
+      },
+    });
+  }) as AnyProcedure;
+};

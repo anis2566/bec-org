@@ -1,12 +1,12 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { adminProcedure, permissionProcedure, publicProcedure } from "../trpc";
 
 import { ClassNameSchema } from "@workspace/utils/schemas";
 
 export const classRouter = {
-  createOne: adminProcedure
+  createOne: permissionProcedure("class", "create")
     .input(ClassNameSchema)
     .mutation(async ({ ctx, input }) => {
       const { name, level, position } = input;
@@ -99,7 +99,7 @@ export const classRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  forSelect: adminProcedure
+  forSelect: publicProcedure
     .input(
       z.object({
         search: z.string().nullish(),
@@ -119,7 +119,7 @@ export const classRouter = {
         },
         orderBy: {
           position: "asc",
-        }
+        },
       });
 
       return classes;
