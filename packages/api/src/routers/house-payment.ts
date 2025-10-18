@@ -1,17 +1,14 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import {
-  allPermissionsProcedure,
-  protectedProcedure,
-} from "../trpc";
+import { allPermissionsProcedure, protectedProcedure } from "../trpc";
 
 import { HousePaymentSchema } from "@workspace/utils/schemas";
 import { MONTH } from "@workspace/utils/constant";
 
 export const housePaymentRouter = {
   createOne: allPermissionsProcedure([
-    { module: "house_rent", action: "create" },
+    { module: "house_payment", action: "create" },
     { module: "expense", action: "create" },
   ])
     .input(HousePaymentSchema)
@@ -75,7 +72,7 @@ export const housePaymentRouter = {
     return paymentData;
   }),
   getMany: allPermissionsProcedure([
-    { module: "house_rent", action: "read" },
+    { module: "house_payment", action: "read" },
     { module: "expense", action: "read" },
   ])
     .input(

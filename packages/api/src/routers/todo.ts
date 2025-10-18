@@ -1,13 +1,13 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { protectedProcedure } from "../trpc";
 
 import { TodoSchema } from "@workspace/utils/schemas";
 import { TODO_STATUS } from "@workspace/utils/constant";
 
 export const todoRouter = {
-  createOne: adminProcedure
+  createOne: protectedProcedure
     .input(TodoSchema)
     .mutation(async ({ input, ctx }) => {
       const { text } = input;
@@ -25,7 +25,7 @@ export const todoRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  markComplete: adminProcedure
+  markComplete: protectedProcedure
     .input(
       z.object({
         id: z.string(),
@@ -56,7 +56,7 @@ export const todoRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: protectedProcedure
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const todoId = input;
@@ -80,7 +80,7 @@ export const todoRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getMany: adminProcedure.query(async ({ ctx }) => {
+  getMany: protectedProcedure.query(async ({ ctx }) => {
     const todos = await ctx.db.todo.findMany({
       orderBy: {
         createdAt: "desc",

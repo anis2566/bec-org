@@ -65,6 +65,7 @@ import {
 } from "@workspace/ui/components/collapsible";
 import { cn } from "@workspace/ui/lib/utils";
 import { usePermissions } from "@/hooks/use-user-permission";
+import { UserPermission, UserRole } from "@/lib/get-permissions";
 
 // Type definitions
 export interface NavItem {
@@ -173,21 +174,21 @@ export const navigationData: NavGroup[] = [
         title: "Student",
         url: "",
         icon: Users,
-        permission: { module: "attendance", action: "read" },
+        permission: { module: "student_attendance", action: "read" },
         items: [
           {
             title: "Create",
             url: "/attendance/student/new",
             icon: PlusCircle,
             items: [],
-            permission: { module: "attendance", action: "create" },
+            permission: { module: "student_attendance", action: "create" },
           },
           {
             title: "List",
             url: "/attendance/student",
             icon: List,
             items: [],
-            permission: { module: "attendance", action: "read" },
+            permission: { module: "student_attendance", action: "read" },
           },
         ],
       },
@@ -223,7 +224,7 @@ export const navigationData: NavGroup[] = [
         url: "/room-plan",
         icon: Warehouse,
         items: [],
-        permission: { module: "room", action: "read" },
+        permission: { module: "batch", action: "room_plan" },
       },
     ],
   },
@@ -234,35 +235,35 @@ export const navigationData: NavGroup[] = [
         title: "Salary",
         url: "",
         icon: Calendar,
-        permission: { module: "fee", action: "read" },
+        permission: { module: "salary_payment", action: "read" },
         items: [
           {
             title: "Receive Fee",
             url: "/fee/salary/new",
             icon: PlusCircle,
             items: [],
-            permission: { module: "fee", action: "create" },
+            permission: { module: "salary_payment", action: "create" },
           },
           {
             title: "History",
             url: "/fee/salary",
             icon: History,
             items: [],
-            permission: { module: "fee", action: "read" },
+            permission: { module: "salary_payment", action: "read" },
           },
           {
             title: "Due",
             url: "/fee/salary/due",
             icon: List,
             items: [],
-            permission: { module: "fee", action: "read" },
+            permission: { module: "salary_payment", action: "read" },
           },
           {
             title: "Overview",
             url: "/fee/salary/overview",
             icon: BringToFront,
             items: [],
-            permission: { module: "fee", action: "read" },
+            permission: { module: "salary_payment", action: "read" },
           },
         ],
       },
@@ -270,21 +271,21 @@ export const navigationData: NavGroup[] = [
         title: "Admission",
         url: "",
         icon: LogIn,
-        permission: { module: "fee", action: "read" },
+        permission: { module: "admission_payment", action: "read" },
         items: [
           {
             title: "Due",
             url: "/fee/admission/due",
             icon: List,
             items: [],
-            permission: { module: "fee", action: "read" },
+            permission: { module: "admission_payment", action: "read" },
           },
           {
             title: "History",
             url: "/fee/admission",
             icon: History,
             items: [],
-            permission: { module: "fee", action: "read" },
+            permission: { module: "admission_payment", action: "read" },
           },
         ],
       },
@@ -345,19 +346,7 @@ export const navigationData: NavGroup[] = [
     ],
   },
   {
-    label: "Tasks",
-    items: [
-      {
-        title: "Print",
-        url: "/task/print",
-        icon: Printer,
-        items: [],
-        permission: { module: "task", action: "read" },
-      },
-    ],
-  },
-  {
-    label: "Exam & Results",
+    label: "Document & Tasks",
     items: [
       {
         title: "Documents",
@@ -367,20 +356,32 @@ export const navigationData: NavGroup[] = [
         items: [
           {
             title: "New",
-            url: "/exam/document/new",
+            url: "/document/new",
             icon: PlusCircle,
             items: [],
             permission: { module: "document", action: "create" },
           },
           {
             title: "List",
-            url: "/exam/document",
+            url: "/document",
             icon: List,
             items: [],
             permission: { module: "document", action: "read" },
           },
         ],
       },
+      {
+        title: "Print",
+        url: "/task/print",
+        icon: Printer,
+        items: [],
+        permission: { module: "print_task", action: "read" },
+      },
+    ],
+  },
+  {
+    label: "Exam & Results",
+    items: [
       {
         title: "Exam",
         url: "",
@@ -430,7 +431,7 @@ export const navigationData: NavGroup[] = [
         url: "/exam/category",
         icon: Layers3,
         items: [],
-        permission: { module: "exam", action: "read" },
+        permission: { module: "exam_category", action: "read" },
       },
     ],
   },
@@ -468,21 +469,21 @@ export const navigationData: NavGroup[] = [
         title: "Advance",
         url: "",
         icon: HandCoins,
-        permission: { module: "expense", action: "read" },
+        permission: { module: "teacher_advance", action: "read" },
         items: [
           {
             title: "New",
             url: "/expense/advance/new",
             icon: PlusCircle,
             items: [],
-            permission: { module: "expense", action: "create" },
+            permission: { module: "teacher_advance", action: "create" },
           },
           {
             title: "List",
             url: "/expense/advance",
             icon: List,
             items: [],
-            permission: { module: "expense", action: "read" },
+            permission: { module: "teacher_advance", action: "read" },
           },
         ],
       },
@@ -490,21 +491,21 @@ export const navigationData: NavGroup[] = [
         title: "Teacher Bill",
         url: "",
         icon: UsersRound,
-        permission: { module: "expense", action: "read" },
+        permission: { module: "teacher_payment", action: "read" },
         items: [
           {
             title: "New",
             url: "/expense/teacher/new",
             icon: PlusCircle,
             items: [],
-            permission: { module: "expense", action: "create" },
+            permission: { module: "teacher_payment", action: "create" },
           },
           {
             title: "List",
             url: "/expense/teacher",
             icon: List,
             items: [],
-            permission: { module: "expense", action: "read" },
+            permission: { module: "teacher_payment", action: "read" },
           },
         ],
       },
@@ -512,21 +513,21 @@ export const navigationData: NavGroup[] = [
         title: "House Rent",
         url: "",
         icon: House,
-        permission: { module: "expense", action: "read" },
+        permission: { module: "house_payment", action: "read" },
         items: [
           {
             title: "New",
             url: "/expense/house/new",
             icon: PlusCircle,
             items: [],
-            permission: { module: "expense", action: "create" },
+            permission: { module: "house_payment", action: "create" },
           },
           {
             title: "List",
             url: "/expense/house",
             icon: List,
             items: [],
-            permission: { module: "expense", action: "read" },
+            permission: { module: "house_payment", action: "read" },
           },
         ],
       },
@@ -534,21 +535,21 @@ export const navigationData: NavGroup[] = [
         title: "Utility Bill",
         url: "",
         icon: Package,
-        permission: { module: "expense", action: "read" },
+        permission: { module: "utility_payment", action: "read" },
         items: [
           {
             title: "New",
             url: "/expense/utility/new",
             icon: PlusCircle,
             items: [],
-            permission: { module: "expense", action: "create" },
+            permission: { module: "utility_payment", action: "create" },
           },
           {
             title: "List",
             url: "/expense/utility",
             icon: List,
             items: [],
-            permission: { module: "expense", action: "read" },
+            permission: { module: "utility_payment", action: "read" },
           },
         ],
       },
@@ -762,39 +763,48 @@ export const navigationData: NavGroup[] = [
     label: "Utilities",
     items: [
       {
-        title: "Counter",
-        url: "/utils/counter",
-        icon: ShieldEllipsis,
-        items: [],
-        permission: { module: "counter_utils", action: "read" },
-      },
-    ],
-  },
-  {
-    label: "Fee Utils",
-    items: [
-      {
         title: "Admission",
         url: "/utils/fee/admission",
         icon: LogIn,
         items: [],
-        permission: { module: "fee", action: "read" },
+        permission: { module: "admission_fee", action: "read" },
       },
       {
         title: "Salary",
         url: "/utils/fee/salary",
         icon: Calendar,
         items: [],
-        permission: { module: "fee", action: "read" },
+        permission: { module: "salary_fee", action: "read" },
+      },
+      {
+        title: "Counter",
+        url: "/utils/counter",
+        icon: ShieldEllipsis,
+        items: [],
+        permission: { module: "counter", action: "read" },
       },
     ],
   },
 ];
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
+  initialPermissions?: UserPermission[];
+  initialRoles?: UserRole[];
+};
+
+export function AppSidebar({
+  initialPermissions,
+  initialRoles,
+  ...props
+}: AppSidebarProps) {
   const pathname = usePathname();
+
+  // Pass initial data - no loading state!
   const { hasPermission, hasAnyPermission, hasAllPermissions, isLoading } =
-    usePermissions();
+    usePermissions({
+      initialPermissions,
+      initialRoles,
+    });
 
   // returns true if the item is allowed to be shown
   const itemAllowed = (item: NavItem) => {
@@ -819,7 +829,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     }
 
     // optional allPermissions field (if you choose to use it)
-    // expecting shape: allPermissions: Array<{ module, action }>
     if ((item as any).allPermissions) {
       if (!hasAllPermissions((item as any).allPermissions)) return false;
     }
@@ -933,11 +942,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <Header />
       </SidebarHeader>
       <SidebarContent className="bg-[#1D1E4E] text-white">
+        {/* This will only show if shouldFetch is true (no initial data) */}
         {isLoading && (
           <div className="flex h-full items-center justify-center">
             <Loader className="w-4 h-4 animate-spin" />
           </div>
         )}
+
+        {/* With initial data, this renders immediately! */}
         {!isLoading &&
           filteredNavigation.map((group, idx) => (
             <SidebarGroup key={idx}>

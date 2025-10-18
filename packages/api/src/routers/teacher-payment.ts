@@ -10,7 +10,7 @@ import {
 import { TeacherPaymentSchema } from "@workspace/utils/schemas";
 
 export const teacherPaymentRouter = {
-  createOne: allPermissionsProcedure([{ module: "teacher_bill", action: "create" }, { module: "expense", action: "create" }])
+  createOne: permissionProcedure("teacher_payment", "create")
     .input(TeacherPaymentSchema)
     .mutation(async ({ input, ctx }) => {
       const { teacherId, month, classUnit, incentive, deductionUnit, note } =
@@ -72,7 +72,7 @@ export const teacherPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: allPermissionsProcedure([{ module: "teacher_bill", action: "update" }, { module: "expense", action: "update" }])
+  updateOne: permissionProcedure("teacher_payment", "update")
     .input(
       z.object({
         ...TeacherPaymentSchema.shape,
@@ -127,7 +127,7 @@ export const teacherPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  changeStatus: allPermissionsProcedure([{ module: "teacher_bill", action: "update" }, { module: "expense", action: "update" }])
+  changeStatus: permissionProcedure("teacher_payment", "update")
     .input(
       z.object({
         id: z.string(),
@@ -159,7 +159,7 @@ export const teacherPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: allPermissionsProcedure([{ module: "teacher_bill", action: "delete" }, { module: "expense", action: "delete" }])
+  deleteOne: permissionProcedure("teacher_payment", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const counterId = input;
@@ -244,7 +244,7 @@ export const teacherPaymentRouter = {
 
     return teacherPaymentData;
   }),
-  getMany: allPermissionsProcedure([{ module: "teacher_bill", action: "read" }, { module: "expense", action: "read" }])
+  getMany: permissionProcedure("teacher_payment", "read")
     .input(
       z.object({
         page: z.number(),

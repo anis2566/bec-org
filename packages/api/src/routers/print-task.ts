@@ -7,7 +7,7 @@ import { PRINT_TASK_STATUS } from "@workspace/utils/constant";
 import { endOfDay, startOfDay } from "date-fns";
 
 export const printTaskRouter = {
-  toggleStatus: permissionProcedure("printTask", "update")
+  toggleStatus: permissionProcedure("print_task", "toggle_status")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const printTaskId = input;
@@ -41,7 +41,7 @@ export const printTaskRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  deleteOne: permissionProcedure("printTask", "delete")
+  deleteOne: permissionProcedure("print_task", "delete")
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
@@ -69,7 +69,7 @@ export const printTaskRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getMany: permissionProcedure("printTask", "read")
+  getMany: permissionProcedure("print_task", "read")
     .input(
       z.object({
         page: z.number(),

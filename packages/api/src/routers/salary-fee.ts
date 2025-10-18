@@ -9,7 +9,7 @@ import {
 import { SalaryFeeSchema } from "@workspace/utils/schemas";
 
 export const salaryFeeRouter = {
-  createOne: permissionProcedure("fee_utils", "create")
+  createOne: permissionProcedure("salary_fee", "create")
     .input(SalaryFeeSchema)
     .mutation(async ({ input, ctx }) => {
       const { classNameId, amount, group, type } = input;
@@ -38,7 +38,7 @@ export const salaryFeeRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: permissionProcedure("fee_utils", "update")
+  updateOne: permissionProcedure("salary_fee", "update")
     .input(
       z.object({
         ...SalaryFeeSchema.shape,
@@ -73,7 +73,7 @@ export const salaryFeeRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: permissionProcedure("fee_utils", "delete")
+  deleteOne: permissionProcedure("salary_fee", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const feeId = input;
@@ -141,7 +141,7 @@ export const salaryFeeRouter = {
 
     return feeData;
   }),
-  getMany: permissionProcedure("fee_utils", "read")
+  getMany: permissionProcedure("salary_fee", "read")
     .input(
       z.object({
         page: z.number(),

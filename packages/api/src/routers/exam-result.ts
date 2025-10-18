@@ -13,7 +13,7 @@ const resultSchema = z.object({
 });
 
 export const examResultRouter = {
-  createMany: permissionProcedure("exam", "create")
+  createMany: permissionProcedure("result", "create")
     .input(
       z.object({
         examId: z.string(),
@@ -90,7 +90,7 @@ export const examResultRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  updateMany: permissionProcedure("exam", "update")
+  updateMany: permissionProcedure("result", "update")
     .input(
       z.object({
         resultId: z.string(),
@@ -173,7 +173,7 @@ export const examResultRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  updateResults: permissionProcedure("exam", "update")
+  updateResults: permissionProcedure("result", "update")
     .input(
       z.object({
         resultId: z.string(),
@@ -216,7 +216,7 @@ export const examResultRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  toggleStatus: permissionProcedure("exam", "update")
+  toggleStatus: permissionProcedure("result", "update")
     .input(z.string())
     .mutation(async ({ ctx, input }) => {
       const resultId = input;
@@ -309,7 +309,7 @@ export const examResultRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  deleteOne: permissionProcedure("exam", "delete")
+  deleteOne: permissionProcedure("result", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const resultId = input;
@@ -454,7 +454,7 @@ export const examResultRouter = {
 
     return result;
   }),
-  getMany: permissionProcedure("exam", "read")
+  getMany: permissionProcedure("result", "read")
     .input(
       z.object({
         page: z.number(),

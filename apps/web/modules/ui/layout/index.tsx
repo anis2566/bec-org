@@ -1,5 +1,3 @@
-"use client";
-
 import { Suspense } from "react";
 
 import {
@@ -8,27 +6,25 @@ import {
 } from "@workspace/ui/components/sidebar";
 
 import { AppSidebar } from "./app-sidebar";
-import { usePathname } from "next/navigation";
 import Loader from "@/components/loader";
+import { getServerPermissions } from "@/lib/get-permissions";
 
 interface Props {
   children: React.ReactNode;
 }
 
-export const DashboardLayout = ({ children }: Props) => {
-  const pathname = usePathname();
-  const isAuthRoute = pathname === "/sign-in" || pathname === "/sign-up";
+export const DashboardLayout = async ({ children }: Props) => {
+  const permissionData = await getServerPermissions();
 
   return (
     <Suspense fallback={<Loader />}>
-      {isAuthRoute ? (
-        <>{children}</>
-      ) : (
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>{children}</SidebarInset>
-        </SidebarProvider>
-      )}
+      <SidebarProvider>
+        <AppSidebar
+          initialPermissions={permissionData.permissions}
+          initialRoles={permissionData.roles}
+        />
+        <SidebarInset className="flex-1 overflow-auto">{children}</SidebarInset>
+      </SidebarProvider>
     </Suspense>
   );
 };

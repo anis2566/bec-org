@@ -334,10 +334,6 @@ export const higherSecondaryLevels = ["HSC 1st Year", "HSC 2nd Year"];
 
 export const modules = [
   {
-    name: "Class",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
     name: "Institute",
     actions: ["create", "read", "update", "delete"],
   },
@@ -346,7 +342,111 @@ export const modules = [
     actions: ["create", "read", "update", "delete"],
   },
   {
-    name: "Student",
+    name: "Attendance",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "admission_fee",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "admission_payment",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "batch_class",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Batch",
+    actions: ["create", "read", "update", "delete", "room_plan"],
+  },
+  {
+    name: "Class",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Counter",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "Dashboard",
+    actions: ["read", "admin", "account"],
+  },
+  {
+    name: "Document",
+    actions: [
+      "create",
+      "read",
+      "update",
+      "delete",
+      "toggle_received",
+      "toggle_finished",
+      "push_print",
+    ],
+  },
+  {
+    name: "exam_category",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "result",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "exam",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "homework",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "house_payment",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "house",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "institute",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "income",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "print_task",
+    actions: ["create", "read", "update", "delete", "toggle_status"],
+  },
+  {
+    name: "report",
+    actions: ["read", "daily", "income", "expense", "final"],
+  },
+  {
+    name: "role",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "room",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "salary_fee",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "salary_payment",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "student_attendance",
+    actions: ["create", "read", "update", "delete"],
+  },
+  {
+    name: "student",
     actions: [
       "create",
       "read",
@@ -357,111 +457,23 @@ export const modules = [
     ],
   },
   {
-    name: "Attendance",
+    name: "subject",
     actions: ["create", "read", "update", "delete"],
   },
   {
-    name: "Batch",
-    actions: ["create", "read", "update", "delete", "room_plan"],
-  },
-  {
-    name: "Academic",
+    name: "teacher_advance",
     actions: ["create", "read", "update", "delete"],
   },
   {
-    name: "Fee",
+    name: "teacher_payment",
     actions: ["create", "read", "update", "delete"],
   },
   {
-    name: "Homework",
+    name: "teacher",
     actions: ["create", "read", "update", "delete"],
   },
   {
-    name: "Teacher",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Task",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Result",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Income",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Expense",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "SMS",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Room",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "House",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Role",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Permission",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Dashboard",
-    actions: ["admin", "account", "hr", "management", "read"],
-  },
-  {
-    name: "Report",
-    actions: ["daily", "income", "expense", "final", "read"],
-  },
-  {
-    name: "Fee_Utils",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Counter_Utils",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Fees",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Exam",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Exam Category",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Document",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Teacher_Advance",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Teacher_Bill",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "House_Rent",
-    actions: ["create", "read", "update", "delete"],
-  },
-  {
-    name: "Utility_Bill",
+    name: "utility_payment",
     actions: ["create", "read", "update", "delete"],
   },
 ];

@@ -2,7 +2,7 @@ import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 import { startOfDay, endOfDay } from "date-fns";
 
-import { permissionProcedure } from "../trpc";
+import { allPermissionsProcedure, permissionProcedure } from "../trpc";
 
 import {
   ADMISSION_PAYMENT_STATUS,
@@ -27,7 +27,10 @@ const calculateTotal = (data: { month: string; total: number }[]): number => {
 };
 
 export const reportRouter = {
-  daily: permissionProcedure("report", "daily")
+  daily: allPermissionsProcedure([
+    { module: "report", action: "read" },
+    { module: "report", action: "daily" },
+  ])
     .input(
       z.object({
         session: z.string().nullish(),
@@ -158,7 +161,10 @@ export const reportRouter = {
         dailyTeacherAdvance,
       };
     }),
-  salaryIncome: permissionProcedure("report", "income")
+  salaryIncome: allPermissionsProcedure([
+    { module: "report", action: "read" },
+    { module: "report", action: "income" },
+  ])
     .input(
       z.object({
         session: z.string().nullish(),
@@ -227,7 +233,10 @@ export const reportRouter = {
         totalSalary,
       };
     }),
-  admissionIncome: permissionProcedure("report", "income")
+  admissionIncome: allPermissionsProcedure([
+    { module: "report", action: "read" },
+    { module: "report", action: "income" },
+  ])
     .input(
       z.object({
         session: z.string().nullish(),
@@ -296,7 +305,10 @@ export const reportRouter = {
         totalAdmission,
       };
     }),
-  otherIncome: permissionProcedure("report", "income")
+  otherIncome: allPermissionsProcedure([
+    { module: "report", action: "read" },
+    { module: "report", action: "income" },
+  ])
     .input(
       z.object({
         session: z.string().nullish(),
@@ -359,7 +371,10 @@ export const reportRouter = {
         totalOthers,
       };
     }),
-  income: permissionProcedure("report", "income")
+  income: allPermissionsProcedure([
+    { module: "report", action: "read" },
+    { module: "report", action: "income" },
+  ])
     .input(
       z.object({
         session: z.string().nullish(),
@@ -473,7 +488,10 @@ export const reportRouter = {
         others: modifiedOthers,
       };
     }),
-  teacherExpense: permissionProcedure("report", "expense")
+  teacherExpense: allPermissionsProcedure([
+    { module: "report", action: "read" },
+    { module: "report", action: "expense" },
+  ])
     .input(
       z.object({
         session: z.string().nullish(),
@@ -547,7 +565,10 @@ export const reportRouter = {
         totalPayment,
       };
     }),
-  houseExpense: permissionProcedure("report", "expense")
+  houseExpense: allPermissionsProcedure([
+    { module: "report", action: "read" },
+    { module: "report", action: "expense" },
+  ])
     .input(
       z.object({
         session: z.string().nullish(),
@@ -615,7 +636,10 @@ export const reportRouter = {
         totalPayment,
       };
     }),
-  utilityExpense: permissionProcedure("report", "expense")
+  utilityExpense: allPermissionsProcedure([
+    { module: "report", action: "read" },
+    { module: "report", action: "expense" },
+  ])
     .input(
       z.object({
         session: z.string().nullish(),
@@ -678,7 +702,10 @@ export const reportRouter = {
         totalPayment,
       };
     }),
-  expense: permissionProcedure("report", "expense")
+  expense: allPermissionsProcedure([
+    { module: "report", action: "read" },
+    { module: "report", action: "expense" },
+  ])
     .input(
       z.object({
         session: z.string().nullish(),
@@ -788,7 +815,10 @@ export const reportRouter = {
         utilities: modifiedUtilities,
       };
     }),
-  overview: permissionProcedure("report", "final")
+  overview: allPermissionsProcedure([
+    { module: "report", action: "read" },
+    { module: "report", action: "final" },
+  ])
     .input(
       z.object({
         session: z.string().nullish(),

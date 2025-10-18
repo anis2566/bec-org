@@ -17,6 +17,7 @@ import { useEditPermission } from "@/hooks/use-permission";
 interface PermissionListProps {
   permissions: {
     module: string;
+    name: string;
     permissions: Omit<
       {
         roles: {
@@ -63,7 +64,13 @@ export const PermissionList = ({ permissions }: PermissionListProps) => {
                   <TableCell>{item.action}</TableCell>
                   <TableCell className="flex items-center gap-x-2">
                     {item.roles.map((role, index) => (
-                      <Badge key={index} variant="secondary" className="rounded-full">{role.name}</Badge>
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="rounded-full"
+                      >
+                        {role.name}
+                      </Badge>
                     ))}
                   </TableCell>
                   <TableCell>

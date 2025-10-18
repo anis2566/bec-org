@@ -32,7 +32,7 @@ export const CardWrapper = ({
     >
       {title && (
         <CardHeader className="px-0">
-          <CardTitle>{title}</CardTitle>
+          <CardTitle className="capitalize">{title}</CardTitle>
           {description && <CardDescription>{description}</CardDescription>}
           <Separator />
         </CardHeader>

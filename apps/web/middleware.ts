@@ -5,7 +5,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Define public routes that don't require authentication
-  const publicRoutes = ["/sign-in", "/sign-up"];
+  const publicRoutes = ["/auth/sign-in", "/auth/sign-up", "/unauthorized"];
 
   // Check if the current path is a public route
   const isPublicRoute = publicRoutes.some((route) =>
@@ -17,13 +17,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check for Better Auth session token cookie
   // Better Auth uses this cookie name by default
   const sessionToken = request.cookies.get("better-auth.session_token")?.value;
 
   // // If no session token exists, redirect to sign-in
   if (!sessionToken) {
-    const signInUrl = new URL("/sign-in", request.url);
+    const signInUrl = new URL("/auth/sign-in", request.url);
     signInUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(signInUrl);
   }

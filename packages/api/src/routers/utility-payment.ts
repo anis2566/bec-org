@@ -2,7 +2,6 @@ import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
 import {
-  allPermissionsProcedure,
   permissionProcedure,
   protectedProcedure,
 } from "../trpc";
@@ -11,7 +10,7 @@ import { UtilityPaymentSchema } from "@workspace/utils/schemas";
 import { MONTH } from "@workspace/utils/constant";
 
 export const utilityPaymentRouter = {
-  createOne: allPermissionsProcedure([{ module: "utility_bill", action: "create" }, { module: "expense", action: "create" }])
+  createOne: permissionProcedure("utility_payment", "create")
     .input(UtilityPaymentSchema)
     .mutation(async ({ input, ctx }) => {
       const { name, amount } = input;
@@ -32,7 +31,7 @@ export const utilityPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: allPermissionsProcedure([{ module: "utility_bill", action: "update" }, { module: "expense", action: "update" }])
+  updateOne: permissionProcedure("utility_payment", "update")
     .input(
       z.object({
         ...UtilityPaymentSchema.shape,
@@ -65,7 +64,7 @@ export const utilityPaymentRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: allPermissionsProcedure([{ module: "utility_bill", action: "delete" }, { module: "expense", action: "delete" }])
+  deleteOne: permissionProcedure("utility_payment", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const paymentId = input;
@@ -102,7 +101,7 @@ export const utilityPaymentRouter = {
 
     return paymentData;
   }),
-  getMany: allPermissionsProcedure([{ module: "utility_bill", action: "read" }, { module: "expense", action: "read" }])
+  getMany: permissionProcedure("utility_payment", "read")
     .input(
       z.object({
         page: z.number(),

@@ -6,7 +6,7 @@ import { permissionProcedure, protectedProcedure } from "../trpc";
 import { AdmissionFeeSchema } from "@workspace/utils/schemas";
 
 export const admissionFeeRouter = {
-  createOne: permissionProcedure("fee_utils", "create")
+  createOne: permissionProcedure("admission_fee", "create")
     .input(AdmissionFeeSchema)
     .mutation(async ({ input, ctx }) => {
       const { classNameId, amount } = input;
@@ -33,7 +33,7 @@ export const admissionFeeRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: permissionProcedure("fee_utils", "update")
+  updateOne: permissionProcedure("admission_fee", "update")
     .input(
       z.object({
         ...AdmissionFeeSchema.shape,
@@ -66,7 +66,7 @@ export const admissionFeeRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: permissionProcedure("fee_utils", "delete")
+  deleteOne: permissionProcedure("admission_fee", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const feeId = input;
@@ -128,7 +128,7 @@ export const admissionFeeRouter = {
 
     return feeData;
   }),
-  getMany: permissionProcedure("fee_utils", "read")
+  getMany: permissionProcedure("admission_fee", "read")
     .input(
       z.object({
         page: z.number(),

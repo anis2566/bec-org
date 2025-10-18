@@ -10,7 +10,7 @@ import {
 import { generateTransactionIdFromObjectId } from "@workspace/utils";
 
 export const salaryPaymentRouter = {
-  updateOne: permissionProcedure("fee", "update")
+  updateOne: permissionProcedure("salary_payment", "update")
     .input(
       z.object({
         id: z.string(),
@@ -163,7 +163,7 @@ export const salaryPaymentRouter = {
 
       return salaryPaymentData;
     }),
-  getOverview: permissionProcedure("fee", "read")
+  getOverview: permissionProcedure("salary_payment", "read")
     .input(
       z.object({
         page: z.number(),
@@ -309,7 +309,7 @@ export const salaryPaymentRouter = {
         totalCount,
       };
     }),
-  getDueMany: permissionProcedure("fee", "read")
+  getDueMany: permissionProcedure("salary_payment", "read")
     .input(
       z.object({
         page: z.number(),
@@ -413,7 +413,7 @@ export const salaryPaymentRouter = {
         totalCount,
       };
     }),
-  getMany: permissionProcedure("fee", "read")
+  getMany: permissionProcedure("salary_payment", "read")
     .input(
       z.object({
         page: z.number(),

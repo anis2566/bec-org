@@ -11,7 +11,7 @@ import { AccountDashboard } from "../components/account-dashboard";
 export const DashboardView = () => {
   return (
     <div className="space-y-6">
-      <Tabs defaultValue="admin">
+      <Tabs defaultValue="account">
         <TabsList className="w-full max-w-fit rounded-xs mb-2 bg-muted">
           <TabsTrigger value="admin">Admin</TabsTrigger>
           <TabsTrigger value="account">Account</TabsTrigger>
@@ -22,7 +22,7 @@ export const DashboardView = () => {
         <TabsContent value="account">
           <AccountDashboard />
         </TabsContent>
-      </Tabs>
+    </Tabs>
     </div>
   );
 };

@@ -16,7 +16,6 @@ import {
   DialogDescription,
 } from "@workspace/ui/components/dialog";
 import { Form } from "@workspace/ui/components/form";
-import { FormInput } from "@workspace/ui/shared/form-input";
 import {
   ButtonState,
   LoadingButton,
@@ -27,7 +26,6 @@ import {
   PermissionSchemaType,
 } from "@workspace/utils/schemas";
 
-import { FormTextarea } from "@workspace/ui/shared/form-textarea";
 import { useCreatePermission } from "@/hooks/use-permission";
 import { modules } from "@workspace/utils/constant";
 import { FormSelect } from "@workspace/ui/shared/form-select";
@@ -62,8 +60,6 @@ export const CreatePermissionModal = () => {
           queryKey: trpc.permission.getMany.queryKey(),
         });
         form.reset({
-          name: "",
-          description: "",
           module: "",
           actions: [],
         });
@@ -75,8 +71,6 @@ export const CreatePermissionModal = () => {
   const form = useForm<PermissionSchemaType>({
     resolver: zodResolver(PermissionSchema),
     defaultValues: {
-      name: "",
-      description: "",
       module: "",
       actions: [],
     },
@@ -100,19 +94,6 @@ export const CreatePermissionModal = () => {
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormInput
-              form={form}
-              name="name"
-              label="Name"
-              disabled={isPending}
-              type="text"
-            />
-            <FormTextarea
-              form={form}
-              name="description"
-              label="Description"
-              disabled={isPending}
-            />
             <FormSelect
               form={form}
               name="module"

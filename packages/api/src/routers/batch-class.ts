@@ -1,7 +1,7 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { adminProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { BatchClassSchema } from "@workspace/utils/schemas";
 import { formatTime, splitTimeRange } from "@workspace/utils/constant";
@@ -15,7 +15,7 @@ type ClassData = {
   id: string;
   teacherId: string;
 };
-
+ 
 type GroupedData = {
   day: string;
   time: string;
@@ -31,7 +31,7 @@ type GroupedData = {
 };
 
 export const batchClassRouter = {
-  createMany: adminProcedure
+  createMany: permissionProcedure("batch_class", "create")
     .input(BatchClassSchema)
     .mutation(async ({ input, ctx }) => {
       const { time, days, batchId, teacherId, subjectId } = input;
@@ -122,7 +122,7 @@ export const batchClassRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: adminProcedure
+  deleteOne: permissionProcedure("batch_class", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const classId = input;
@@ -184,88 +184,90 @@ export const batchClassRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  getByBatch: adminProcedure.input(z.string()).query(async ({ input, ctx }) => {
-    const batchId = input;
+  getByBatch: protectedProcedure
+    .input(z.string())
+    .query(async ({ input, ctx }) => {
+      const batchId = input;
 
-    const batch = await ctx.db.batch.findUnique({
-      where: {
-        id: batchId,
-      },
-    });
-
-    if (!batch) {
-      return [
-        {
-          day: "",
-          time: "",
-          classes: [],
+      const batch = await ctx.db.batch.findUnique({
+        where: {
+          id: batchId,
         },
-      ];
-    }
+      });
 
-    const batchClasses = await ctx.db.batchClass.findMany({
-      where: {
-        batchId,
-      },
-      select: {
-        id: true,
-        time: true,
-        day: true,
-        teacherName: true,
-        subjectName: true,
-        roomName: true,
-        teacherId: true,
-      },
-      orderBy: [{ day: "asc" }, { time: "asc" }],
-    });
-
-    const orderedDays = [
-      "Saturday",
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-    ];
-
-    const groupedData: GroupedData[] = orderedDays.map((day) => ({
-      day,
-      time: "",
-      classes: [],
-    }));
-
-    const sortedClasses = batchClasses.sort((a, b) => {
-      const dayComparison =
-        orderedDays.indexOf(a.day) - orderedDays.indexOf(b.day);
-      if (dayComparison !== 0) return dayComparison;
-
-      return a.time.localeCompare(b.time);
-    });
-
-    sortedClasses.forEach((curr: ClassData) => {
-      const { day, time, teacherName, subjectName, roomName, id, teacherId } =
-        curr;
-      const dayGroup = groupedData.find((group) => group.day === day);
-      if (dayGroup) {
-        dayGroup.classes.push({
-          time,
-          teacherName,
-          subjectName,
-          roomName,
-          id,
-          teacherId,
-          className: batch.batchClassName,
-        });
+      if (!batch) {
+        return [
+          {
+            day: "",
+            time: "",
+            classes: [],
+          },
+        ];
       }
-    });
 
-    groupedData.forEach((dayGroup) => {
-      dayGroup.classes.sort((a, b) => a.time.localeCompare(b.time));
-    });
+      const batchClasses = await ctx.db.batchClass.findMany({
+        where: {
+          batchId,
+        },
+        select: {
+          id: true,
+          time: true,
+          day: true,
+          teacherName: true,
+          subjectName: true,
+          roomName: true,
+          teacherId: true,
+        },
+        orderBy: [{ day: "asc" }, { time: "asc" }],
+      });
 
-    return groupedData;
-  }),
-  getByTeacher: adminProcedure
+      const orderedDays = [
+        "Saturday",
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+      ];
+
+      const groupedData: GroupedData[] = orderedDays.map((day) => ({
+        day,
+        time: "",
+        classes: [],
+      }));
+
+      const sortedClasses = batchClasses.sort((a, b) => {
+        const dayComparison =
+          orderedDays.indexOf(a.day) - orderedDays.indexOf(b.day);
+        if (dayComparison !== 0) return dayComparison;
+
+        return a.time.localeCompare(b.time);
+      });
+
+      sortedClasses.forEach((curr: ClassData) => {
+        const { day, time, teacherName, subjectName, roomName, id, teacherId } =
+          curr;
+        const dayGroup = groupedData.find((group) => group.day === day);
+        if (dayGroup) {
+          dayGroup.classes.push({
+            time,
+            teacherName,
+            subjectName,
+            roomName,
+            id,
+            teacherId,
+            className: batch.batchClassName,
+          });
+        }
+      });
+
+      groupedData.forEach((dayGroup) => {
+        dayGroup.classes.sort((a, b) => a.time.localeCompare(b.time));
+      });
+
+      return groupedData;
+    }),
+  getByTeacher: protectedProcedure
     .input(z.string())
     .query(async ({ input, ctx }) => {
       const teacherId = input;

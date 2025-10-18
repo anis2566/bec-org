@@ -1,16 +1,13 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { allPermissionsProcedure, protectedProcedure } from "../trpc";
+import { permissionProcedure, protectedProcedure } from "../trpc";
 
 import { TeacherAdvanceSchema } from "@workspace/utils/schemas";
 import { MONTH, TEACHER_ADVANCE_STATUS } from "@workspace/utils/constant";
 
 export const teacherAdvanceRouter = {
-  createOne: allPermissionsProcedure([
-    { module: "teacher_advance", action: "create" },
-    { module: "expense", action: "create" },
-  ])
+  createOne: permissionProcedure("teacher_advance", "create")
     .input(TeacherAdvanceSchema)
     .mutation(async ({ input, ctx }) => {
       const { teacherId, amount } = input;
@@ -57,10 +54,7 @@ export const teacherAdvanceRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateOne: allPermissionsProcedure([
-    { module: "teacher_advance", action: "update" },
-    { module: "expense", action: "update" },
-  ])
+  updateOne: permissionProcedure("teacher_advance", "update")
     .input(
       z.object({
         ...TeacherAdvanceSchema.shape,
@@ -96,10 +90,7 @@ export const teacherAdvanceRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  changeStatus: allPermissionsProcedure([
-    { module: "teacher_advance", action: "update" },
-    { module: "expense", action: "update" },
-  ])
+  changeStatus: permissionProcedure("teacher_advance", "update")
     .input(
       z.object({
         id: z.string(),
@@ -131,10 +122,7 @@ export const teacherAdvanceRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: allPermissionsProcedure([
-    { module: "teacher_advance", action: "delete" },
-    { module: "expense", action: "delete" },
-  ])
+  deleteOne: permissionProcedure("teacher_advance", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const advanceId = input;
@@ -213,10 +201,7 @@ export const teacherAdvanceRouter = {
 
     return advanceData;
   }),
-  getMany: allPermissionsProcedure([
-    { module: "teacher_advance", action: "read" },
-    { module: "expense", action: "read" },
-  ])
+  getMany: permissionProcedure("teacher_advance", "read")
     .input(
       z.object({
         page: z.number(),

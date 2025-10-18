@@ -91,7 +91,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  toggleReceived: permissionProcedure("document", "update")
+  toggleReceived: permissionProcedure("document", "toggle_received")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const documentId = input;
@@ -122,7 +122,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  toggleFinished: permissionProcedure("document", "update")
+  toggleFinished: permissionProcedure("document", "toggle_finished")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const documentId = input;
@@ -153,7 +153,7 @@ export const documentRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  pushToPrint: permissionProcedure("document", "update")
+  pushToPrint: permissionProcedure("document", "push_print")
     .input(
       z.object({
         documentId: z.string(),

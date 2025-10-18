@@ -8,7 +8,7 @@ import { AttendanceSchema } from "@workspace/utils/schemas";
 import { MONTH } from "@workspace/utils/constant";
 
 export const studentAttendanceRouter = {
-  createMany: permissionProcedure("student", "create")
+  createMany: permissionProcedure("attendance_attendance", "create")
     .input(AttendanceSchema)
     .mutation(async ({ input, ctx }) => {
       const { attendances, batchId, date } = input;
@@ -82,7 +82,7 @@ export const studentAttendanceRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  updateMany: permissionProcedure("student", "update")
+  updateMany: permissionProcedure("attendance_attendance", "update")
     .input(
       z.object({
         attendances: AttendanceSchema.shape.attendances,
@@ -137,7 +137,7 @@ export const studentAttendanceRouter = {
         return { success: false, message: "Internal Server Error" };
       }
     }),
-  deleteOne: permissionProcedure("student", "delete")
+  deleteOne: permissionProcedure("attendance_attendance", "delete")
     .input(z.string())
     .mutation(async ({ input, ctx }) => {
       const attendanceId = input;
@@ -228,7 +228,7 @@ export const studentAttendanceRouter = {
         totalCount,
       };
     }),
-  getMany: permissionProcedure("student", "read")
+  getMany: permissionProcedure("attendance_attendance", "read")
     .input(
       z.object({
         page: z.number(),

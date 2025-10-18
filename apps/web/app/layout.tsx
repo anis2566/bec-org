@@ -4,11 +4,7 @@ import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 import { Providers } from "@/components/providers";
 
-import { Toaster } from "@workspace/ui/components/sonner";
-
 import "@workspace/ui/globals.css";
-import { DashboardLayout } from "@/modules/ui/layout";
-import { ModalProvider } from "@/components/modal-provider";
 import { Metadata } from "next";
 
 const fontSans = Geist({
@@ -42,13 +38,7 @@ export default function RootLayout({
           <body
             className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
           >
-            <Providers>
-              <DashboardLayout>
-                {children}
-                <ModalProvider />
-                <Toaster duration={3000} />
-              </DashboardLayout>
-            </Providers>
+            <Providers>{children}</Providers>
           </body>
         </html>
       </NuqsAdapter>

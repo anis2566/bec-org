@@ -11,6 +11,7 @@ import { appRouter, createTRPCContext } from "@workspace/api";
 import { auth } from "@/auth/server";
 import { createQueryClient } from "./query-client";
 import Loader from "@/components/loader";
+import { ErrorView } from "@/components/error";
 
 /**
  * This wraps the `createTRPCContext` helper and provides the required context for the tRPC API when
@@ -39,7 +40,7 @@ export function HydrateClient(props: { children: React.ReactNode }) {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Suspense fallback={<Loader />}>
-        <ErrorBoundary fallback={<p>Error</p>}>{props.children}</ErrorBoundary>
+        <ErrorBoundary fallback={<ErrorView />}>{props.children}</ErrorBoundary>
       </Suspense>
     </HydrationBoundary>
   );
@@ -56,3 +57,10 @@ export function prefetch<T extends ReturnType<TRPCQueryOptions<any>>>(
     void queryClient.prefetchQuery(queryOptions);
   }
 }
+
+export const createCaller = cache(
+  async (): Promise<ReturnType<typeof appRouter.createCaller>> => {
+    const context = await createContext();
+    return appRouter.createCaller(context);
+  }
+);

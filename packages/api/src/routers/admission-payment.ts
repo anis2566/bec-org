@@ -5,7 +5,7 @@ import { permissionProcedure, protectedProcedure } from "../trpc";
 import { ADMISSION_PAYMENT_STATUS } from "@workspace/utils/constant";
 
 export const admissionPaymentRouter = {
-  changeStatus: permissionProcedure("fee", "update")
+  changeStatus: permissionProcedure("admission_payment", "update")
     .input(
       z.object({
         id: z.string(),
@@ -71,7 +71,7 @@ export const admissionPaymentRouter = {
 
     return { success: true, data: paymentData };
   }),
-  getDueMany: permissionProcedure("fee", "read")
+  getDueMany: permissionProcedure("admission_payment", "read")
     .input(
       z.object({
         page: z.number(),
@@ -161,7 +161,7 @@ export const admissionPaymentRouter = {
         totalCount,
       };
     }),
-  getMany: permissionProcedure("fee", "read")
+  getMany: permissionProcedure("admission_payment", "read")
     .input(
       z.object({
         page: z.number(),

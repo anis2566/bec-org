@@ -1,19 +1,19 @@
 import type { TRPCRouterRecord } from "@trpc/server";
 import z from "zod";
 
-import { permissionProcedure } from "../trpc";
+import { adminProcedure, permissionProcedure } from "../trpc";
 
 import { PermissionSchema } from "@workspace/utils/schemas";
 
 export const permissionRouter = {
-  createOne: permissionProcedure("permission", "create")
+  createOne: adminProcedure
     .input(PermissionSchema)
     .mutation(async ({ ctx, input }) => {
-      const { name, description, module, actions } = input;
+      const { module, actions } = input;
 
       try {
         const constructedNames = actions.map(
-          (action) => `${name.toLocaleLowerCase()}.${action}`
+          (action) => `${module.toLocaleLowerCase()}.${action}`
         );
 
         const existingPermission = await ctx.db.permission.findFirst({
@@ -34,8 +34,7 @@ export const permissionRouter = {
         for (const action of actions) {
           await ctx.db.permission.create({
             data: {
-              name: `${name.toLocaleLowerCase()}.${action}`,
-              description,
+              name: `${module.toLocaleLowerCase()}.${action}`,
               module: module.toLocaleLowerCase(),
               action,
             },
@@ -48,7 +47,7 @@ export const permissionRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  updateOne: permissionProcedure("permission", "update")
+  updateOne: adminProcedure
     .input(
       z.object({
         permissionId: z.string(),
@@ -104,7 +103,7 @@ export const permissionRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getMany: permissionProcedure("permission", "read")
+  getMany: adminProcedure
     .input(
       z.object({
         page: z.number(),
@@ -146,7 +145,7 @@ export const permissionRouter = {
           roles: true,
         },
         orderBy: {
-          createdAt: sort === "asc" ? "asc" : "desc",
+          createdAt: "asc",
         },
       });
 
@@ -169,13 +168,15 @@ export const permissionRouter = {
 
           if (!acc[module]) {
             acc[module] = {
+              name,
               module,
               permissions: [],
             };
           }
 
-          acc[module].permissions.push({
+          acc[module]!.permissions.push({
             id,
+            name,
             action,
             description,
             roles,
@@ -189,8 +190,9 @@ export const permissionRouter = {
         {} as Record<
           string,
           {
+            name: string;
             module: string;
-            permissions: Array<Omit<PermissionWithRoles, "module" | "name">>;
+            permissions: Array<Omit<PermissionWithRoles, "module">>;
           }
         >
       );

@@ -6,7 +6,7 @@ import { permissionProcedure, protectedProcedure } from "../trpc";
 import { ExamCategory } from "@workspace/utils/schemas";
 
 export const examCategoryRouter = {
-  createOne: permissionProcedure("exam category", "create")
+  createOne: permissionProcedure("exam_category", "create")
     .input(ExamCategory)
     .mutation(async ({ ctx, input }) => {
       const { name } = input;
@@ -37,7 +37,7 @@ export const examCategoryRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  updateOne: permissionProcedure("exam category", "update")
+  updateOne: permissionProcedure("exam_category", "update")
     .input(
       z.object({
         ...ExamCategory.shape,
@@ -95,7 +95,7 @@ export const examCategoryRouter = {
 
       return categories;
     }),
-  deleteOne: permissionProcedure("exam category", "delete")
+  deleteOne: permissionProcedure("exam_category", "delete")
     .input(z.object({ id: z.string() }))
     .mutation(async ({ ctx, input }) => {
       const { id } = input;
@@ -123,7 +123,7 @@ export const examCategoryRouter = {
         return { success: false, message: "Internal server error" };
       }
     }),
-  getMany: permissionProcedure("exam category", "read")
+  getMany: permissionProcedure("exam_category", "read")
     .input(
       z.object({
         page: z.number(),

@@ -321,8 +321,6 @@ export const RoleSchema = z.object({
 export type RoleSchemaType = z.infer<typeof RoleSchema>;
 
 export const PermissionSchema = z.object({
-  name: requiredString,
-  description: z.string().optional(),
   module: requiredString,
   actions: z.array(z.string()).min(1, { message: "required" }),
 });
